@@ -1,4 +1,11 @@
-# QualiDoc — documentação de testes (QA) 
+# QualiDoc — documentação de testes (QA)
+
+## Demonstração no GitHub Pages
+
+- **Site publicado (app):** [https://caioandrian.github.io/qualidoc-public-sample/](https://caioandrian.github.io/qualidoc-public-sample/) — abre a interface do QualiDoc (com redirecionamento para `html/index.html`). O texto “QualiDoc” e “Sistema de Documentação de Teste” na página inicial vêm do **HTML da aplicação**, não do `README.md`.
+- **Capa do repositório no GitHub:** [https://github.com/caioandrian/qualidoc-public-sample](https://github.com/caioandrian/qualidoc-public-sample) — ali o GitHub mostra o **README do repositório**; é outra URL e outro contexto.
+
+Se no `.io` você ainda vir só texto estático antigo, faça um recarregamento forçado (Ctrl+F5) ou teste em aba anônima; confira também em **Actions** se o workflow “Deploy GitHub Pages” concluiu com sucesso e em **Settings → Pages** se há um deploy recente.
 
 Sistema de documentação de casos de testes voltado a QA. **A proposta atual é executar a aplicação com persistência somente no lado do cliente**, usando **`localStorage` do navegador** como armazenamento principal — sem depender de bucket S3, banco ou APIs de arquivo no servidor para os dados da documentação.
 
