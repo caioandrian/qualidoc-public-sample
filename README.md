@@ -1,291 +1,75 @@
-# qa-sistema-documentacao-testes
-Sistema de documentação de testes criado por QA
+# QualiDoc — documentação de testes (QA)
 
-## 🚀 Execução Local com LocalStack e S3
+Sistema de documentação de casos de testes voltado a QA. **A proposta atual é executar a aplicação com persistência somente no lado do cliente**, usando **`localStorage` do navegador** como armazenamento principal — sem depender de bucket S3, banco ou APIs de arquivo no servidor para os dados da documentação.
 
-Este projeto utiliza LocalStack para simular serviços AWS (S3) localmente durante o desenvolvimento.
+## Arquitetura (client-side)
 
-### ⚡ Início Rápido (5 minutos)
+1. **Interface**: páginas estáticas em `public/html/` (CSS em `public/css/`, lógica em `public/js/`).
+2. **Camada de persistência**: o script `public/js/client-storage-api.js` é carregado **no início** de cada página e **intercepta chamadas `fetch`** destinadas à API “clássica” do sistema. Em vez de ir ao servidor, leituras e gravações de documentação, metadados, anexos e histórico são **simuladas no browser** e materializadas em chaves no `localStorage`.
+3. **Prefixo das chaves**: por padrão, os dados usam o prefixo `qualiDoc_ls_v1:` (também exposto em `window.__QUALIDOC_LS_PREFIX__`), o que isola este app de outras entradas no mesmo armazenamento.
 
-#### 1️⃣ Instalar Docker Desktop
+Com isso, **cada usuário (e cada perfil de navegador) tem seu próprio conjunto de dados**. Não há sincronização automática entre máquinas. Limpar dados do site ou o próprio `localStorage` remove a documentação armazenada aí.
 
-Se ainda não tem o Docker instalado:
-- **Windows**: [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+## Backend opcional (apenas para IA)
 
-#### 2️⃣ Iniciar LocalStack
+Rotas de **inteligência artificial** (geração de cenários, reorganização, análises, etc.) continuam previstas para conversar com um **servidor** que faz proxy para a API OpenAI — por exemplo `js/server-ai.js` (porta **3002** por padrão). O próprio `client-storage-api.js` encaminha essas rotas ao servidor quando ele está disponível e pode enviar a chave OpenAI no cabeçalho `X-OpenAI-API-Key` se ela estiver configurada no cliente.
 
-```bash
-# Iniciar o container do LocalStack
-npm run localstack:start
+**Resumo**: documentação e arquivos de trabalho **no `localStorage`**; **IA** continua **opcional** e tipicamente exige o serviço Node de IA (ou equivalente) em execução.
 
-# Aguarde alguns segundos para o serviço iniciar
-```
+### Configuração no navegador (sem `.env`)
 
-#### 3️⃣ Testar Configuração
+Sem variáveis de ambiente no servidor, você pode definir no próprio cliente (conforme implementado em `client-storage-api.js`):
 
-```bash
-# Executar script de teste
-npm run s3:setup
-```
+- **Senha de administrador**: chave `qualiDoc_ls_v1:env:PASSWORD_ADMIN` no `localStorage`, ou a variável global `window.__DOCUMENTACAO_ADMIN_SENHA__` (senão, o padrão de desenvolvimento é `admin`).
+- **Chave OpenAI** (para chamadas de IA via proxy): chave `qualiDoc_ls_v1:env:OPENAI_API_KEY` no `localStorage`.
 
-Você verá algo como:
-```
-🚀 Configurando LocalStack...
-✅ Bucket S3 "test-evidence-bucket" criado com sucesso
-✅ Upload bem-sucedido
-✅ Download bem-sucedido
-✅ LocalStack configurado e testado com sucesso!
-```
+Trate esses valores como secretos no contexto do usuário: qualquer pessoa com acesso ao mesmo perfil do navegador pode lê-los.
 
-#### 4️⃣ Pronto! ✅
+## Como executar localmente
 
-Agora você pode usar o S3 Service na sua aplicação!
+### Só interface + dados em `localStorage` (mínimo)
 
-### 📦 Scripts Disponíveis
-
-#### LocalStack (Docker)
+É necessário servir os arquivos por **HTTP** (não basta abrir `file://`), para que scripts e caminhos absolutos (`/js/...`, `/css/...`) funcionem. Exemplo com Node:
 
 ```bash
-# Iniciar LocalStack
-npm run localstack:start
-
-# Parar LocalStack
-npm run localstack:stop
-
-# Ver logs
-npm run localstack:logs
-
-# Reiniciar
-npm run localstack:restart
-
-# Limpar dados (cuidado!)
-npm run localstack:clean
+npx --yes serve public -p 8080
 ```
 
-#### S3 Service
+Abra no navegador a home do app, por exemplo:
+
+`http://localhost:8080/html/index.html`
+
+### Instalação e servidor Node do repositório
+
+Útil se você quiser o mesmo ambiente que o código Express espera (incluindo proxy de IA, se configurado):
 
 ```bash
-# Configurar e testar S3
-npm run s3:setup
-
-# Migrar arquivos locais para S3
-npm run s3:migrate
+npm install
+npm start
 ```
 
-### 💡 Como Usar no Código
+O servidor principal (`js/server.js`) usa por padrão a porta **3001** (variável `PORT` no `.env` opcional). Consulte o código e o `Dockerfile` para detalhes de execução em container. Documentação auxiliar de Docker: `scripts/README-DOCKER-RUN.md`.
 
-#### Exemplo Básico
+## Variáveis de ambiente (modo servidor / Docker)
 
-```javascript
-const s3Service = require('./services/s3.service');
+Quando você **faz rodar** os servidores Node ou imagens Docker, ainda é comum definir no `.env` (há um modelo em `.env.example`):
 
-// Upload de arquivo
-async function uploadExample() {
-  const result = await s3Service.uploadFile(
-    Buffer.from('Olá, S3!'),
-    'test/hello.txt',
-    'text/plain'
-  );
-  console.log('Upload:', result);
-}
+- `OPENAI_API_KEY` — usada pelo serviço de IA no servidor, quando não se envia só pelo cliente.
+- `PASSWORD_ADMIN` — senha administrativa no servidor legado; no fluxo **client-first**, a senha efetiva pode ser a do `localStorage` conforme acima.
+- `PORT` / `AI_PORT` — portas dos serviços principal e de IA, quando aplicável.
 
-// Download de arquivo
-async function downloadExample() {
-  const buffer = await s3Service.downloadFile('test/hello.txt');
-  console.log('Conteúdo:', buffer.toString());
-}
+O arquivo `.env` não deve ser versionado (mantenha segredos fora do Git).
 
-// Listar arquivos
-async function listExample() {
-  const files = await s3Service.listFiles('test/');
-  console.log('Arquivos:', files);
-}
+## Estrutura relevante do repositório
 
-// Deletar arquivo
-async function deleteExample() {
-  await s3Service.deleteFile('test/hello.txt');
-  console.log('Arquivo deletado!');
-}
-```
+| Caminho | Função |
+|--------|--------|
+| `public/html/` | Páginas da aplicação |
+| `public/js/client-storage-api.js` | Interceptação de API + persistência em `localStorage` |
+| `public/js/script.js`, `view-script.js`, ... | Comportamento da UI |
+| `js/server.js` | Servidor Express (estático + rotas; uso opcional conforme deploy) |
+| `js/server-ai.js` | Proxy/serviço de rotas de IA (opcional) |
 
-### 🔄 Migração de Arquivos
+## Licença
 
-Para migrar seus arquivos locais existentes para o S3:
-
-```bash
-npm run s3:migrate
-```
-
-Este comando irá:
-- ✅ Migrar `public/anexos/` → `s3://bucket/anexos/`
-- ✅ Migrar `public/features/` → `s3://bucket/features/`
-- ✅ Migrar `public/historico/` → `s3://bucket/historico/`
-
-### 🐛 Troubleshooting
-
-#### LocalStack não inicia
-
-```bash
-# Verificar se Docker está rodando
-docker ps
-
-# Ver logs de erro
-npm run localstack:logs
-
-# Tentar reiniciar
-npm run localstack:restart
-```
-
-#### Erro "Cannot connect to LocalStack"
-
-```bash
-# Verificar se a porta 4566 está livre
-netstat -an | findstr 4566
-
-# Parar e iniciar novamente
-npm run localstack:stop
-npm run localstack:start
-```
-
-#### Arquivo .env não encontrado
-
-```bash
-# Copiar arquivo de exemplo
-copy .env.example .env
-```
-
-### 📊 Estrutura de Arquivos S3
-
-#### Desenvolvimento (LocalStack)
-
-```
-s3://test-evidence-bucket/
-├── anexos/
-│   ├── ABCDEF_CT001.pdf
-│   ├── ABCDEF_CT002.jpg
-│   └── ...
-├── features/
-│   ├── ABCDEF.json
-│   ├── GHIJKL.json
-│   └── ...
-└── historico/
-    ├── ABCDEF_feature_name_2025-11-03.csv
-    └── ...
-```
-
-### 📚 Documentação Completa
-
-Para mais detalhes sobre S3 e LocalStack, veja:
-- [QUICKSTART-S3.md](./QUICKSTART-S3.md) - Guia rápido completo
-- [INTEGRACAO-S3-COMPLETA.md](./INTEGRACAO-S3-COMPLETA.md) - Documentação de integração
-- [AWS S3 Docs](https://docs.aws.amazon.com/s3/)
-- [LocalStack Docs](https://docs.localstack.cloud/)
-
----
-
-## Configuração de Variáveis de Ambiente
-
-Este projeto requer duas variáveis de ambiente principais: `OPENAI_API_KEY` e `PASSWORD_ADMIN`.
-
-### Variável OPENAI_API_KEY
-
-Este projeto utiliza a API da OpenAI para funcionalidades de IA. É necessário configurar a variável de ambiente `OPENAI_API_KEY` com sua chave da API OpenAI.
-
-#### Configuração Local
-
-1. Copie o arquivo `.env.example` para `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   Ou no Windows PowerShell:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-
-2. Edite o arquivo `.env` e preencha com seus valores reais:
-   ```
-   OPENAI_API_KEY=sua_chave_aqui
-   PASSWORD_ADMIN=sua_senha_admin_aqui
-   ```
-
-3. Obtenha sua chave da OpenAI em: https://platform.openai.com/api-keys
-
-**Nota:** O arquivo `.env` não deve ser commitado no repositório (já está no `.gitignore`). Use `.env.example` como template.
-
-#### Configuração no GitHub Actions
-
-Para usar o projeto no GitHub Actions, você precisa configurar a variável como um secret do repositório:
-
-1. Acesse: **Settings** → **Secrets and variables** → **Actions**
-2. Clique em **New repository secret**
-3. Nome: `OPENAI_API_KEY`
-4. Valor: Cole sua chave da API OpenAI
-5. Clique em **Add secret**
-
-O workflow do GitHub Actions (`docker-build.yml`) está configurado para usar automaticamente este secret durante o build e testes dos containers Docker.
-
-**⚠️ Importante para Produção**: As secrets do GitHub Actions são usadas apenas para CI/CD e testes. Em produção, você deve passar as variáveis de ambiente em runtime (não no build). Veja [DEPLOY-PRODUCAO.md](./DEPLOY-PRODUCAO.md) para detalhes.
-
-#### Configuração no Docker
-
-Ao executar o container Docker, passe a variável de ambiente:
-
-```bash
-docker run -e OPENAI_API_KEY=sua_chave_aqui -p 3001:3001 -p 3002:3002 sua-imagem
-```
-
-Ou use um arquivo `.env`:
-
-```bash
-docker run --env-file .env -p 3001:3001 -p 3002:3002 sua-imagem
-```
-
-### Variável PASSWORD_ADMIN
-
-Esta variável define a senha de administrador necessária para operações protegidas no sistema, como:
-- Exclusão de documentação
-- Edição de prompts
-- Operações de manutenção
-- Download de arquivos ZIP
-- Edição em massa
-
-#### Configuração Local
-
-1. Se ainda não tiver um arquivo `.env`, copie o template:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Adicione ou edite no arquivo `.env`:
-   ```
-   PASSWORD_ADMIN=sua_senha_admin_aqui
-   ```
-3. Use uma senha forte e segura
-
-#### Configuração no GitHub Actions
-
-Para usar o projeto no GitHub Actions, você precisa configurar a variável como um secret do repositório:
-
-1. Acesse: **Settings** → **Secrets and variables** → **Actions**
-2. Clique em **New repository secret**
-3. Nome: `PASSWORD_ADMIN`
-4. Valor: Cole sua senha de administrador
-5. Clique em **Add secret**
-
-O workflow do GitHub Actions (`docker-build.yml`) está configurado para usar automaticamente este secret durante o build e testes dos containers Docker.
-
-**⚠️ Importante para Produção**: As secrets do GitHub Actions são usadas apenas para CI/CD e testes. Em produção, você deve passar as variáveis de ambiente em runtime (não no build). Veja [DEPLOY-PRODUCAO.md](./DEPLOY-PRODUCAO.md) para detalhes.
-
-#### Configuração no Docker
-
-Ao executar o container Docker, passe a variável de ambiente:
-
-```bash
-docker run -e PASSWORD_ADMIN=sua_senha_aqui -e OPENAI_API_KEY=sua_chave_aqui -p 3001:3001 -p 3002:3002 sua-imagem
-```
-
-Ou use um arquivo `.env`:
-
-```bash
-docker run --env-file .env -p 3001:3001 -p 3002:3002 sua-imagem
-```
+Veja o arquivo `LICENSE` no repositório.
