@@ -501,7 +501,7 @@ class DocumentacaoViewer {
             <div style="text-align: center; padding: 40px; color: #dc3545;" data-cy="error-container">
                 <h3 data-cy="error-title">❌ Erro</h3>
                 <p data-cy="error-message">${mensagem}</p>
-                <button onclick="window.location.href='/'" style="
+                <button onclick="window.location.href='index.html'" style="
                     background: #0066cc;
                     color: white;
                     border: none;

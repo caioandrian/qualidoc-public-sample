@@ -11,6 +11,22 @@
   window.__QUALIDOC_LS_PREFIX__ = P;
   var nativeFetch = window.fetch.bind(window);
 
+  /** Base para arquivos estáticos (/json/…). Em GitHub Pages (projeto) o site fica em /nome-do-repo/. */
+  function staticAssetBasePath() {
+    if (typeof window.__QUALIDOC_STATIC_BASE__ === 'string' && window.__QUALIDOC_STATIC_BASE__.length) {
+      var b = String(window.__QUALIDOC_STATIC_BASE__).replace(/\/?$/, '/');
+      return b.charAt(0) === '/' ? b : '/' + b;
+    }
+    var h = (window.location.hostname || '').toLowerCase();
+    if (h.slice(-10) === 'github.io') {
+      var segs = window.location.pathname.split('/').filter(Boolean);
+      if (segs.length >= 1) {
+        return '/' + segs[0] + '/';
+      }
+    }
+    return '/';
+  }
+
   var AI_PROXY_PATHS = [
     '/api/generate-scenarios',
     '/api/reorganize-test-cases',
@@ -458,7 +474,7 @@
 
   async function seedPromptsFromStatic() {
     try {
-      var r = await nativeFetch('/json/prompts.json', { cache: 'no-store' });
+      var r = await nativeFetch(staticAssetBasePath() + 'json/prompts.json', { cache: 'no-store' });
       if (!r.ok) return [];
       var arr = await r.json();
       if (Array.isArray(arr) && arr.length) {

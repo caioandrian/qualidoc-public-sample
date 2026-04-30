@@ -2126,7 +2126,7 @@ async function salvar() {
                 
                 // Redirecionar para a página inicial após 3 segundos
                 setTimeout(() => {
-                    window.location.href = '/html/index.html';
+                    window.location.href = 'index.html';
                 }, 3000);
             } else {
             if (result.code === 'DUPLICATE_NAME') {
@@ -5286,7 +5286,7 @@ function showCancelModal() {
     } else {
         // Sem alterações, limpar localStorage exceto backup e redirecionar
         limparLocalStorageExcetoBackup();
-        window.location.href = '/html/index.html';
+        window.location.href = 'index.html';
     }
 }
 
@@ -5378,7 +5378,7 @@ async function confirmarCancelamento() {
     // Limpar localStorage exceto backup ao cancelar
     limparLocalStorageExcetoBackup();
     
-    window.location.href = '/html/index.html';
+    window.location.href = 'index.html';
 }
 
 // Função de compatibilidade para o modal antigo (cancelModal)
@@ -5628,12 +5628,12 @@ function abrirHistoricoTestes() {
     
     if (featureId) {
         // Abrir histórico em nova aba com parâmetro hash
-        const url = `/html/historico.html?hash=${encodeURIComponent(featureId)}`;
+        const url = `historico.html?hash=${encodeURIComponent(featureId)}`;
         window.open(url, '_blank');
         console.log(`✅ Histórico aberto em nova aba para feature: ${featureId}`);
     } else {
         // Se não tem hash, abrir histórico geral
-        window.open('/html/historico.html', '_blank');
+        window.open('historico.html', '_blank');
         console.log('✅ Histórico geral aberto em nova aba');
     }
 }
@@ -10149,9 +10149,9 @@ function abrirMapeamentoCobertura() {
     // Abrir a nova janela IMEDIATAMENTE (antes da request ser finalizada)
     let novaJanela = null;
     if (backup) {
-        novaJanela = window.open('/html/rastreabilidade_cobertura.html', '_blank');
+        novaJanela = window.open('rastreabilidade_cobertura.html', '_blank');
     } else if (featureId) {
-        novaJanela = window.open(`/html/rastreabilidade_cobertura.html?id=${featureId}`, '_blank');
+        novaJanela = window.open(`rastreabilidade_cobertura.html?id=${featureId}`, '_blank');
     } else {
         alert('❌ Backup não encontrado e ID da documentação não disponível. Por favor, salve a documentação primeiro ou tenha dados no backup.');
         return;

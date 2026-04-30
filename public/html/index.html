@@ -9,8 +9,8 @@
     <title>QualiDoc - Sistema de Documentação de Testes</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
     <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="/css/styles.css?v=20251104001" id="css-styles-link">
-    <script src="/js/client-storage-api.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20251104001" id="css-styles-link">
+    <script src="../js/client-storage-api.js"></script>
     <script>
         // GARANTIR que ct_aplicadosIA seja sempre false ao acessar a index (ANTES DE QUALQUER OUTRA COISA)
         // E limpar temp_ct_ia quando acessar a home
@@ -1385,7 +1385,7 @@
                     </select>
                 </div>
                 <button class="stats-btn" data-cy="stats-btn" onclick="abrirModalEstatisticas()">📊 Estatísticas</button>
-                <a href="/html/template.html?new=true" class="add-feature-btn" data-cy="add-feature-btn">+ Nova Documentação</a>
+                <a href="template.html?new=true" class="add-feature-btn" data-cy="add-feature-btn">+ Nova Documentação</a>
             </div>
         </div>
         
@@ -1648,7 +1648,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // DEBUG: Mostrar versão do arquivo no console
             console.log('📦 HTML Version: 20251104-002');
-            console.log('📍 Arquivo correto carregado de: /html/index.html');
+            console.log('📍 Arquivo correto carregado de: html/index.html');
             
             // GARANTIR que ct_aplicadosIA seja sempre false ao acessar a index (PRIMEIRA COISA A FAZER)
             localStorage.setItem('ct_aplicadosIA', 'false');
@@ -3000,7 +3000,7 @@
                 // Se HASH ID é null, vazio ou não existe, redirecionar para criar novo documento
                 if (!featureId || featureId === 'null' || featureId === null || featureId === '') {
                     console.log('📝 HASH ID não existe, redirecionando para criar novo documento');
-                    window.location.href = `/html/template.html?new=true`;
+                    window.location.href = `template.html?new=true`;
                     return;
                 }
                 
@@ -3023,7 +3023,7 @@
                 // Se o arquivo não existe no servidor, redirecionar para criar novo documento com o hash do backup
                 if (!arquivoExiste) {
                     console.log('📝 Arquivo não existe no servidor, redirecionando para criar novo documento com HASH ID:', featureId);
-                    window.location.href = `/html/template.html?new=true&hash=${featureId}`;
+                    window.location.href = `template.html?new=true&hash=${featureId}`;
                     return;
                 }
                 
@@ -3317,7 +3317,7 @@
                 // Se HASH ID não existe ou é null, criar nova documentação
                 if (!featureId || featureId === 'null' || featureId === null) {
                     console.log('📝 HASH ID null ou não existe, criando nova documentação');
-                    window.location.href = `/html/template.html?new=true`;
+                    window.location.href = `template.html?new=true`;
                     return;
                 }
                 
@@ -3329,7 +3329,7 @@
                         if (result.success && result.data) {
                             // Arquivo existe - abrir tela de edição
                             console.log('✅ Feature encontrada, abrindo tela de edição');
-                            window.location.href = `/html/template.html?edit=${featureId}`;
+                            window.location.href = `template.html?edit=${featureId}`;
                             return;
                         }
                     }
@@ -3339,7 +3339,7 @@
                 
                 // Arquivo não existe - criar nova documentação com o mesmo HASH ID
                 console.log('📝 Feature não encontrada, criando nova documentação com HASH ID:', featureId);
-                window.location.href = `/html/template.html?new=true&hash=${featureId}`;
+                window.location.href = `template.html?new=true&hash=${featureId}`;
             } catch (error) {
                 console.error('❌ Erro ao continuar com backup:', error);
                 alert('Erro ao continuar. Tente novamente.');
@@ -3446,7 +3446,7 @@
 
         function visualizarFeature(arquivo) {
             // arquivo agora é o ID da feature
-            window.location.href = `/html/view.html?file=${encodeURIComponent(arquivo)}`;
+            window.location.href = `view.html?file=${encodeURIComponent(arquivo)}`;
         }
         
         
@@ -3473,12 +3473,12 @@
                 });
                 
                 // Redireciona para o template de edição de features com o ID específico
-                window.location.href = `/html/template.html?edit=${encodeURIComponent(arquivo)}`;
+                window.location.href = `template.html?edit=${encodeURIComponent(arquivo)}`;
             } catch (error) {
                 console.error('Erro ao verificar status de edição:', error);
                 alert('Erro ao verificar status de edição. Tentando novamente...');
                 // Em caso de erro, ainda permite tentar editar
-                window.location.href = `/html/template.html?edit=${encodeURIComponent(arquivo)}`;
+                window.location.href = `template.html?edit=${encodeURIComponent(arquivo)}`;
             }
         }
 
@@ -4295,7 +4295,7 @@
                     
                     // Redirecionar para tela de edição da nova documentação
                     setTimeout(() => {
-                        window.location.href = `/html/template.html?edit=${encodeURIComponent(data.novoArquivo)}`;
+                        window.location.href = `template.html?edit=${encodeURIComponent(data.novoArquivo)}`;
                     }, 1000);
                 } else {
                     alert('Erro ao duplicar documentação: ' + data.message);
@@ -4315,7 +4315,7 @@
         // Função para abrir histórico de testes
         function abrirHistoricoTestes(nomeFeature = '', ambiente = '', featureId = '') {
             // Abrir nova aba com a página de histórico, passando o featureId, nome da feature e ambiente como parâmetros
-            let url = '/html/historico.html';
+            let url = 'historico.html';
             const params = [];
             
             // Priorizar featureId para busca mais precisa
@@ -4341,6 +4341,6 @@
     
     <!-- Footer Component -->
     <div id="footer-container"></div>
-    <script src="/js/components-loader.js"></script>
+    <script src="../js/components-loader.js"></script>
 </body>
 </html>
