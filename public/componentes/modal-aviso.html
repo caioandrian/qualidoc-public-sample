@@ -1,0 +1,56 @@
+<!-- Modal de Aviso Genérico -->
+<div id="warningModal" class="modal" style="display: none;" data-cy="modal-warning">
+    <div class="modal-content modal-warning-content" data-cy="modal-warning-content">
+        <div class="modal-header modal-header-alert" data-cy="modal-warning-header">
+            <h2 class="modal-title" id="warningModalTitle" data-cy="modal-warning-title">⚠️ Aviso</h2>
+            <span class="close" onclick="closeWarningModal()" data-cy="modal-warning-close">&times;</span>
+        </div>
+        <div class="modal-body modal-warning-body" data-cy="modal-warning-body">
+            <p id="warningMessage" data-cy="warning-message">Mensagem de aviso</p>
+        </div>
+        <div class="modal-footer modal-warning-footer" data-cy="modal-warning-footer">
+            <button class="btn btn-primary" onclick="closeWarningModal()" data-cy="btn-ok-warning">OK</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos compactos para modal de aviso */
+    .modal-warning-content {
+        max-width: 450px !important;
+        padding: 0 !important;
+    }
+
+    .modal-warning-content .modal-header {
+        padding: 10px 15px !important;
+        min-height: auto !important;
+        background-color: #fff3cd !important;
+        border-bottom: 1px solid #ffc107 !important;
+    }
+
+    .modal-warning-content .modal-header h2 {
+        font-size: 16px !important;
+        margin: 0 !important;
+    }
+
+    .modal-warning-content .modal-body {
+        padding: 12px 15px !important;
+    }
+
+    .modal-warning-content .modal-body p {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+    }
+
+    .modal-warning-content .modal-footer {
+        padding: 10px 15px !important;
+        min-height: auto !important;
+    }
+
+    .modal-warning-content .btn {
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+    }
+</style>
+

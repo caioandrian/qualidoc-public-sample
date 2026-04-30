@@ -1,0 +1,27 @@
+<!-- Modal para editar título do caso de teste -->
+<div id="modalEditarTitulo" class="modal" style="display: none;" data-cy="modal-editar-titulo">
+    <div class="modal-content" data-cy="modal-editar-titulo-content" style="max-width: 500px;">
+        <div class="modal-header modal-header-alert" data-cy="modal-editar-titulo-header" style="padding: 10px 15px;">
+            <h3 data-cy="modal-editar-titulo-title" style="margin: 0; font-size: 16px;">✏️ Editar Título do Caso de Teste</h3>
+            <span class="close" onclick="fecharModalEditarTitulo()" data-cy="modal-editar-titulo-close">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="modal-editar-titulo-body" style="padding: 12px 15px;">
+            <div class="form-group" data-cy="form-group-editar-titulo" style="margin-bottom: 0;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                    <label for="novoTituloCT" data-cy="label-novo-titulo-ct" style="margin: 0; white-space: nowrap; font-size: 14px;">Título:</label>
+                    <div class="quantidade-container" data-cy="quantidade-container-titulo" style="flex: 1;">
+                        <input type="text" id="novoTituloCT" data-cy="input-novo-titulo" placeholder="Digite apenas a descrição do teste (ex: Login do usuário)" maxlength="100" style="padding: 8px 10px; font-size: 14px;">
+                    </div>
+                </div>
+                <small style="color: #666; font-size: 11px; margin-top: 3px; display: block; margin-left: calc(60px + 10px);" data-cy="hint-novo-titulo-ct">
+                    O prefixo "CT001 - " será adicionado automaticamente
+                </small>
+            </div>
+        </div>
+        <div class="modal-footer" data-cy="modal-editar-titulo-footer" style="padding: 10px 15px;">
+            <button class="btn btn-secondary" data-cy="btn-cancel-edit-title" onclick="fecharModalEditarTitulo()" style="padding: 6px 12px; font-size: 13px;">Cancelar</button>
+            <button class="btn btn-primary" data-cy="btn-confirm-edit-title" onclick="confirmarEdicaoTitulo()" style="padding: 6px 12px; font-size: 13px;">Confirmar</button>
+        </div>
+    </div>
+</div>
+

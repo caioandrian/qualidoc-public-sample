@@ -1,0 +1,290 @@
+<!-- Modal para comparação de histórico -->
+<div id="compareModal" class="modal" style="display: none;" data-cy="compare-modal">
+    <div class="modal-content compare-modal-content" data-cy="compare-modal-content">
+        <div class="modal-header" data-cy="compare-modal-header">
+            <h3 data-cy="compare-modal-title">📊 Comparação de Histórico</h3>
+            <span class="close" data-cy="compare-modal-close" onclick="fecharModalComparacao()">&times;</span>
+        </div>
+        <div id="compareContent" class="compare-content" data-cy="compare-content"></div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para modal de comparação de histórico */
+    #compareModal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    #compareModal .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 10px;
+        width: 80%;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #compareModal .compare-modal-content {
+        max-width: none;
+    }
+
+    #compareModal .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 2px solid #e0e0e0;
+        background-color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        flex-shrink: 0;
+    }
+
+    #compareModal .modal-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    #compareModal .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    #compareModal .close:hover {
+        color: #000;
+    }
+
+    #compareModal .compare-content {
+        display: flex;
+        gap: 15px;
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    #compareModal .compare-column {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8f9fa;
+        max-width: none;
+        display: flex;
+        flex-direction: column;
+        min-height: fit-content;
+    }
+
+    #compareModal .compare-column h4 {
+        margin: 0 0 15px 0;
+        color: #333;
+        text-align: center;
+    }
+
+    #compareModal .posicao-indicator {
+        color: #666;
+        font-size: 12px;
+        font-weight: normal;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    #compareModal .compare-column h6 {
+        margin: 0 0 15px 0;
+        color: #666;
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #007bff;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+    #compareModal .compare-ct-list h5 {
+        margin: 0 0 8px 0;
+        color: #333;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    #compareModal .compare-ct-list h6 {
+        margin: 0 0 15px 0;
+        color: #666;
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #007bff;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+    #compareModal .compare-stats {
+        margin-bottom: 20px;
+        font-size: 12px;
+        padding-bottom: 12px;
+    }
+
+    #compareModal .compare-stat {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        padding: 4px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    #compareModal .compare-stat:last-child {
+        margin-bottom: 0;
+        padding-bottom: 8px;
+        border-bottom: none;
+    }
+
+    #compareModal .compare-stat-label {
+        font-weight: bold;
+        color: #666;
+    }
+
+    #compareModal .compare-stat-value {
+        color: #333;
+        font-weight: normal;
+    }
+
+    #compareModal .compare-stat-value.taxa-aprovacao {
+        color: #007bff;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    #compareModal .compare-stat-value.casos-teste {
+        color: #007bff;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    
+    #compareModal .compare-stat-value.anexos {
+        color: #6c757d;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    #compareModal .compare-ct-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+    
+    #compareModal .compare-anexos-list {
+        max-height: 250px;
+        overflow-y: auto;
+        border-top: 2px solid #e0e0e0;
+        padding-top: 15px;
+    }
+
+    #compareModal .compare-ct-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    #compareModal .compare-anexos-list h6 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        margin: 0 0 12px 0;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #6c757d;
+    }
+    
+    #compareModal .compare-ct-list h6 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        margin: 0 0 12px 0;
+    }
+
+    #compareModal .ct-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    #compareModal .compare-ct-title {
+        flex: 1;
+        font-size: 12px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    #compareModal .compare-ct-status {
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    #compareModal .status-aprovado {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    #compareModal .status-reprovado {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    #compareModal .status-bloqueado {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    #compareModal .status-pendente {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    #compareModal .status-novo {
+        background: #e2e3e5;
+        color: #383d41;
+        font-weight: bold;
+    }
+    
+    #compareModal .status-removido {
+        background: #ffeaa7;
+        color: #d63031;
+        font-weight: bold;
+    }
+    
+    #compareModal .status-renomeado {
+        background: #b3d9ff;
+        color: #0056b3;
+        font-weight: bold;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        #compareModal .modal-content {
+            width: 95%;
+            margin: 2% auto;
+        }
+
+        #compareModal .compare-content {
+            flex-direction: column;
+        }
+
+        #compareModal .compare-column {
+            max-width: 100%;
+        }
+    }
+</style>
+

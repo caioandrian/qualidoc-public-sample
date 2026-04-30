@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplos para Geração de Casos de Teste com AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .example-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .example-card h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-card .icon {
+            font-size: 1.8em;
+        }
+
+        .example-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .example-card ul {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .example-card ul li {
+            padding: 5px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-card ul li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 5px;
+            margin-top: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .info-section ol, .info-section ul {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .info-section li {
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .modal-content pre {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../html/template.html" class="back-link">← Voltar para Gerador de Casos de Teste</a>
+
+        <div class="header">
+            <h1>🤖 Exemplos para Geração de Casos de Teste com AI</h1>
+            <p>Exemplos práticos para testar a geração automática de casos de teste</p>
+        </div>
+
+        <div class="examples-grid">
+            <!-- Exemplo 1: Cadastro de Produtos -->
+            <div class="example-card" onclick="showExample('cadastro_de_produtos')">
+                <h3><span class="icon">📦</span> Cadastro de Produtos</h3>
+                <p>Sistema administrativo completo para gerenciar produtos no estoque.</p>
+                <ul>
+                    <li>Cadastro completo de produtos</li>
+                    <li>Upload de imagens</li>
+                    <li>Geração automática de SKU</li>
+                    <li>Edição e exclusão</li>
+                </ul>
+                <div>
+                    <span class="tag">CRUD</span>
+                    <span class="tag">Validação</span>
+                    <span class="tag">Upload</span>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); showExample('cadastro_de_produtos')">Ver Detalhes</button>
+                </div>
+            </div>
+
+            <!-- Exemplo 2: Carrinho de Compras -->
+            <div class="example-card" onclick="showExample('carrinho_de_compras')">
+                <h3><span class="icon">🛒</span> Carrinho de Compras</h3>
+                <p>Sistema de e-commerce completo com gerenciamento de produtos, cupons e cálculos.</p>
+                <ul>
+                    <li>Adicionar/remover produtos</li>
+                    <li>Gerenciar quantidades</li>
+                    <li>Aplicar cupons de desconto</li>
+                    <li>Calcular totais e frete</li>
+                </ul>
+                <div>
+                    <span class="tag">Funcional</span>
+                    <span class="tag">Validação</span>
+                    <span class="tag">Cálculos</span>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); showExample('carrinho_de_compras')">Ver Detalhes</button>
+                </div>
+            </div>
+
+            <!-- Exemplo 3: Sistema de Login -->
+            <div class="example-card" onclick="showExample('sistema_de_login')">
+                <h3><span class="icon">🔐</span> Sistema de Login</h3>
+                <p>Autenticação de usuários com validação, recuperação de senha e controle de tentativas.</p>
+                <ul>
+                    <li>Validação de credenciais</li>
+                    <li>Recuperação de senha</li>
+                    <li>Controle de tentativas</li>
+                    <li>Gerenciamento de sessão</li>
+                </ul>
+                <div>
+                    <span class="tag">Segurança</span>
+                    <span class="tag">Validação</span>
+                    <span class="tag">Autenticação</span>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); showExample('sistema_de_login')">Ver Detalhes</button>
+                </div>
+            </div>
+
+            <!-- Exemplo 4: Busca de Produtos -->
+            <div class="example-card" onclick="showExample('busca_de_produtos')">
+                <h3><span class="icon">🔍</span> Busca de Produtos</h3>
+                <p>Sistema de busca com autocomplete, filtros múltiplos e ordenação de resultados.</p>
+                <ul>
+                    <li>Autocomplete e sugestões</li>
+                    <li>Filtros múltiplos</li>
+                    <li>Ordenação de resultados</li>
+                    <li>Histórico de buscas</li>
+                </ul>
+                <div>
+                    <span class="tag">Busca</span>
+                    <span class="tag">Filtros</span>
+                    <span class="tag">Usabilidade</span>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); showExample('busca_de_produtos')">Ver Detalhes</button>
+                </div>
+            </div>
+
+            <!-- Exemplo 5: Notificações Push -->
+            <div class="example-card" onclick="showExample('notificacoes_push')">
+                <h3><span class="icon">🔔</span> Notificações Push</h3>
+                <p>Sistema de alertas em tempo real com gerenciamento e preferências de notificações.</p>
+                <ul>
+                    <li>Notificações em tempo real</li>
+                    <li>Gerenciar lidas/não lidas</li>
+                    <li>Preferências de notificação</li>
+                    <li>Badge de contador</li>
+                </ul>
+                <div>
+                    <span class="tag">Integração</span>
+                    <span class="tag">Tempo Real</span>
+                    <span class="tag">Interface</span>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); showExample('notificacoes_push')">Ver Detalhes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Instruções -->
+        <div class="info-section">
+            <h2>📚 Como Usar os Exemplos</h2>
+            <ol>
+                <li><strong>Escolha um exemplo</strong> clicando no card desejado</li>
+                <li><strong>Leia o conteúdo completo</strong> para entender a funcionalidade</li>
+                <li><strong>Copie o texto</strong> usando o botão "Copiar Exemplo"</li>
+                <li><strong>Cole no gerador</strong> de casos de teste com AI</li>
+                <li><strong>Configure o tipo de teste</strong> e quantidade de cenários</li>
+                <li><strong>Clique em "Gerar com AI"</strong> e aguarde os resultados</li>
+            </ol>
+        </div>
+
+        <div class="info-section">
+            <h2>💡 Dicas para Melhores Resultados</h2>
+            <ul>
+                <li><strong>Seja específico:</strong> Inclua regras de negócio claras e validações detalhadas</li>
+                <li><strong>Liste os elementos:</strong> Mencione campos, botões e componentes da interface</li>
+                <li><strong>Descreva fluxos:</strong> Explique o comportamento esperado do sistema</li>
+                <li><strong>Mencione validações:</strong> Especifique limites, formatos e obrigatoriedades</li>
+                <li><strong>Adapte os exemplos:</strong> Customize conforme suas necessidades específicas</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal para exibir exemplos -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <pre id="modal-content"></pre>
+            <button class="copy-btn" id="copy-btn" onclick="copyExample()">📋 Copiar Exemplo</button>
+        </div>
+    </div>
+
+    <script>
+        const examples = {
+            'cadastro_de_produtos': 'cadastro_de_produtos.txt',
+            'carrinho_de_compras': 'carrinho_de_compras.txt',
+            'sistema_de_login': 'sistema_de_login.txt',
+            'busca_de_produtos': 'busca_de_produtos.txt',
+            'notificacoes_push': 'notificacoes_push.txt'
+        };
+
+        const titles = {
+            'cadastro_de_produtos': '📦 Cadastro de Produtos',
+            'carrinho_de_compras': '🛒 Carrinho de Compras',
+            'sistema_de_login': '🔐 Sistema de Login',
+            'busca_de_produtos': '🔍 Busca de Produtos',
+            'notificacoes_push': '🔔 Notificações Push'
+        };
+
+        let currentExample = '';
+
+        async function showExample(exampleName) {
+            try {
+                const response = await fetch(examples[exampleName]);
+                const content = await response.text();
+                
+                document.getElementById('modal-title').textContent = titles[exampleName];
+                document.getElementById('modal-content').textContent = content;
+                document.getElementById('modal').style.display = 'block';
+                
+                currentExample = content;
+                
+                // Resetar botão de copiar
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.textContent = '📋 Copiar Exemplo';
+                copyBtn.classList.remove('copied');
+            } catch (error) {
+                alert('Erro ao carregar exemplo: ' + error.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        async function copyExample() {
+            try {
+                await navigator.clipboard.writeText(currentExample);
+                
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.textContent = '✅ Copiado!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copiar Exemplo';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (error) {
+                alert('Erro ao copiar: ' + error.message);
+            }
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Suportar tecla ESC para fechar modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-minimal">Desenvolvido por Caio Andrian</div>
+        <div class="footer-full">
+            QA Enginner
+        </div>
+    </footer>
+</body>
+</html>
+

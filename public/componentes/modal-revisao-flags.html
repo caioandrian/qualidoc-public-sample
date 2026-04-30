@@ -1,0 +1,171 @@
+<!-- Modal de Revisão de Flags -->
+<div id="review-modal" class="review-modal" style="display: none;">
+    <style>
+        .review-modal {
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .review-modal-content {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .review-modal-header {
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .review-modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .review-modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: opacity 0.2s;
+        }
+
+        .review-modal-close:hover {
+            opacity: 0.7;
+        }
+
+        .review-modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .review-modal-body p {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .review-changes-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .review-change-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #0066cc;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .review-change-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .review-change-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-change-old {
+            color: #666;
+            font-size: 13px;
+            text-decoration: line-through;
+        }
+
+        .review-change-arrow {
+            color: #0066cc;
+            font-size: 16px;
+        }
+
+        .review-change-new {
+            color: #0066cc;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .review-modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-continuar {
+            background: #0052a3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-continuar:hover {
+            background: #003d7a;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancelar-review {
+            background: #e9ecef;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancelar-review:hover {
+            background: #dee2e6;
+        }
+    </style>
+    <div class="review-modal-content">
+        <div class="review-modal-header">
+            <h3>📋 Revisar Alterações</h3>
+            <span class="review-modal-close" onclick="fecharModalRevisao()">&times;</span>
+        </div>
+        <div class="review-modal-body">
+            <p>As seguintes alterações serão aplicadas:</p>
+            <ul id="review-changes-list" class="review-changes-list">
+                <!-- Itens serão inseridos dinamicamente -->
+            </ul>
+        </div>
+        <div class="review-modal-footer">
+            <button class="btn btn-cancelar-review" onclick="fecharModalRevisao()">Cancelar</button>
+            <button class="btn btn-continuar" onclick="continuarParaSenha()">Prosseguir</button>
+        </div>
+    </div>
+</div>
+

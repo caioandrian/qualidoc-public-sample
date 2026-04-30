@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompts IA - QualiDoc</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="/js/client-storage-api.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Garantir que o modal de senha admin fique centralizado quando visível */
+        #password-admin-modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 20000 !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 250px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #0066cc;
+        }
+
+        .header-buttons-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-cancelar {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-cancelar:hover {
+            background-color: #0066cc;
+        }
+
+        .btn-salvar {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-salvar:hover {
+            background-color: #218838;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .prompts-container {
+            display: flex;
+            height: calc(100vh - 61px); /* 100vh menos altura do header (15px top + 15px bottom + ~31px conteúdo = ~61px) */
+            margin-top: 0;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 20%;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 15px;
+            flex-shrink: 0;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .prompt-list {
+            list-style: none;
+        }
+
+        .prompt-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            word-break: break-word;
+        }
+
+        .prompt-item:hover {
+            background-color: #e9ecef;
+            border-color: #0066cc;
+        }
+
+        .prompt-item.active {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0052a3;
+        }
+
+        .editor-container {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .editor-label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        .keywords-section {
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+
+        .keywords-info {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+
+        .keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background-color: #6c757d;
+            color: white;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .editor-textarea:focus {
+            border-color: #0066cc;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        /* Estilos do Modal de Senha */
+        .password-modal {
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-modal-content {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 90%;
+            overflow: hidden;
+        }
+
+        .password-modal-header {
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .password-modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .password-modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: opacity 0.2s;
+        }
+
+        .password-modal-close:hover {
+            opacity: 0.7;
+        }
+
+        .password-modal-body {
+            padding: 25px;
+        }
+
+        .password-modal-body p {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        .password-error {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            color: #721c24;
+            font-size: 14px;
+        }
+
+        .capslock-warning {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #856404;
+            display: none;
+        }
+
+        .password-modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Estilos do Modal de Aviso */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header-alert {
+            background-color: #fff3cd;
+            border-bottom: 1px solid #ffc107;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-body p {
+            margin: 0;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-radius: 0 0 8px 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mensagem de manutenção -->
+    <div id="manutencao-alert" class="backup-alert" style="display: none; background: #e9ecef; border-color: #6c757d; margin: 20px; position: fixed; top: 0; left: 0; right: 0; z-index: 10000;" data-cy="manutencao-alert">
+        <div class="backup-alert-content">
+            <span class="backup-alert-icon" style="color: #ffc107; font-size: 24px;">⚠️</span>
+            <span class="backup-alert-message" style="font-weight: bold; color: #495057;">O sistema está em manutenção. Por favor, tente novamente mais tarde.</span>
+        </div>
+    </div>
+    <div class="header-buttons">
+        <div class="search-container">
+            <input 
+                type="text" 
+                class="search-input" 
+                id="search-input" 
+                placeholder="Pesquisar prompts..." 
+                oninput="filtrarPrompts()"
+            >
+        </div>
+        <div class="header-buttons-right">
+            <button class="btn btn-salvar" id="btn-salvar" onclick="salvarPrompt()" disabled>Salvar</button>
+        </div>
+    </div>
+
+    <div class="prompts-container">
+        <div class="sidebar">
+            <h2>Prompts IA</h2>
+            <ul class="prompt-list" id="prompt-list">
+                <li class="loading">Carregando prompts...</li>
+            </ul>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-wrapper">
+                <div class="editor-label" id="editor-label">Selecione um prompt para editar</div>
+                <div class="keywords-section" id="keywords-section" style="display: none;">
+                    <div class="keywords-info">
+                        <small>⚠️ Palavras-chave que não podem ser removidas ou editadas:</small>
+                    </div>
+                    <div class="keywords-list" id="keywords-list"></div>
+                </div>
+                <textarea 
+                    class="editor-textarea" 
+                    id="editor-textarea" 
+                    placeholder="Selecione um prompt no menu lateral para começar a editar..."
+                    disabled
+                ></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="success-message">
+        Prompt salvo com sucesso!
+    </div>
+
+    <!-- Modal de Senha Admin Component -->
+    <div id="modal-senha-admin-container"></div>
+
+    <!-- Modal de Aviso (Componente) -->
+    <div id="modal-aviso-container"></div>
+
+    <!-- Modal de Confirmação para Desfazer Alterações -->
+    <div id="confirm-undo-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header modal-header-alert">
+                <h2 class="modal-title">⚠️ Confirmar</h2>
+                <span class="close" onclick="closeConfirmUndoModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-undo-message">Deseja descartar todas as alterações?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancelar" onclick="closeConfirmUndoModal()">Cancelar</button>
+                <button class="btn btn-salvar" onclick="confirmarDesfazerAlteracoes()">Desfazer Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let prompts = [];
+        let promptsFiltrados = [];
+        let currentPromptId = null;
+        let currentPromptName = null;
+        let originalContent = '';
+        let currentKeywords = [];
+        let hasChanges = false;
+        let flagEditarPrompts = null; // Flag de edição de prompts (carregada do servidor)
+        let flagsConfig = {}; // Configuração de flags para senhas (carregada do servidor)
+
+        // Função para carregar flags de configuração
+        async function carregarFlagsPrompts() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags) {
+                    flagsConfig = data.flags;
+                    return flagsConfig;
+                }
+                return {};
+            } catch (error) {
+                console.error('❌ Erro ao carregar flags:', error);
+                return {};
+            }
+        }
+
+        // Função para verificar flag de edição de prompts
+        async function verificarFlagEditarPrompts() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags) {
+                    flagEditarPrompts = data.flags.editarPrompts === true; // Apenas true permite edição
+                    
+                    if (flagEditarPrompts !== true) {
+                        // Flag desativada ou não definida - bloquear completamente a edição
+                        bloquearEdicao();
+                    } else {
+                        // Flag ativada - permitir edição
+                        liberarEdicao();
+                    }
+                    
+                    return flagEditarPrompts;
+                }
+                flagEditarPrompts = null; // Não carregou do servidor
+                bloquearEdicao();
+                return null;
+            } catch (error) {
+                console.error('❌ Erro ao verificar flag de editar prompts:', error);
+                flagEditarPrompts = null; // Erro ao carregar
+                bloquearEdicao();
+                return null;
+            }
+        }
+
+        // Bloquear edição de prompts completamente
+        function bloquearEdicao() {
+            const textarea = document.getElementById('editor-textarea');
+            const btnSalvar = document.getElementById('btn-salvar');
+            const searchInput = document.getElementById('search-input');
+            
+            if (textarea) {
+                textarea.disabled = true;
+                textarea.style.opacity = '0.6';
+                textarea.style.cursor = 'not-allowed';
+                textarea.placeholder = 'Edição de prompts está bloqueada pela flag editarPrompts.';
+            }
+            
+            if (btnSalvar) {
+                btnSalvar.disabled = true;
+            }
+            
+            // Bloquear também a seleção de prompts na lista
+            const promptItems = document.querySelectorAll('.prompt-item');
+            promptItems.forEach(item => {
+                item.style.opacity = '0.6';
+                item.style.cursor = 'not-allowed';
+                item.style.pointerEvents = 'none';
+            });
+        }
+
+        // Liberar edição de prompts
+        function liberarEdicao() {
+            const textarea = document.getElementById('editor-textarea');
+            const btnSalvar = document.getElementById('btn-salvar');
+            
+            if (textarea && currentPromptId) {
+                textarea.disabled = false;
+                textarea.style.opacity = '1';
+                textarea.style.cursor = 'text';
+                textarea.placeholder = 'Selecione um prompt no menu lateral para começar a editar...';
+            } else if (textarea) {
+                textarea.placeholder = 'Selecione um prompt no menu lateral para começar a editar...';
+            }
+            
+            if (btnSalvar) {
+                btnSalvar.disabled = !currentPromptId;
+            }
+            
+            // Liberar seleção de prompts na lista
+            const promptItems = document.querySelectorAll('.prompt-item');
+            promptItems.forEach(item => {
+                item.style.opacity = '1';
+                item.style.cursor = 'pointer';
+                item.style.pointerEvents = 'auto';
+            });
+        }
+
+        // Função para verificar flag de manutenção
+        async function verificarManutencao() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags && data.flags.manutencao === true) {
+                    // Mostrar alerta de manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'block';
+                        console.log('🔧 Sistema em manutenção');
+                    }
+                    
+                    // Ocultar conteúdo principal
+                    const container = document.querySelector('.prompts-container');
+                    if (container) {
+                        container.style.opacity = '0.5';
+                        container.style.pointerEvents = 'none';
+                    }
+                    
+                    // Bloquear todos os botões e inputs
+                    const buttons = document.querySelectorAll('button, input, select, textarea');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.5';
+                    });
+                    
+                    return true; // Sistema em manutenção
+                } else {
+                    // Ocultar alerta de manutenção se não estiver em manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'none';
+                    }
+                    return false; // Sistema não está em manutenção
+                }
+            } catch (error) {
+                console.error('❌ Erro ao verificar flag de manutenção:', error);
+                return false; // Em caso de erro, não bloquear o sistema
+            }
+        }
+        
+        // Carregar lista de prompts ao carregar a página
+        async function carregarPrompts() {
+            try {
+                const response = await fetch('/api/prompts/list');
+                const data = await response.json();
+                
+                if (data.success) {
+                    prompts = data.prompts;
+                    promptsFiltrados = prompts;
+                    renderizarListaPrompts();
+                } else {
+                    console.error('Erro ao carregar prompts:', data.error);
+                    document.getElementById('prompt-list').innerHTML = '<li class="loading">Erro ao carregar prompts</li>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar prompts:', error);
+                document.getElementById('prompt-list').innerHTML = '<li class="loading">Erro ao carregar prompts</li>';
+            }
+        }
+        
+        // Verificar manutenção ao carregar a página
+        document.addEventListener('DOMContentLoaded', async function() {
+            const emManutencao = await verificarManutencao();
+            if (!emManutencao) {
+                await verificarFlagEditarPrompts();
+                await carregarPrompts();
+            }
+        });
+
+        // Filtrar prompts baseado no texto de pesquisa
+        function filtrarPrompts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                promptsFiltrados = prompts;
+            } else {
+                promptsFiltrados = prompts.filter(prompt => 
+                    prompt.name.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            renderizarListaPrompts();
+        }
+
+        // Renderizar lista de prompts no menu lateral
+        function renderizarListaPrompts() {
+            const list = document.getElementById('prompt-list');
+            const searchTerm = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
+            let promptsParaRenderizar = searchTerm === '' ? prompts : promptsFiltrados;
+            
+            // Ordenar alfabeticamente por nome
+            promptsParaRenderizar = [...promptsParaRenderizar].sort((a, b) => {
+                return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+            });
+            
+            if (promptsParaRenderizar.length === 0) {
+                list.innerHTML = '<li class="loading">Nenhum prompt encontrado</li>';
+                return;
+            }
+
+            list.innerHTML = promptsParaRenderizar.map(prompt => `
+                <li class="prompt-item" data-id="${prompt.id}" onclick="selecionarPrompt(${prompt.id})">
+                    ${prompt.name}
+                </li>
+            `).join('');
+            
+            // Manter o item ativo destacado se ainda estiver visível
+            if (currentPromptId) {
+                const activeItem = document.querySelector(`[data-id="${currentPromptId}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
+            }
+            
+            // Aplicar bloqueio se a flag estiver desativada
+            if (flagEditarPrompts !== true) {
+                const promptItems = document.querySelectorAll('.prompt-item');
+                promptItems.forEach(item => {
+                    item.style.opacity = '0.6';
+                    item.style.cursor = 'not-allowed';
+                    item.style.pointerEvents = 'none';
+                });
+            }
+        }
+
+        // Variável para armazenar o promptId quando precisar confirmar antes de selecionar
+        let pendingPromptId = null;
+
+        // Selecionar um prompt
+        async function selecionarPrompt(promptId) {
+            // Verificar se a edição está bloqueada
+            await verificarFlagEditarPrompts();
+            if (flagEditarPrompts !== true) {
+                // Flag desativada ou não carregada - bloquear completamente, não permitir seleção
+                alert('A edição de prompts está bloqueada pela flag editarPrompts.');
+                return;
+            }
+            
+            // Verificar se há alterações não salvas
+            if (hasChanges) {
+                // Usar modal de confirmação
+                const modal = document.getElementById('confirm-undo-modal');
+                const messageElement = document.getElementById('confirm-undo-message');
+                
+                if (modal && messageElement) {
+                    pendingPromptId = promptId;
+                    messageElement.textContent = 'Você tem alterações não salvas. Deseja descartá-las?';
+                    modal.style.display = 'block';
+                    return;
+                } else {
+                    // Fallback para confirm
+                    if (!confirm('Você tem alterações não salvas. Deseja descartá-las?')) {
+                        return;
+                    }
+                }
+            }
+            
+            selecionarPromptAposConfirmacao(promptId);
+        }
+
+        // Selecionar prompt após confirmação
+        async function selecionarPromptAposConfirmacao(promptId) {
+            try {
+                // Atualizar item ativo no menu
+                document.querySelectorAll('.prompt-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-id="${promptId}"]`).classList.add('active');
+
+                // Carregar conteúdo do prompt
+                const response = await fetch(`/api/prompts/${promptId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentPromptId = promptId;
+                    currentPromptName = data.nome;
+                    originalContent = data.content;
+                    currentKeywords = data.keywords || [];
+                    document.getElementById('editor-textarea').value = data.content;
+                    document.getElementById('editor-label').textContent = `Editando: ${data.nome}`;
+                    hasChanges = false;
+                    
+                    // Aplicar bloqueio/liberação baseado na flag
+                    await verificarFlagEditarPrompts();
+                    if (flagEditarPrompts === true) {
+                        liberarEdicao();
+                    } else {
+                        bloquearEdicao();
+                    }
+
+                    // Exibir palavras-chave
+                    const keywordsSection = document.getElementById('keywords-section');
+                    const keywordsList = document.getElementById('keywords-list');
+                    
+                    // Para o prompt "gerar ct funcional", mostrar apenas {contexto}
+                    let keywordsParaExibir = currentKeywords;
+                    if (currentPromptName && currentPromptName.toLowerCase() === 'gerar ct funcional') {
+                        keywordsParaExibir = currentKeywords.filter(k => k === '{contexto}');
+                        if (keywordsParaExibir.length === 0) {
+                            // Se {contexto} não estiver na lista, adicionar para exibição
+                            keywordsParaExibir = ['{contexto}'];
+                        }
+                    }
+                    
+                    if (keywordsParaExibir.length > 0) {
+                        keywordsList.innerHTML = keywordsParaExibir.map(keyword => 
+                            `<span class="keyword-badge">${keyword}</span>`
+                        ).join('');
+                        keywordsSection.style.display = 'block';
+                    } else {
+                        keywordsSection.style.display = 'none';
+                    }
+
+                    // Remover listener anterior se existir e adicionar novo
+                    const textarea = document.getElementById('editor-textarea');
+                    const newTextarea = textarea.cloneNode(true);
+                    textarea.parentNode.replaceChild(newTextarea, textarea);
+                    newTextarea.addEventListener('input', detectarMudancas);
+                } else {
+                    alert('Erro ao carregar prompt: ' + (data.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao carregar prompt:', error);
+                alert('Erro ao carregar prompt');
+            }
+        }
+
+        // Detectar mudanças no texto
+        function detectarMudancas() {
+            // Verificar se a edição está bloqueada
+            if (flagEditarPrompts !== true) {
+                // Tentar editar quando bloqueado - restaurar conteúdo original
+                alert('A edição de prompts está bloqueada pela flag editarPrompts.');
+                document.getElementById('editor-textarea').value = originalContent;
+                return;
+            }
+            
+            const currentContent = document.getElementById('editor-textarea').value;
+            hasChanges = currentContent !== originalContent;
+        }
+
+        // Mostrar modal de confirmação para desfazer alterações
+        function showConfirmUndoModal() {
+            const modal = document.getElementById('confirm-undo-modal');
+            const messageElement = document.getElementById('confirm-undo-message');
+            
+            if (modal && messageElement) {
+                messageElement.textContent = 'Deseja descartar todas as alterações?';
+                modal.style.display = 'block';
+            } else {
+                // Fallback para confirm caso o modal não exista
+                if (confirm('Deseja descartar todas as alterações?')) {
+                    confirmarDesfazerAlteracoes();
+                }
+            }
+        }
+
+        // Fechar modal de confirmação
+        function closeConfirmUndoModal() {
+            const modal = document.getElementById('confirm-undo-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Confirmar desfazer alterações
+        function confirmarDesfazerAlteracoes() {
+            closeConfirmUndoModal();
+            
+            // Se há um prompt pendente para selecionar, selecioná-lo após descartar alterações
+            if (pendingPromptId !== null) {
+                const promptId = pendingPromptId;
+                pendingPromptId = null;
+                // Restaurar conteúdo original
+                document.getElementById('editor-textarea').value = originalContent;
+                hasChanges = false;
+                // Selecionar o prompt pendente
+                selecionarPromptAposConfirmacao(promptId);
+            } else {
+                // Restaurar conteúdo original
+                document.getElementById('editor-textarea').value = originalContent;
+                hasChanges = false;
+            }
+        }
+
+
+        // Contar ocorrências de uma palavra-chave no texto
+        function contarOcorrencias(texto, palavra) {
+            let count = 0;
+            let index = texto.indexOf(palavra);
+            while (index !== -1) {
+                count++;
+                index = texto.indexOf(palavra, index + 1);
+            }
+            return count;
+        }
+
+        // Variável para armazenar dados de validação quando houver edição parcial
+        let validationDataForForce = null;
+
+        // Validar palavras-chave antes de salvar
+        function validarKeywords(content) {
+            console.log('🔍 Validando palavras-chave...');
+            console.log('Palavras-chave esperadas:', currentKeywords);
+            console.log('Conteúdo original:', originalContent.substring(0, 200) + '...');
+            
+            if (!currentKeywords || currentKeywords.length === 0) {
+                console.log('⚠️ Nenhuma palavra-chave definida, validação passou');
+                return { valid: true };
+            }
+
+            // Para o prompt "gerar ct funcional", só validar {contexto}
+            let keywordsParaValidar = currentKeywords;
+            if (currentPromptName && currentPromptName.toLowerCase() === 'gerar ct funcional') {
+                console.log('📝 Prompt "gerar ct funcional" detectado - validando apenas {contexto}');
+                keywordsParaValidar = currentKeywords.filter(k => k === '{contexto}');
+                if (keywordsParaValidar.length === 0) {
+                    // Se {contexto} não estiver na lista, adicionar para validação
+                    keywordsParaValidar = ['{contexto}'];
+                }
+            }
+
+            const missingKeywords = []; // Palavras-chave totalmente removidas
+            const modifiedKeywords = []; // Palavras-chave modificadas
+            const partialEdits = []; // Palavras-chave com edição parcial (algumas ocorrências permanecem)
+
+            for (const keyword of keywordsParaValidar) {
+                console.log(`Verificando palavra-chave: ${keyword}`);
+                
+                // Contar quantas vezes a palavra-chave aparece no conteúdo original
+                const ocorrenciasOriginais = contarOcorrencias(originalContent, keyword);
+                console.log(`  Ocorrências no original: ${ocorrenciasOriginais}`);
+                
+                // Contar quantas vezes a palavra-chave EXATA aparece no novo conteúdo
+                const ocorrenciasNovas = contarOcorrencias(content, keyword);
+                console.log(`  Ocorrências no novo conteúdo: ${ocorrenciasNovas}`);
+                
+                // Se não encontrou a palavra-chave exata
+                if (ocorrenciasNovas === 0) {
+                    console.log(`  ❌ Palavra-chave "${keyword}" NÃO encontrada exatamente`);
+                    // Palavra-chave não encontrada exatamente - verificar se foi modificada
+                    const keywordName = keyword.replace(/[{}]/g, '');
+                    
+                    // Procurar por qualquer padrão entre chaves no conteúdo
+                    const allKeywordsPattern = /\{[^}]+\}/g;
+                    const allKeywordsInContent = content.match(allKeywordsPattern) || [];
+                    
+                    // Verificar se existe alguma palavra-chave que seja similar (para mostrar no erro)
+                    const similarKeyword = allKeywordsInContent.find(k => {
+                        if (k === keyword) return false; // Já sabemos que não é exatamente igual
+                        
+                        const kName = k.replace(/[{}]/g, '');
+                        const originalName = keywordName;
+                        
+                        // Se os nomes são idênticos (ignorando case), é uma modificação
+                        if (kName.toLowerCase() === originalName.toLowerCase()) {
+                            return true;
+                        }
+                        
+                        // Verificar se os nomes são similares (para identificar a modificação)
+                        const lengthDiff = Math.abs(kName.length - originalName.length);
+                        const minLength = Math.min(kName.length, originalName.length);
+                        
+                        // Se a diferença de comprimento for pequena (até 4 caracteres) e o comprimento mínimo for significativo
+                        if (lengthDiff <= 4 && minLength >= 3) {
+                            // Contar caracteres em comum
+                            let commonChars = 0;
+                            const originalCharCount = {};
+                            const foundCharCount = {};
+                            
+                            originalName.toLowerCase().split('').forEach(char => {
+                                originalCharCount[char] = (originalCharCount[char] || 0) + 1;
+                            });
+                            
+                            kName.toLowerCase().split('').forEach(char => {
+                                foundCharCount[char] = (foundCharCount[char] || 0) + 1;
+                            });
+                            
+                            Object.keys(originalCharCount).forEach(char => {
+                                commonChars += Math.min(originalCharCount[char] || 0, foundCharCount[char] || 0);
+                            });
+                            
+                            // Calcular similaridade baseada no comprimento mínimo (mais rigoroso)
+                            const similarity = commonChars / minLength;
+                            
+                            // Se a similaridade for alta (>= 0.6), considera como modificação
+                            if (similarity >= 0.6) {
+                                return true;
+                            }
+                        }
+                        
+                        // Verificar se um contém o outro (pelo menos 70% do nome menor está no maior)
+                        const shorter = kName.length < originalName.length ? kName : originalName;
+                        const longer = kName.length >= originalName.length ? kName : originalName;
+                        if (longer.toLowerCase().includes(shorter.toLowerCase()) && shorter.length >= 3) {
+                            const containmentRatio = shorter.length / longer.length;
+                            if (containmentRatio >= 0.7) {
+                                return true;
+                            }
+                        }
+                        
+                        return false;
+                    });
+                    
+                    if (similarKeyword) {
+                        // Encontrou uma variação modificada - BLOQUEAR (modificação total)
+                        console.log(`  ⚠️ Encontrada variação modificada: ${keyword} → ${similarKeyword}`);
+                        modifiedKeywords.push({
+                            original: keyword,
+                            found: similarKeyword,
+                            ocorrenciasOriginais: ocorrenciasOriginais
+                        });
+                    } else {
+                        // Não encontrou nem a palavra-chave exata nem variações similares - BLOQUEAR (remoção total)
+                        console.log(`  ❌ Palavra-chave "${keyword}" ausente e sem variações similares`);
+                        missingKeywords.push({
+                            keyword: keyword,
+                            ocorrenciasOriginais: ocorrenciasOriginais
+                        });
+                    }
+                } else if (ocorrenciasNovas < ocorrenciasOriginais) {
+                    // Encontrou menos ocorrências do que o original - EDição PARCIAL (pode forçar)
+                    console.log(`  ⚠️ Palavra-chave "${keyword}" tem menos ocorrências: ${ocorrenciasNovas} < ${ocorrenciasOriginais}`);
+                    partialEdits.push({
+                        keyword: keyword,
+                        ocorrenciasOriginais: ocorrenciasOriginais,
+                        ocorrenciasNovas: ocorrenciasNovas
+                    });
+                } else {
+                    console.log(`  ✅ Palavra-chave "${keyword}" encontrada corretamente (${ocorrenciasNovas} ocorrências)`);
+                }
+            }
+
+            console.log('Resultado da validação:', { missingKeywords, modifiedKeywords, partialEdits });
+
+            // Se houver remoção total ou modificação total, bloquear completamente
+            if (missingKeywords.length > 0 || modifiedKeywords.length > 0) {
+                let errorMessage = 'Não é permitido remover ou editar palavras-chave.\n\n';
+                
+                if (missingKeywords.length > 0) {
+                    errorMessage += `Palavras-chave totalmente removidas:\n${missingKeywords.map(k => `  - ${k.keyword} (${k.ocorrenciasOriginais} ocorrência(s) removida(s))`).join('\n')}\n\n`;
+                }
+                
+                if (modifiedKeywords.length > 0) {
+                    errorMessage += `Palavras-chave modificadas:\n${modifiedKeywords.map(m => `  - ${m.original} → ${m.found}`).join('\n')}`;
+                }
+                
+                return {
+                    valid: false,
+                    canForce: false,
+                    message: errorMessage,
+                    missingKeywords: missingKeywords,
+                    modifiedKeywords: modifiedKeywords,
+                    partialEdits: []
+                };
+            }
+
+            // Se houver apenas edição parcial (algumas ocorrências permanecem), permitir forçar
+            if (partialEdits.length > 0) {
+                let warningMessage = 'Algumas palavras-chave foram parcialmente editadas ou removidas:\n\n';
+                warningMessage += partialEdits.map(p => `  - ${p.keyword}: ${p.ocorrenciasNovas} de ${p.ocorrenciasOriginais} ocorrência(s) permanecem`).join('\n');
+                warningMessage += '\n\nVocê pode forçar a edição se desejar continuar.';
+                
+                return {
+                    valid: false,
+                    canForce: true,
+                    message: warningMessage,
+                    missingKeywords: [],
+                    modifiedKeywords: [],
+                    partialEdits: partialEdits
+                };
+            }
+
+            return { valid: true };
+        }
+
+        // Verificar Caps Lock
+        function verificarCapsLock(event, inputId, warningId) {
+            const warning = document.getElementById(warningId);
+            if (!warning) return;
+            
+            // Usar getModifierState se disponível (método mais confiável)
+            if (event.getModifierState && typeof event.getModifierState === 'function') {
+                const capsLockOn = event.getModifierState('CapsLock');
+                warning.style.display = capsLockOn ? 'block' : 'none';
+                return;
+            }
+            
+            // Fallback: verificar através da tecla pressionada
+            const key = event.key;
+            if (key && /^[a-zA-Z]$/.test(key)) {
+                const isUpperCase = key === key.toUpperCase() && key !== key.toLowerCase();
+                const isShiftPressed = event.shiftKey;
+                
+                // Se é maiúscula sem Shift ou minúscula com Shift, Caps Lock está ativado
+                if ((isUpperCase && !isShiftPressed) || (!isUpperCase && isShiftPressed)) {
+                    warning.style.display = 'block';
+                } else {
+                    warning.style.display = 'none';
+                }
+            }
+        }
+        
+        // Expor função globalmente
+        window.verificarCapsLock = verificarCapsLock;
+
+        // Variável global para armazenar callback de senha admin
+        let passwordAdminCallback = null;
+        let passwordAdminTitle = '🔒 Autenticação Necessária';
+        let passwordAdminMessage = 'Digite a senha de admin para confirmar a operação:';
+        
+        // Função genérica para abrir modal de senha admin
+        function abrirModalSenhaAdmin(title, message, callback) {
+            passwordAdminCallback = callback;
+            if (title) passwordAdminTitle = title;
+            if (message) passwordAdminMessage = message;
+            
+            const modal = document.getElementById('password-admin-modal');
+            const titleElement = document.getElementById('password-admin-modal-title');
+            const messageElement = document.getElementById('password-admin-modal-message');
+            const input = document.getElementById('password-admin-input');
+            const error = document.getElementById('password-admin-error');
+            const warning = document.getElementById('capslock-warning-admin');
+            
+            if (modal) {
+                if (titleElement) titleElement.textContent = passwordAdminTitle;
+                if (messageElement) messageElement.textContent = passwordAdminMessage;
+                modal.style.display = 'flex';
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+                if (error) {
+                    error.style.display = 'none';
+                    error.textContent = '';
+                }
+                if (warning) {
+                    warning.style.display = 'none';
+                }
+            } else {
+                // Se o modal ainda não foi carregado, aguardar e tentar novamente
+                console.warn('Modal de senha admin ainda não foi carregado, aguardando...');
+                setTimeout(() => abrirModalSenhaAdmin(title, message, callback), 200);
+            }
+        }
+        
+        // Fechar modal de senha admin
+        function fecharModalSenhaAdmin() {
+            const modal = document.getElementById('password-admin-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            passwordAdminCallback = null;
+            passwordAdminTitle = '🔒 Autenticação Necessária';
+            passwordAdminMessage = 'Digite a senha de admin para confirmar a operação:';
+        }
+        
+        // Confirmar senha admin
+        async function confirmarSenhaAdmin() {
+            const password = document.getElementById('password-admin-input').value;
+            const errorElement = document.getElementById('password-admin-error');
+            
+            if (!password) {
+                if (errorElement) {
+                    errorElement.textContent = 'Por favor, digite a senha.';
+                    errorElement.style.display = 'block';
+                }
+                return;
+            }
+
+            // Verificar senha no servidor
+            try {
+                const response = await fetch('/api/verify-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Senha correta, executar callback e depois fechar modal
+                    const callback = passwordAdminCallback; // Guardar callback antes de limpar
+                    if (callback) {
+                        // Fechar modal primeiro
+                        fecharModalSenhaAdmin();
+                        // Executar callback com a senha
+                        await callback(password);
+                    } else {
+                        // Se não houver callback, apenas fechar modal
+                        fecharModalSenhaAdmin();
+                    }
+                } else {
+                    // Senha incorreta
+                    if (errorElement) {
+                        errorElement.textContent = 'Senha incorreta. Tente novamente.';
+                        errorElement.style.display = 'block';
+                    }
+                    const input = document.getElementById('password-admin-input');
+                    if (input) {
+                        input.value = '';
+                        input.focus();
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao verificar senha:', err);
+                if (errorElement) {
+                    errorElement.textContent = 'Erro ao verificar senha. Tente novamente.';
+                    errorElement.style.display = 'block';
+                }
+            }
+        }
+        
+        // Expor funções globalmente
+        window.abrirModalSenhaAdmin = abrirModalSenhaAdmin;
+        window.fecharModalSenhaAdmin = fecharModalSenhaAdmin;
+        window.confirmarSenhaAdmin = confirmarSenhaAdmin;
+
+        // Abrir modal de senha
+        function abrirModalSenha() {
+            abrirModalSenhaAdmin(
+                '🔒 Autenticação Necessária',
+                'Digite a senha para salvar as alterações:',
+                async (password) => {
+                    await salvarPromptComSenha(password);
+                }
+            );
+        }
+
+        // Fechar modal de senha (compatibilidade)
+        function fecharModalSenha() {
+            fecharModalSenhaAdmin();
+        }
+
+        // Confirmar senha e salvar (compatibilidade)
+        async function confirmarSenha() {
+            await confirmarSenhaAdmin();
+        }
+
+        // Salvar prompt (chamado após validação da senha)
+        async function salvarPromptComSenha(password) {
+            if (!currentPromptId) {
+                return;
+            }
+
+            const content = document.getElementById('editor-textarea').value;
+
+            // Se foi forçado, não validar novamente - pular validação e ir direto para o servidor
+            const foiForcado = validationDataForForce !== null;
+            
+            if (!foiForcado) {
+                // Validar palavras-chave antes de enviar para o servidor apenas se não foi forçado
+                const validation = validarKeywords(content);
+                if (!validation.valid) {
+                    showKeywordsWarningModal(validation);
+                    console.error('Validação falhou:', validation);
+                    return;
+                }
+            } else {
+                console.log('⚠️ Edição forçada - pulando validação de palavras-chave');
+            }
+            
+            // Limpar flag de forçar após usar
+            if (validationDataForForce) {
+                validationDataForForce = null;
+            }
+            
+            console.log('Validação passou, enviando para o servidor...');
+
+            try {
+                const response = await fetch(`/api/prompts/${currentPromptId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        content: content,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Atualizar conteúdo original
+                    originalContent = content;
+                    hasChanges = false;
+                    
+                    // Mostrar mensagem de sucesso
+                    mostrarMensagemSucesso();
+                } else {
+                    // Tratar erros do servidor (validação adicional no backend)
+                    let errorMessage = 'Erro ao salvar prompt:\n\n' + (data.error || 'Erro desconhecido');
+                    
+                    if (data.missingKeywords && data.missingKeywords.length > 0) {
+                        errorMessage += '\n\nPalavras-chave totalmente removidas:\n' + 
+                            data.missingKeywords.map(k => {
+                                if (typeof k === 'string') return `  - ${k}`;
+                                return `  - ${k.keyword} (${k.ocorrenciasOriginais} ocorrência(s) removida(s))`;
+                            }).join('\n');
+                    }
+                    
+                    if (data.modifiedKeywords && data.modifiedKeywords.length > 0) {
+                        errorMessage += '\n\nPalavras-chave modificadas:\n' + 
+                            data.modifiedKeywords.map(m => {
+                                if (typeof m === 'string') return `  - ${m}`;
+                                return `  - ${m.original} → ${m.found}`;
+                            }).join('\n');
+                    }
+                    
+                    // Usar modal de aviso ao invés de alert
+                    showKeywordsWarningModal({
+                        valid: false,
+                        canForce: false,
+                        message: errorMessage,
+                        missingKeywords: data.missingKeywords || [],
+                        modifiedKeywords: data.modifiedKeywords || [],
+                        partialEdits: []
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao salvar prompt:', error);
+                alert('Erro ao salvar prompt: ' + error.message);
+            }
+        }
+
+        // Mostrar modal de aviso de palavras-chave
+        function showKeywordsWarningModal(validation) {
+            const modal = document.getElementById('warningModal');
+            const titleElement = document.getElementById('warningModalTitle');
+            const messageElement = document.getElementById('warningMessage');
+            const footerElement = document.querySelector('#warningModal .modal-warning-footer');
+            
+            if (modal && messageElement) {
+                // Configurar título
+                if (titleElement) {
+                    titleElement.textContent = '⚠️ Aviso';
+                }
+                
+                // Substituir quebras de linha por <br> para exibição correta
+                const messageWithBreaks = validation.message.replace(/\n/g, '<br>');
+                messageElement.innerHTML = messageWithBreaks;
+                
+                // Configurar footer com botões customizados
+                if (footerElement) {
+                    let footerHTML = '<button class="btn btn-cancelar" onclick="closeKeywordsWarningModal()">Cancelar</button>';
+                    
+                    if (validation.canForce) {
+                        footerHTML += '<button class="btn btn-salvar" id="btn-forcar-edicao" onclick="forcarEdicaoKeywords()">Forçar Edição</button>';
+                        validationDataForForce = validation;
+                    } else {
+                        validationDataForForce = null;
+                    }
+                    
+                    footerElement.innerHTML = footerHTML;
+                }
+                
+                modal.style.display = 'block';
+            } else {
+                // Fallback para alert caso o modal não exista
+                alert(validation.message);
+            }
+        }
+
+        // Fechar modal de aviso de palavras-chave
+        function closeKeywordsWarningModal() {
+            const modal = document.getElementById('warningModal');
+            if (modal) {
+                modal.style.display = 'none';
+                // Restaurar footer padrão do componente
+                const footerElement = document.querySelector('#warningModal .modal-warning-footer');
+                if (footerElement) {
+                    footerElement.innerHTML = '<button class="btn btn-primary" onclick="closeWarningModal()" data-cy="btn-ok-warning">OK</button>';
+                }
+                // Não limpar validationDataForForce aqui, pois pode ser usado em forcarEdicaoKeywords
+            }
+        }
+
+        // Forçar edição mesmo com palavras-chave parcialmente editadas
+        async function forcarEdicaoKeywords() {
+            // Fechar modal sem limpar validationDataForForce (será limpo após salvar)
+            const modal = document.getElementById('warningModal');
+            if (modal) {
+                modal.style.display = 'none';
+                // Restaurar footer padrão do componente
+                const footerElement = document.querySelector('#warningModal .modal-warning-footer');
+                if (footerElement) {
+                    footerElement.innerHTML = '<button class="btn btn-primary" onclick="closeWarningModal()" data-cy="btn-ok-warning">OK</button>';
+                }
+            }
+            // validationDataForForce já está definido, manter para uso em salvarPromptComSenha
+            console.log('✅ Forçando edição - validationDataForForce mantido:', validationDataForForce);
+            
+            // Recarregar flags para garantir valor atualizado
+            await carregarFlagsPrompts();
+            
+            // Verificar se senha é necessária
+            if (flagsConfig.senhaEditarPrompts === true) {
+                // Continuar com o fluxo normal de salvar - abrir modal de senha
+                abrirModalSenha();
+            } else {
+                // Senha não é necessária, salvar diretamente
+                await salvarPromptComSenha('');
+            }
+        }
+
+        // Salvar prompt (abre modal de senha primeiro)
+        async function salvarPrompt() {
+            if (!currentPromptId) {
+                return;
+            }
+
+            // Verificar se a edição está bloqueada
+            await verificarFlagEditarPrompts();
+            if (flagEditarPrompts !== true) {
+                // Flag desativada ou não carregada - bloquear completamente
+                alert('A edição de prompts está bloqueada pela flag editarPrompts.');
+                return;
+            }
+
+            const content = document.getElementById('editor-textarea').value;
+
+            // Validar palavras-chave antes de abrir modal
+            const validation = validarKeywords(content);
+            if (!validation.valid) {
+                // Se pode forçar, mostrar modal com opção de forçar
+                if (validation.canForce) {
+                    showKeywordsWarningModal(validation);
+                } else {
+                    // Se não pode forçar, mostrar modal apenas com aviso
+                    showKeywordsWarningModal(validation);
+                }
+                console.error('Validação falhou:', validation);
+                return;
+            }
+
+            // Recarregar flags para garantir valor atualizado
+            await carregarFlagsPrompts();
+
+            // Verificar se senha é necessária
+            if (flagsConfig.senhaEditarPrompts === true) {
+                // Abrir modal de senha
+                abrirModalSenha();
+            } else {
+                // Senha não é necessária, salvar diretamente
+                await salvarPromptComSenha('');
+            }
+        }
+
+        // Mostrar mensagem de sucesso
+        function mostrarMensagemSucesso() {
+            const message = document.getElementById('success-message');
+            message.classList.add('show');
+            
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 3000);
+        }
+
+    </script>
+    
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+    <script src="../js/components-loader.js"></script>
+</body>
+</html>
+

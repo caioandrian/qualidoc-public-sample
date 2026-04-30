@@ -1,0 +1,78 @@
+<!-- Modal para executar testes -->
+<div id="modalExecutarTestes" class="modal" data-cy="modal-execute-tests" style="display: none;">
+    <div class="modal-content" data-cy="modal-execute-content">
+        <div class="modal-header" style="background-color: #e9ecef; color: black;" data-cy="modal-execute-header">
+            <h3 data-cy="modal-execute-title" style="color: black; font-size: 16px; margin: 0;">▶️ Executando Teste<span id="modal-execute-title-suffix" style="display: none;"><span data-cy="modal-execute-title-dash"> - </span><span data-cy="modal-execute-title-document" id="modal-execute-title-document"></span></span></h3>
+            <span class="close" data-cy="modal-execute-close" onclick="fecharModalExecutarTestes()">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="modal-execute-body">
+            <div class="execute-filtros" data-cy="execute-filters">
+                <div class="filtro-group" data-cy="execute-filter-group">
+                    <label for="filtro-status-execute" data-cy="label-filtro-status-execute">Status:</label>
+                    <select id="filtro-status-execute" onchange="aplicarFiltroExecute()" data-cy="select-filtro-status-execute">
+                        <option value="todos" data-cy="option-execute-status-todos">Todos</option>
+                        <option value="na" data-cy="option-execute-status-na">N/A</option>
+                        <option value="nao_executado" data-cy="option-execute-status-nao-executado">Não Executado</option>
+                        <option value="aprovado" data-cy="option-execute-status-aprovado">Aprovado</option>
+                        <option value="reprovado" data-cy="option-execute-status-reprovado">Reprovado</option>
+                        <option value="bloqueado" data-cy="option-execute-status-bloqueado">Bloqueado</option>
+                    </select>
+                </div>
+                <div class="filtro-group" data-cy="execute-filter-group">
+                    <label for="filtro-fonte-execute" data-cy="label-filtro-fonte-execute">Fonte:</label>
+                    <select id="filtro-fonte-execute" onchange="aplicarFiltroExecute()" data-cy="select-filtro-fonte-execute">
+                        <option value="todos" data-cy="option-execute-fonte-todos">Todos</option>
+                        <option value="IA" data-cy="option-execute-fonte-ia">IA</option>
+                        <option value="usuário" data-cy="option-execute-fonte-manual">Usuário</option>
+                    </select>
+                </div>
+                <div class="filtro-group" data-cy="execute-filter-group">
+                    <label for="filtro-tipo-execute" data-cy="label-filtro-tipo-execute">Tipo:</label>
+                    <select id="filtro-tipo-execute" onchange="aplicarFiltroExecute()" data-cy="select-filtro-tipo-execute">
+                        <option value="todos" data-cy="option-execute-tipo-todos">Todos</option>
+                        <option value="funcional" data-cy="option-execute-tipo-funcional">Funcional</option>
+                        <option value="regressao" data-cy="option-execute-tipo-regressao">Regressão</option>
+                        <option value="integracao" data-cy="option-execute-tipo-integracao">Integração</option>
+                        <option value="usabilidade" data-cy="option-execute-tipo-usabilidade">Usabilidade</option>
+                        <option value="performance" data-cy="option-execute-tipo-performance">Performance</option>
+                        <option value="técnica de qa" data-cy="option-execute-tipo-tecnica-qa">Técnica de QA</option>
+                        <option value="sem informação" data-cy="option-execute-tipo-sem-info">Sem Informação</option>
+                    </select>
+                </div>
+                <div class="filtro-group" data-cy="execute-filter-group" style="display: flex; align-items: center; gap: 6px;">
+                    <label for="execute-view-mode" data-cy="label-execute-view-mode" style="margin: 0; white-space: nowrap; font-size: 12px;">Exibição:</label>
+                    <select id="execute-view-mode" onchange="alterarModoExibicaoExecute()" data-cy="select-execute-view-mode" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                        <option value="individual" data-cy="option-execute-view-individual">1 por vez</option>
+                        <option value="lista" selected data-cy="option-execute-view-lista">Lista</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="execute-lista" id="execute-lista" data-cy="execute-test-list">
+                <!-- Lista de CTs será gerada dinamicamente -->
+            </div>
+        </div>
+        
+        <div class="modal-footer" data-cy="modal-execute-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 15px;">
+            <div id="execute-footer-navigation" style="display: flex; align-items: center; gap: 8px;">
+                <!-- Controles de navegação para modo individual -->
+                <div id="execute-navigation-controls-footer" data-cy="execute-navigation-controls-footer" style="display: none;">
+                    <button id="execute-nav-prev-footer" onclick="casoAnteriorExecute()" disabled style="padding: 6px 12px; background-color: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s;" data-cy="execute-nav-prev-footer">← Anterior</button>
+                    <span id="execute-nav-info-footer" style="font-size: 12px; color: #666; font-weight: 500; margin: 0 8px;" data-cy="execute-nav-info-footer">1 de 1</span>
+                    <button id="execute-nav-next-footer" onclick="casoProximoExecute()" disabled style="padding: 6px 12px; background-color: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s;" data-cy="execute-nav-next-footer">Próximo →</button>
+                </div>
+                <!-- Paginação para modo lista -->
+                <div class="execute-paginacao resumo-paginacao" id="execute-paginacao" data-cy="execute-pagination">
+                    <button class="btn-pagina" id="pagination-prev-btn-execute" data-cy="execute-pagination-prev" onclick="paginaAnteriorExecute()" disabled>← Anterior</button>
+                    <span id="pagination-info-execute" data-cy="execute-pagination-info">Página 1 de 1</span>
+                    <button class="btn-pagina" id="pagination-next-btn-execute" data-cy="execute-pagination-next" onclick="proximaPaginaExecute()" disabled>Próxima →</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" data-cy="execute-modal-btn-close" onclick="abrirModalConfirmarFecharExecucao()" style="padding: 6px 12px; font-size: 13px;">Cancelar</button>
+                <button class="btn btn-success" data-cy="execute-modal-btn-save" onclick="salvarStatusExecucao()" style="padding: 6px 12px; font-size: 13px;">💾 Salvar Status</button>
+            </div>
+        </div>
+    </div>
+</div>
+

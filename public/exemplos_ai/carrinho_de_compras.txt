@@ -1,0 +1,54 @@
+## Carrinho de Compras - E-commerce
+
+### Descrição
+Página de carrinho com lista de produtos, controle de quantidades, aplicação de cupons, cálculo automático de totais e finalização.
+
+### Layout
+Duas colunas: lista de produtos à esquerda, resumo do pedido (sticky) à direita. Cards/linhas com imagem, nome, preço e controles. Área de cupom no resumo. Estado vazio centralizado. Responsivo (empilha em mobile).
+
+### Funcionalidades
+Visualizar produtos, alterar quantidades (+/- ou input), remover produtos, aplicar cupom, visualizar cálculos (subtotal, frete, total), limpar carrinho, continuar comprando, finalizar compra.
+
+### Elementos Visíveis
+- **Lista de Produtos**: Imagem (thumbnail), nome (link), preço unitário, controles quantidade (-, input, +), preço total do item, botão Remover (ícone/texto)
+- **Resumo**: Título "Resumo do Pedido", Subtotal, campo "Cupom de Desconto" + botão "Aplicar", valor desconto, frete (ou "Frete Grátis"), linha divisória, Total final (destaque), botão "Finalizar Compra" (primário), botão "Continuar Comprando" (secundário)
+- **Estado Vazio**: Ícone/ilustração, "Seu carrinho está vazio", botão "Continuar Comprando"
+
+### Regras de Negócio
+1. Quantidade mínima: 1, máxima: 99 (ou conforme estoque)
+2. Cupom aplicável uma vez por pedido
+3. Frete grátis acima de R$ 200,00
+4. Frete calculado por faixa de CEP (se aplicável)
+5. Botão "Finalizar Compra" desabilitado se carrinho vazio
+6. Total atualizado em tempo real ao alterar quantidades
+7. Produtos sem estoque não podem ter quantidade aumentada
+8. Remoção instantânea ou com confirmação (conforme UX)
+
+### Validações
+- Quantidade: não permite <1 ou >máximo
+- Cupom: erro se inválido ou expirado
+- Estoque: desabilita "+" se máximo atingido
+- Carrinho vazio: estado visual específico, desabilita finalização
+
+### Mensagens
+- "Seu carrinho está vazio"
+- "Cupom aplicado com sucesso!" (toast verde)
+- "Cupom inválido ou expirado" (vermelho)
+- "Quantidade máxima atingida"
+- "Produto removido do carrinho" (toast)
+- "Carrinho limpo" (toast)
+- "Frete Grátis para compras acima de R$ 200"
+- "Adicione mais R$ X,XX para ganhar frete grátis"
+
+### Comportamentos
+Quantidade atualiza ao clicar +/- ou digitar, total do item recalcula automaticamente, subtotal e total geral atualizam em tempo real, cupom aplicado mostra desconto imediatamente, remoção recalcula totais, botões redirecionam (checkout/produtos), carrinho persiste entre sessões, loading durante aplicação de cupom.
+
+### Estados Visuais
+Produto em estoque (controles habilitados), sem estoque (controles desabilitados, "Indisponível"), quantidade máxima (botão "+" desabilitado), cupom válido (borda verde, desconto exibido), cupom inválido (borda vermelha), carrinho vazio (centralizado), carrinho com itens (duas colunas).
+
+### Cálculos
+- Subtotal: Σ(quantidade × preço unitário)
+- Desconto: valor do cupom (percentual ou fixo)
+- Frete: por faixa ou grátis acima de R$ 200
+- Total: Subtotal - Desconto + Frete
+- Valores formatados como moeda (R$ X.XXX,XX)

@@ -1,0 +1,53 @@
+## Sistema de Login e Autenticação
+
+### Descrição
+Tela de login responsiva com email/senha, recuperação de senha, criação de conta e controle de sessão.
+
+### Layout
+Formulário centralizado (card), logo no topo, campos verticais, botão de login destacado, links secundários abaixo, checkbox "Lembrar-me", mensagens de erro acima/abaixo dos campos, indicador de carregamento.
+
+### Funcionalidades
+Login com email/senha, validação em tempo real, opção "Lembrar-me", recuperação de senha, link para criação de conta, bloqueio após múltiplas tentativas, redirecionamento automático após sucesso.
+
+### Elementos Visíveis
+- **Campos**: Email (tipo email, placeholder "seu@email.com"), Senha (tipo password, placeholder "Digite sua senha", ícone olho para mostrar/ocultar)
+- **Checkbox**: "Lembrar-me" entre campos e botão
+- **Botão**: "Entrar"/"Login" (primário, largura total)
+- **Links**: "Esqueci minha senha", "Criar conta"/"Cadastre-se"
+- **Mensagens**: Container vermelho acima do formulário ou abaixo dos campos
+- **Loading**: Spinner ou botão "Entrando..." durante autenticação
+
+### Regras de Negócio
+1. Email válido (formato usuario@dominio.com)
+2. Senha mínimo 6 caracteres
+3. Ambos obrigatórios
+4. Bloqueio após 5 tentativas incorretas consecutivas (15 min)
+5. Link recuperação expira em 1 hora
+6. Sessão "Lembrar-me": 30 dias (cookie persistente)
+7. Sessão normal: 24 horas (cookie de sessão)
+8. Senha sempre tipo password (não texto claro)
+9. Opção mostrar/ocultar senha disponível
+
+### Validações
+- Email: erro se formato inválido ou vazio
+- Senha: erro se <6 chars ou vazio
+- Campos obrigatórios indicados visualmente (asterisco ou borda)
+- Botão Entrar desabilitado se campos vazios
+- Tentativas incorretas: contador ou mensagem de tentativas restantes
+- Conta bloqueada: mensagem com tempo restante
+
+### Mensagens
+- "Email ou senha incorretos" (genérica por segurança)
+- "Preencha todos os campos"
+- "Email inválido. Verifique o formato"
+- "Senha deve ter no mínimo 6 caracteres"
+- "Conta bloqueada. Tente novamente em X minutos"
+- "Link de recuperação enviado para seu email" (verde)
+- "Login realizado com sucesso"
+- "Você tem X tentativas restantes"
+
+### Comportamentos
+Validação de email onBlur, botão desabilitado se campos vazios, loading ao clicar "Entrar", mensagens aparecem após tentativa falha, links abrem modal/página, redirecionamento após sucesso, checkbox salva preferência, ícone olho alterna mostrar/ocultar senha.
+
+### Estados Visuais
+Campos: vazio (borda padrão), preenchido (borda destacada), erro (borda vermelha), válido (borda verde/padrão). Botão: desabilitado (cinza), habilitado (cor primária), carregando (spinner/texto "Entrando...").

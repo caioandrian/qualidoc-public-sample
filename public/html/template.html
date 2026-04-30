@@ -1,0 +1,3858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Documentação de Teste - QualiDoc</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="/js/client-storage-api.js"></script>
+    <style>
+        /* Ocultar corpo até ter nome da feature */
+        .body-content {
+            display: none;
+        }
+        
+        .body-content.visible {
+            display: block;
+        }
+        
+        /* Ocultar seções durante criação de nova documentação */
+        .hidden-in-creation {
+            display: none !important;
+        }
+        
+        /* Ícone de alerta para status não atribuído */
+        .status-alert {
+            color: #ff6b35;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+        
+        .test-case-header .status-alert {
+            vertical-align: middle;
+        }
+        
+        /* Tags de fonte e tipo do CT */
+        .ct-tag {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: normal;
+            display: inline-block;
+        }
+        
+        .ct-tag-tipo {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .ct-tag-tipo:hover {
+            background-color: #dee2e6;
+        }
+        
+        .ct-tag-tipo-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 150px;
+            display: none;
+        }
+        
+        .ct-tag-tipo-dropdown.show {
+            display: block;
+        }
+        
+        .ct-tag-tipo-option {
+            padding: 6px 12px;
+            font-size: 11px;
+            color: #495057;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .ct-tag-tipo-option:hover {
+            background-color: #e9ecef;
+        }
+        
+        .ct-tag-tipo-option:first-child {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        
+        .ct-tag-tipo-option:last-child {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .char-count {
+            color: #666;
+            font-size: 12px;
+            display: block;
+            text-align: right;
+            margin-top: 4px;
+        }
+        
+        .char-count.warning {
+            color: #ff6b35;
+        }
+        
+        .char-count.danger {
+            color: #e53e3e;
+        }
+
+        /* Layout 50%-50% para campos do bug */
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group-50 {
+            flex: 1;
+            width: 50%;
+        }
+
+        .form-group-50 label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group-50 input,
+        .form-group-50 textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .form-group-50 textarea {
+            min-height: 60px;
+        }
+
+        /* Responsivo para telas menores */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-group-50 {
+                width: 100%;
+            }
+            
+            .header-content {
+                flex-direction: column;
+            }
+            
+            .header h2,
+            .header h3 {
+                width: 100%;
+            }
+        }
+        
+        .quantidade-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantidade-container input[type="number"] {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+            height: auto;
+        }
+        
+        .quantidade-container input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-add-quantidade {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            min-width: 40px;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        
+        .btn-add-quantidade:hover {
+            background-color: #218838;
+        }
+        
+        /* Estilo para botão de geração com IA */
+        .btn-ai-generate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .modal-footer .btn-ai-generate {
+            margin-right: 0;
+        }
+        
+        .btn-ai-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        
+        .btn-ai-generate:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-ai-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #d3d3d3;
+            background: linear-gradient(135deg, #d3d3d3 0%, #b0b0b0 100%);
+            box-shadow: none;
+        }
+        
+        .btn-ai-generate:disabled:hover {
+            transform: none;
+            box-shadow: none;
+            background: linear-gradient(135deg, #d3d3d3 0%, #b0b0b0 100%);
+        }
+        
+        /* Botão Avaliar IA */
+        .btn-avaliar-ia:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+        
+        .btn-avaliar-ia:disabled {
+            background: #6c757d !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .btn-avaliar-ia:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Estrelas do modal de avaliação */
+        .star {
+            filter: grayscale(100%) brightness(0.7);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+        
+        .star.selected {
+            filter: none !important;
+            transform: scale(1.1);
+        }
+        
+        .star-wrapper:hover .star:not(.selected) {
+            filter: grayscale(0%) brightness(1.2);
+            transform: scale(1.2);
+        }
+        
+        .star-wrapper:hover .star.selected {
+            filter: none !important;
+            transform: scale(1.2);
+        }
+        
+        .btn-cobertura {
+            background: #0066cc !important;
+            color: white !important;
+            border: 1px solid #0066cc !important;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .btn-cobertura:hover {
+            background: #0052a3 !important;
+            color: white !important;
+            border-color: #0052a3 !important;
+        }
+        
+        .cobertura-icon-tooltip {
+            font-size: 18px;
+            position: relative;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+        
+        .cobertura-icon-tooltip:hover {
+            transform: scale(1.1);
+        }
+        
+        .cobertura-icon-tooltip[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background-color: #333;
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+        
+        .cobertura-icon-tooltip[title]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 2px;
+            border: 6px solid transparent;
+            border-top-color: #333;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        /* Botão Selecionar Todos */
+        .btn-selecionar-todos {
+            background-color: white !important;
+            color: #333 !important;
+            border: 1px solid #ddd !important;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-selecionar-todos:hover {
+            background-color: #e0e0e0 !important;
+            color: #333 !important;
+            border-color: #ccc !important;
+        }
+        
+        /* Indicadores de Etapas do Modal de IA */
+        .ai-steps-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .step-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid #667eea;
+        }
+        
+        .step-number.active {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .step-number.completed {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .step-number.disabled {
+            background-color: #f5f5f5;
+            color: #ccc;
+            border-color: #ddd;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .step-item.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .step-item.disabled:hover {
+            transform: none;
+        }
+        
+        .step-item.disabled .step-label {
+            color: #ccc;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .step-item.active .step-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .step-connector {
+            width: 60px;
+            height: 2px;
+            background-color: #e0e0e0;
+            margin: 0 10px;
+            margin-top: -20px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-connector.completed {
+            background-color: #28a745;
+        }
+        
+        
+        /* Cores específicas dos botões do modal */
+        .modal-footer .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .modal-footer .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .modal-footer .btn-primary {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .modal-footer .btn-primary:hover {
+            background-color: #218838;
+        }
+        
+        /* Modal de deletar */
+        .warning-message {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .warning-message p {
+            margin: 0;
+            color: #856404;
+        }
+        
+        .checkboxes-ct-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .checkbox-ct {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            gap: 8px;
+        }
+        
+        .checkbox-ct input[type="checkbox"] {
+            margin: 0;
+            transform: scale(0.9);
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .checkbox-ct label {
+            flex: 1;
+            margin: 0;
+            font-weight: normal;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .checkbox-ct .ct-info {
+            font-size: 11px;
+            color: #666;
+            flex-shrink: 0;
+            white-space: nowrap;
+            margin-top: 0;
+        }
+        
+        /* Estilos para itens do modal de deletar (baseado no modal de resumo) */
+        .delete-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #dc3545;
+            transition: all 0.2s;
+        }
+        
+        .delete-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .delete-item.selected {
+            background-color: #f8d7da;
+            border-left-color: #c82333;
+        }
+        
+        .delete-checkbox {
+            margin-right: 12px;
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+        
+        .delete-titulo {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .delete-info {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        /* Estilos para controles de paginação do modal de deletar */
+        .pagination-controls-delete {
+            display: inline-flex;
+            justify-content: right;
+            align-items: center;
+            gap: 8px;
+            margin: 15px 0 10px 0;
+            padding: 6px 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            width: auto;
+            min-width: fit-content;
+        }
+
+        .pagination-controls-delete button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            min-height: 32px;
+        }
+
+        .pagination-controls-delete button:hover:not(:disabled) {
+            background: #c82333;
+        }
+
+        .pagination-controls-delete button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .pagination-controls-delete .pagination-info {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 80px;
+            text-align: center;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-footer .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .modal-footer .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        /* Botão Deletar CT em Massa */
+        .scenario-controls .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .scenario-controls .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .clear-icon {
+            position: absolute;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .clear-icon:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        /* Mensagem quando não há CTs */
+        .no-ct-message {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .no-ct-message p {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        /* Botão salvar habilitado */
+        #save-btn:not(:disabled) {
+            background-color: #28a745 !important;
+            color: #fff !important;
+            cursor: pointer !important;
+            opacity: 1 !important;
+            border-color: #28a745 !important;
+        }
+        
+        #save-btn:not(:disabled):hover {
+            background-color: #218838 !important;
+            border-color: #218838 !important;
+        }
+        
+        /* Botão salvar desabilitado */
+        #save-btn:disabled {
+            background-color: #6c757d !important;
+            color: #fff !important;
+            cursor: not-allowed !important;
+            opacity: 0.6 !important;
+            border-color: #6c757d !important;
+        }
+        
+        #save-btn:disabled:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .hidden-section {
+            display: none;
+        }
+        .info-item-small {
+            flex: 0 0 200px;
+        }
+        .info-item-full {
+            grid-column: 1 / -1;
+        }
+        .observacao-section {
+            margin-bottom: 30px;
+        }
+        
+        .file-size-info {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        
+        /* Estilos para modais - mantidos porque são usados diretamente no HTML sem sufixo _template */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            width: 95%;
+            max-width: 1200px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        /* Classe específica para modais de alerta/confirmação */
+        .modal-header-alert {
+            background-color: transparent;
+            color: #000;
+        }
+        
+        .modal-header-alert .modal-title {
+            color: #000;
+        }
+        
+        .modal-header-alert .close {
+            color: #000;
+        }
+        
+        .modal-header-alert .close:hover {
+            color: #000;
+        }
+        
+        /* Modal de aviso deve ficar acima de outros modais */
+        #warningModal {
+            z-index: 2000 !important;
+        }
+        
+        /* Modal de confirmação de deletar imagem deve ficar acima do modal de IA */
+        #deleteImageModal {
+            z-index: 2000 !important;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            color: #666;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .history-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-right: auto;
+            align-self: center;
+            transition: color 0.3s;
+        }
+
+        .history-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-confirm {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .btn-confirm:hover {
+            background-color: #218838;
+        }
+        
+        /* Estilo hover para botão organizar */
+        button[data-cy="btn-reorganize"]:hover {
+            background-color: #138496 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+        }
+        
+        /* Estilo hover para botão criar CT em massa */
+        button[data-cy="btn-create-mass"]:hover {
+            background-color: #218838 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        /* Estilo hover para botão deletar CT em massa */
+        button[data-cy="btn-delete-mass"]:hover {
+            background-color: #c82333 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* Estilos para popup de sucesso */
+        .success-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            z-index: 1001;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .success-popup.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        #test-scenarios-container {
+            margin-right: 0;
+            padding-right: 0;
+            overflow-x: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        #test-scenarios-container * {
+            box-sizing: border-box;
+        }
+        
+        .test-scenarios-container {
+            margin-right: 0;
+            padding-right: 0;
+        }
+        
+        /* Corrigir espaçamento da seção principal */
+        .section {
+            margin-right: 0;
+            padding-right: 20px;
+            box-sizing: border-box;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        
+        /* Corrigir espaçamento dos casos de teste */
+        .test-case {
+            margin-right: 0;
+            padding-right: 15px;
+            box-sizing: border-box;
+        }
+        
+        /* Corrigir espaçamento das colunas */
+        .two-columns {
+            margin-right: 0;
+            padding-right: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Forçar largura total e remover espaçamento extra */
+        body {
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        /* Garantir que não há overflow horizontal */
+        html, body {
+            overflow-x: hidden;
+        }
+        
+        /* Corrigir espaçamento específico da área de casos de teste */
+        .test-scenarios-container .test-case {
+            width: 100%;
+            max-width: 100%;
+            margin-right: 0;
+            padding-right: 15px;
+        }
+        
+        .test-scenarios-container .two-columns {
+            width: 100%;
+            max-width: 100%;
+            margin-right: 0;
+            padding-right: 0;
+        }
+        
+        /* Remover border-bottom dos H3 */
+        h3 {
+            border-bottom: none !important;
+        }
+        
+        .section h3 {
+            border-bottom: none !important;
+            color: #000 !important;
+        }
+        
+        
+        /* Ocultar campos detalhados por padrão */
+        .test-case .two-columns,
+        .test-case .expected-result {
+            display: none !important;
+        }
+        
+        .test-case .two-columns.visible,
+        .test-case .expected-result.visible {
+            display: block !important;
+        }
+        
+        .test-case .two-columns.visible {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        /* Estilo para o ícone de adicionar roteiro */
+        .add-script-icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+        
+        /* Estilo para o ícone de tooltip */
+        .tooltip-icon {
+            cursor: help;
+            color: #0066cc;
+            font-size: 14px;
+            margin-left: 5px;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+        
+        .tooltip-icon:hover {
+            color: #0052a3;
+        }
+        
+        /* Prevenir que o clique no tooltip foque o select */
+        .tooltip-icon {
+            user-select: none;
+        }
+        
+        /* Estilo para informações do CT no modal */
+        .ct-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 0;
+        }
+        
+        .ct-info strong {
+            color: #0066cc;
+        }
+        
+        /* Estilos para o modal de resumo */
+        .resumo-lista {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .resumo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #ddd;
+        }
+        
+        .resumo-item.aprovado {
+            border-left-color: #28a745;
+        }
+        
+        .resumo-item.reprovado {
+            border-left-color: #dc3545;
+        }
+        
+        .resumo-item.bloqueado {
+            border-left-color: #ffc107;
+        }
+        
+        .resumo-item.pendente {
+            border-left-color: #17a2b8;
+        }
+        
+        .resumo-item.na {
+            border-left-color: #6c757d;
+        }
+        
+        .resumo-titulo {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+        
+        .resumo-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .resumo-item .ct-info {
+            font-size: 11px;
+            color: #666;
+            flex-shrink: 0;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+        
+        .resumo-status.aprovado {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .resumo-status.reprovado {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .resumo-status.bloqueado {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .resumo-status.pendente {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .resumo-status.na {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        /* Estilos para o modal de execução de testes */
+        .execute-lista {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .execute-lista.modo-individual {
+            max-height: 500px;
+        }
+        
+        /* Modo lista do modal: destaque suave no hover */
+        .execute-lista.modo-lista .execute-item {
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .execute-lista.modo-lista .execute-item:hover {
+            background-color: #e8f4fc;
+            box-shadow: 0 1px 6px rgba(0, 102, 204, 0.1);
+        }
+        
+        .execute-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        #execute-nav-prev-footer:hover:not(:disabled),
+        #execute-nav-next-footer:hover:not(:disabled) {
+            background-color: #0052a3 !important;
+            transform: translateY(-1px);
+        }
+        
+        #execute-nav-prev-footer:disabled,
+        #execute-nav-next-footer:disabled {
+            background-color: #ccc !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .execute-item.status-aprovado {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .execute-item.status-reprovado {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .execute-item.status-bloqueado {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .execute-item.status-na {
+            background-color: #f8f9fa;
+            border-left-color: #6c757d;
+        }
+        
+        .execute-ct-name {
+            color: #000;
+            flex: 1;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        
+        .execute-status-icons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .status-icon {
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .status-icon:hover {
+            transform: scale(1.2);
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-icon.aprovado:hover {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+        
+        .status-icon.reprovado:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+        
+        .status-icon.bloqueado:hover {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+        
+        .status-icon.na:hover {
+            background-color: rgba(108, 117, 125, 0.2);
+        }
+        
+        .execute-filtros {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .execute-filtros .filtro-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0;
+        }
+        
+        .execute-filtros label {
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .execute-filtros select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .execute-paginacao {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 0;
+            padding: 15px 0;
+        }
+        
+        .no-items {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Estilos para o modal de confirmação de execução */
+        .confirm-message {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .confirm-message p {
+            font-size: 14px;
+            color: #000;
+            margin: 0 0 12px 0;
+        }
+        
+        .confirm-options {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .confirm-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .confirm-option:hover {
+            border-color: #17a2b8;
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .confirm-option.selected {
+            border-color: #17a2b8;
+            background-color: #d1ecf1;
+        }
+        
+        .option-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+        
+        .option-content h4 {
+            margin: 0 0 4px 0;
+            color: #000;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .option-content p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+        
+        /* Estilos para filtros do modal de resumo */
+        .resumo-filtros {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .filtro-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filtro-group label {
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+        }
+        
+        .filtro-group select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .filtro-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+        
+        .filtro-info {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Estilos para paginação do modal de resumo */
+        .resumo-paginacao {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-pagina {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-pagina:hover:not(:disabled) {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        
+        .btn-pagina:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border-color: #dee2e6;
+            cursor: not-allowed;
+        }
+        
+        #info-paginacao {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Estilo para o campo do Jira */
+        .jira-link-input {
+            border: none;
+            border-bottom: 2px solid #ddd;
+            background: transparent;
+            font-size: 18px;
+            color: #333;
+            padding: 5px 10px;
+            margin: 0 10px;
+            min-width: 300px;
+            transition: border-color 0.3s;
+        }
+        
+        .jira-link-input:focus {
+            outline: none;
+            border-bottom-color: #0066cc;
+        }
+        
+        .jira-link-input:disabled {
+            background: transparent;
+            color: #666;
+            border-bottom-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .jira-link-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .optional-text {
+            color: #666;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        
+        /* Estilos modernos para o header */
+        .header {
+            background: white;
+            padding: 0 30px 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(0,0,0,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .header > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            color: #0066cc;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 25px 0;
+            text-align: center;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .header h1.page-title-edit-mode {
+            color: #0066cc;
+        }
+        
+        .header h1::before {
+            content: '📋';
+            font-size: 36px;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .header h2 {
+            color: #333;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+            width: 50%;
+        }
+        
+        .header h3 {
+            color: #333;
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+            width: 50%;
+        }
+        
+        .header h2 .feature-input {
+            flex: 1;
+        }
+        
+        .header h3 .jira-link-input {
+            flex: 1;
+        }
+        
+        .header-label {
+            min-width: 120px;
+            font-weight: 600;
+        }
+        
+        .header .feature-input {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 16px;
+            color: #333;
+            font-weight: normal;
+            transition: all 0.3s ease;
+            flex: 1;
+            width: 100%;
+            min-width: 250px;
+            height: auto;
+        }
+        
+        .header .feature-input::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+        
+        .header .feature-input:focus {
+            outline: none;
+            background: white;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+        
+        .header .jira-link-input {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            width: 100%;
+            min-width: 300px;
+            height: auto;
+        }
+        
+        .header .jira-link-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .header .jira-link-input:focus {
+            outline: none;
+            background: white;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+        
+        .header .optional-text {
+            color: #666;
+            font-weight: normal;
+            font-size: 14px;
+            font-style: italic;
+        }
+        
+        /* Estilos para modal de IA */
+        .ai-input-section h4 {
+            color: #000;
+        }
+        
+        .input-type-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-type-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            width: 100%;
+        }
+        
+        .input-type-option:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        .input-type-option input[type="radio"] {
+            display: none;
+        }
+        
+        .input-type-option input[type="radio"]:checked + .radio-custom {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .input-type-option input[type="radio"]:checked + .radio-custom::after {
+            opacity: 1;
+        }
+        
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .option-content {
+            flex: 1;
+        }
+        
+        .option-content strong {
+            display: block;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .option-content small {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .ai-input-container {
+            position: relative;
+        }
+        
+        .input-section {
+            display: none;
+        }
+        
+        .input-section.active {
+            display: block;
+        }
+        
+        #text-input-section {
+            margin-bottom: 25px;
+        }
+        
+        .ai-input, .ai-textarea, .ai-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .ai-input:focus, .ai-textarea:focus, .ai-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .ai-textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .test-text-option {
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            user-select: none;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+        
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 3px;
+            margin-right: 8px;
+            position: relative;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked + .checkmark {
+            background: #667eea;
+            border-color: #667eea;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .checkbox-label:hover .checkmark {
+            border-color: #667eea;
+        }
+        
+        .input-hint {
+            display: block;
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .ai-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .ai-options-horizontal {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            align-items: start;
+            padding: 10px;
+        }
+        
+        .ai-options-horizontal .form-group {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .ai-options-horizontal .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .ai-options-horizontal .ai-select {
+            width: 100%;
+            height: 36px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+        }
+        
+        .ai-options-horizontal .input-hint {
+            margin-top: 5px;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+        
+        /* Ocultar formulário quando resultados são gerados */
+        .ai-form-hidden {
+            display: none !important;
+        }
+        
+        .ai-results-visible .ai-input-section {
+            display: none !important;
+        }
+        
+        .ai-results-visible .ai-options-horizontal {
+            display: none !important;
+        }
+        
+        /* Garantir que todas as seções do formulário sejam ocultadas */
+        .ai-results-visible .input-type-selector {
+            display: none !important;
+        }
+        
+        .ai-results-visible .ai-input-container {
+            display: none !important;
+        }
+        
+        /* Separadores visuais entre seções do formulário AI */
+        
+        .ai-image-upload-section {
+            margin-bottom: 25px;
+        }
+        
+        
+        /* Estilos para informações do tipo de teste - Tag simples */
+        .ai-test-type-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        /* Responsivo para telas menores */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 98%;
+                max-width: 600px;
+            }
+            
+            .ai-options-horizontal {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 100%;
+                margin: 2% auto;
+                max-width: none;
+            }
+            
+            .ai-options-horizontal {
+                padding: 12px;
+                gap: 12px;
+            }
+        }
+        
+        .ai-loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .ai-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Estilos para preview de imagens da IA */
+        .saved-image-item {
+            position: relative;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fff;
+        }
+        
+        .saved-image-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .saved-image-item.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .saved-image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .saved-image-item .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .saved-image-item:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .saved-image-item .delete-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: normal;
+            transition: all 0.3s;
+            z-index: 10;
+            padding: 0;
+        }
+        
+        .saved-image-item .delete-image-btn:hover {
+            background: rgba(255, 0, 0, 1);
+            transform: scale(1.1);
+        }
+        
+        .saved-image-item .check-icon {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #e0e0e0;
+            color: #999;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        
+        .saved-image-item.selected .check-icon {
+            background: #667eea;
+            color: white;
+        }
+        
+        .ai-image-preview-item {
+            position: relative;
+            display: block;
+            padding: 8px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ai-image-preview-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .ai-image-preview-item.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .ai-image-preview-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            display: block;
+        }
+        
+        .ai-image-preview-item .check-icon {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #e0e0e0;
+            color: #999;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        
+        .ai-image-preview-item.selected .check-icon {
+            background: #667eea;
+            color: white;
+        }
+        
+        .ai-image-preview-item .remove-image-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .ai-image-preview-item .remove-image-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-upload-images:hover {
+            background: #5a6fd8 !important;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Responsividade para layout de 3 colunas na etapa 3 */
+        @media (max-width: 1200px) {
+            .ai-input-container[data-cy="ai-input-container-images"] {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+        }
+        
+        .ai-images-preview-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .ai-preview {
+            margin-top: 20px;
+        }
+        
+        .ai-preview h4 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .ai-scenarios-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .ai-scenario-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .ai-scenario-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ai-scenario-checkbox {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .ai-scenario-content {
+            flex: 1;
+        }
+        
+        .ai-scenario-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .ai-scenario-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .ai-scenario-content strong {
+            color: #333;
+        }
+        
+        /* Estilos para contador de caracteres */
+        .character-counter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .char-count {
+            color: #666;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .char-count.warning {
+            color: #ff6b35;
+        }
+        
+        .char-count.danger {
+            color: #dc3545;
+        }
+        
+        /* Estilos para seção do prompt utilizado */
+        .ai-prompt-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .ai-prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .ai-prompt-header h4 {
+            color: #333;
+            margin: 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+            flex: 1;
+        }
+        
+        .btn-toggle-prompt {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+        }
+        
+        .btn-toggle-prompt:hover {
+            background-color: #5a6fd8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-toggle-prompt:active {
+            transform: translateY(0);
+        }
+        
+        .ai-prompt-content-container {
+            overflow: hidden;
+            transition: all 0.3s ease;
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .ai-prompt-content-container.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .ai-prompt-content-container.expanded {
+            max-height: 500px;
+            opacity: 1;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .ai-prompt-container {
+            position: relative;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .ai-prompt-content {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        
+        .btn-copy-prompt {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .btn-copy-prompt:hover {
+            background-color: #5a6fd8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-copy-prompt:active {
+            transform: translateY(0);
+        }
+        
+        /* Estilos para botões de ação */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        }
+        
+        .btn-cancel:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+        
+        /* Estilos para controles de paginação */
+        .pagination-controls {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px 16px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            box-sizing: border-box;
+        }
+        
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-controls button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            min-height: 32px;
+        }
+
+        .pagination-controls button:hover:not(:disabled) {
+            background: #0052a3;
+        }
+
+        .pagination-controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .pagination-info {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 80px;
+            text-align: center;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Estilos para lista de cenários */
+        .test-case-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .test-case-summary:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+
+        .test-case-summary .test-case-header h4 {
+            margin: 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .test-case-summary .test-case-status {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Estilos para abas de cenários */
+        .scenario-tabs .tab {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            /* 4 tabs por linha: (100% - 3 gaps) / 4 */
+            width: calc((100% - 24px) / 4);
+            min-width: 0;
+            overflow: hidden;
+            justify-content: flex-start;
+        }
+        
+        .scenario-tabs .tab span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+            flex: 1;
+        }
+        
+        @media (max-width: 992px) {
+            .scenario-tabs .tab {
+                /* 3 tabs por linha em tablets */
+                width: calc((100% - 16px) / 3);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .scenario-tabs .tab {
+                /* 2 tabs por linha em tablets pequenos */
+                width: calc((100% - 8px) / 2);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .scenario-tabs .tab {
+                /* 1 tab por linha em mobile */
+                width: 100%;
+            }
+        }
+
+        .scenario-tabs .tab:hover {
+            background: #f8f9fa;
+            border-color: #0066cc;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .scenario-tabs .tab.active {
+            background: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+
+        .scenario-tabs .tab.active .tab-title {
+            color: white;
+        }
+
+        .scenario-tabs .tab .tab-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .scenario-tabs .tab .tab-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Estilos para botões menores na navegação */
+        .btn-approve-all, .btn-summary, .btn-nav {
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            height: auto !important;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-approve-all {
+            background: white !important;
+            border: 1px solid #e9ecef !important;
+            color: black !important;
+        }
+
+        .btn-approve-all:hover {
+            background: #28a745 !important;
+            border-color: #28a745 !important;
+            color: white !important;
+        }
+
+        .btn-summary {
+            background: white !important;
+            border-color: #17a2b8 !important;
+            color: #17a2b8 !important;
+        }
+
+        .btn-summary:hover {
+            background: #17a2b8 !important;
+            border-color: #17a2b8 !important;
+            color: white !important;
+        }
+
+        .btn-execute {
+            background: white !important;
+            border: 1px solid #e9ecef !important;
+            color: black !important;
+        }
+
+        .btn-execute:hover {
+            background: #007bff !important;
+            border-color: #007bff !important;
+            color: white !important;
+        }
+
+        .search-box {
+            flex: 0 0 auto;
+            min-width: 250px;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 35px 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .nav-buttons .btn-nav {
+            margin: 0;
+        }
+
+        /* Container para controles */
+        .navigation-controls {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .pagination-controls {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .pagination-controls .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Responsividade para telas menores */
+        @media (max-width: 768px) {
+            .navigation-controls {
+                flex-direction: column;
+            }
+            
+            .controls-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .search-box {
+                min-width: auto;
+                max-width: none;
+            }
+            
+            .nav-buttons {
+                justify-content: center;
+            }
+            
+            .pagination-controls {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }
+            
+            .pagination-nav {
+                justify-content: center;
+            }
+            
+            .pagination-actions {
+                justify-content: center;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Mensagem de manutenção -->
+    <div id="manutencao-alert" class="backup-alert" style="display: none; background: #e9ecef; border-color: #6c757d; margin: 20px; position: fixed; top: 0; left: 0; right: 0; z-index: 10000;" data-cy="manutencao-alert">
+        <div class="backup-alert-content">
+            <span class="backup-alert-icon" style="color: #ffc107; font-size: 24px;">⚠️</span>
+            <span class="backup-alert-message" style="font-weight: bold; color: #495057;">O sistema está em manutenção. Por favor, tente novamente mais tarde.</span>
+        </div>
+    </div>
+    
+    <!-- Botão Avaliar IA -->
+    <button id="btn-avaliar-ia" class="btn-avaliar-ia" onclick="abrirModalAvaliarIA()" disabled style="position: fixed; right: 20px; bottom: 80px; z-index: 999; padding: 12px 24px; min-width: 150px; height: 50px; font-size: 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; font-weight: 500; display: none;" data-cy="btn-avaliar-ia">
+        ⭐ Avaliar IA
+    </button>
+    
+    <div class="container" data-cy="container">
+        <div class="header" data-cy="header">
+            <h1 data-cy="page-title">DOCUMENTAÇÃO DE TESTE</h1>
+            <div class="header-content" data-cy="header-content">
+                <h2 data-cy="feature-title-section">
+                    <span class="header-label" data-cy="header-label-feature">Título: <span style="color: #dc3545;" data-cy="required-asterisk-feature">*</span></span>
+                    <input type="text" class="feature-input" id="feature-name" data-cy="feature-name" placeholder="Nome da feature" autocomplete="off" required>
+                </h2>
+                <h3 data-cy="jira-link-section">
+                    <span class="header-label" data-cy="header-label-jira">Link do Jira:</span>
+                    <input type="url" id="jira-link" class="jira-link-input" data-cy="jira-link" placeholder="https://jira.exemplo.com/projeto-123">
+                </h3>
+            </div>
+            <input type="hidden" id="feature-id" data-cy="feature-id">
+        </div>
+
+        <div class="body-content hidden-section" id="info-section" data-cy="info-section">
+            <div class="section" id="informacoes-teste-section" data-cy="informacoes-teste-section">
+                <h3 data-cy="info-section-title">INFORMAÇÕES DO TESTE</h3>
+            <div class="info-grid" data-cy="info-grid">
+                <!-- Linha 1: Data de Criação | Última Atualização -->
+                <div class="info-row" data-cy="info-row-1">
+                    <div class="info-item info-item-small" data-cy="info-item-data">
+                        <label for="data" data-cy="label-data">Data de Criação: <span style="color: red;" data-cy="required-asterisk">*</span></label>
+                        <input type="date" id="data" name="data" data-cy="data" required>
+                    </div>
+                    <div class="info-item info-item-small" data-cy="info-item-ultima-atualizacao">
+                        <label for="ultima-atualizacao" data-cy="label-ultima-atualizacao">Última Atualização:</label>
+                        <input type="date" id="ultima-atualizacao" name="ultima-atualizacao" data-cy="ultima-atualizacao" readonly style="background-color: #f8f9fa; color: #6c757d;">
+                    </div>
+                </div>
+                
+                <!-- Linha 2: Ambiente | Testador -->
+                <div class="info-row" data-cy="info-row-2">
+                    <div class="info-item" data-cy="info-item-ambiente">
+                        <label for="ambiente" data-cy="label-ambiente">Ambiente: <span style="color: red;" data-cy="required-asterisk">*</span></label>
+                        <select id="ambiente" name="ambiente" data-cy="ambiente" required>
+                            <option value="" data-cy="option-ambiente-selecione"></option>
+                            <option value="desenvolvimento" data-cy="option-ambiente-dev">Desenvolvimento</option>
+                            <option value="homologacao" data-cy="option-ambiente-hom">Homologação</option>
+                            <option value="producao" data-cy="option-ambiente-prod">Produção</option>
+                        </select>
+                    </div>
+                    <div class="info-item" data-cy="info-item-testador">
+                        <label for="testador" data-cy="label-testador">Testador: <span style="color: red;" data-cy="required-asterisk">*</span></label>
+                        <input type="text" id="testador" name="testador" data-cy="testador" placeholder="Nome do testador" autocomplete="off" required>
+                    </div>
+                </div>
+                
+                <!-- Linha 3: Squad | Adicionar roteiro de testes -->
+                <div class="info-row" data-cy="info-row-3">
+                    <div class="info-item" data-cy="info-item-squad">
+                        <label for="squad" data-cy="label-squad">Squad:</label>
+                        <select id="squad" name="squad" data-cy="squad">
+                            <option value="" data-cy="option-squad-selecione"></option>
+                            <option value="AVA" data-cy="option-squad-ava">AVA</option>
+                            <option value="ACAD" data-cy="option-squad-acad">ACAD</option>
+                            <option value="SALES" data-cy="option-squad-sales">SALES</option>
+                            <option value="AQUISICAO" data-cy="option-squad-aquisicao">AQUISICAO</option>
+                            <option value="PLATAFORMA" data-cy="option-squad-plataforma">PLATAFORMA</option>
+                            <option value="PAYOPS" data-cy="option-squad-payops">PAYOPS</option>
+                        </select>
+                    </div>
+                    <div class="info-item info-item-small" data-cy="info-item-modo">
+                        <label for="modo-teste" data-cy="label-modo-teste">Adicionar roteiro de testes: <span style="color: red;" data-cy="required-asterisk">*</span> 
+                            <span class="tooltip-icon" data-cy="tooltip-modo" title="pré-condições, passos e resultado esperado" onmousedown="event.preventDefault(); event.stopPropagation();">ℹ️</span>
+                        </label>
+                        <select id="modo-teste" name="modo-teste" data-cy="modo-teste" required onchange="window.toggleGlobalChecklistMode()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                            <option value="sim" data-cy="option-modo-sim">Sim</option>
+                            <option value="nao" data-cy="option-modo-nao" selected>Não</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Linha 4: Navegador | Dispositivo -->
+                <div class="info-row" data-cy="info-row-4">
+                    <div class="info-item" data-cy="info-item-navegador">
+                        <label for="navegador" data-cy="label-navegador">Navegador:</label>
+                        <select id="navegador" name="navegador" data-cy="navegador">
+                            <option value="" data-cy="option-navegador-selecione"></option>
+                            <option value="chrome" data-cy="option-navegador-chrome">Chrome</option>
+                            <option value="firefox" data-cy="option-navegador-firefox">Firefox</option>
+                            <option value="safari" data-cy="option-navegador-safari">Safari</option>
+                            <option value="edge" data-cy="option-navegador-edge">Edge</option>
+                        </select>
+                    </div>
+                    <div class="info-item" data-cy="info-item-dispositivo">
+                        <label for="dispositivo" data-cy="label-dispositivo">Dispositivo:</label>
+                        <select id="dispositivo" name="dispositivo" data-cy="dispositivo">
+                            <option value="" data-cy="option-dispositivo-selecione"></option>
+                            <option value="desktop" data-cy="option-dispositivo-desktop">Desktop</option>
+                            <option value="mobile" data-cy="option-dispositivo-mobile">Mobile</option>
+                            <option value="tablet" data-cy="option-dispositivo-tablet">Tablet</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="section hidden-section" id="bugs-section" data-cy="bugs-section">
+            <div class="bugs-header" data-cy="bugs-header">
+                <h3 data-cy="bugs-title">🐞 LISTA DE BUGS REPORTADOS</h3>
+                <button class="btn-collapse" id="collapse-bugs" data-cy="collapse-bugs" onclick="toggleBugs()">▼ Expandir</button>
+            </div>
+            <div id="bugs-container" class="bugs-container collapsed" data-cy="bugs-container">
+                <div class="bugs-controls" data-cy="bugs-controls">
+                    <button class="btn btn-add-bug" data-cy="add-bug-btn" onclick="adicionarBugGeral()">+ Registrar Novo Bug</button>
+                </div>
+                <div id="bugs-list" class="bugs-list" data-cy="bugs-list">
+                    <!-- Bugs serão adicionados dinamicamente aqui -->
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden-section" id="test-cases-section" data-cy="test-cases-section">
+            <div class="test-scenarios-header" data-cy="test-scenarios-header">
+                <h3 data-cy="test-cases-title"><svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 8px;" data-cy="svg-test-cases-icon">
+                    <!-- Pasta aberta com contorno preto -->
+                    <path d="M2 4C2 2.9 2.9 2 4 2H8L10 4H20C21.1 4 22 4.9 22 6V16C22 17.1 21.1 18 20 18H4C2.9 18 2 17.1 2 16V4Z" fill="#ffa500" stroke="#000" stroke-width="0.5" data-cy="svg-path-folder"/>
+                    <!-- Aba da pasta -->
+                    <path d="M2 4H8L10 6H20V4H8L6 2H4C2.9 2 2 2.9 2 4Z" fill="#ff8c00" stroke="#000" stroke-width="0.5" data-cy="svg-path-folder-tab"/>
+                    <!-- Documentos dentro da pasta -->
+                    <!-- Seta diagonal para cima e direita -->
+                    <path d="M3 15L5 13M3 15L5 17M3 15L7 11" stroke="#f0f0f0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" data-cy="svg-path-arrow"/>
+                </svg>CASOS DE TESTE</h3>
+                <div class="scenario-controls" data-cy="scenario-controls">
+                    <div class="scenario-controls-left" data-cy="scenario-controls-left">
+                        <button class="btn btn-secondary" data-cy="btn-create-mass" onclick="abrirModalCriarEmMassa()" style="background-color: #28a745; color: white; transition: all 0.3s ease; padding: 10px 20px; font-size: 16px;">Criar</button>
+                        <button class="btn btn-danger" data-cy="btn-delete-mass" onclick="abrirModalDeletarEmMassa()" style="transition: all 0.3s ease; padding: 10px 20px; font-size: 16px;">Deletar</button>
+                        <button class="btn btn-info" data-cy="btn-reorganize" onclick="reorganizarCasosTeste()" style="background-color: #17a2b8; color: white; transition: all 0.3s ease; padding: 10px 20px; font-size: 16px;">🤖 Organizar</button>
+                        <button class="btn btn-ai-generate" data-cy="btn-ai-generate" onclick="abrirModalGerarIA()">🤖 Gerar com IA</button>
+                    </div>
+                    <div class="scenario-controls-right" data-cy="scenario-controls-right">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation-controls" data-cy="navigation-controls">
+                <div class="controls-header" data-cy="controls-header">
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1;" data-cy="controls-header-left">
+                        <div class="search-box" data-cy="search-box-cenarios">
+                            <input type="text" id="search-input" data-cy="search-input-cenarios" placeholder="Pesquisar..." onkeyup="pesquisarCenarios()" onkeydown="handleSearchKeydown(event)">
+                            <span class="search-icon" data-cy="search-icon-cenarios">🔍</span>
+                            <span class="clear-icon" id="clear-search-cenarios" data-cy="clear-search-cenarios" onclick="limparPesquisaCenarios()" style="display: none;">✕</span>
+                        </div>
+                        <select id="filter-tipo-teste" class="filter-tipo-select" onchange="filtrarPorTipo()" data-cy="filter-tipo-teste">
+                            <option value="" data-cy="option-filter-tipo-selecione">Filtrar por tipo</option>
+                            <option value="funcional" data-cy="option-filter-tipo-funcional">Funcional</option>
+                            <option value="regressao" data-cy="option-filter-tipo-regressao">Regressão</option>
+                            <option value="integracao" data-cy="option-filter-tipo-integracao">Integração</option>
+                            <option value="usabilidade" data-cy="option-filter-tipo-usabilidade">Usabilidade</option>
+                            <option value="performance" data-cy="option-filter-tipo-performance">Performance</option>
+                            <option value="indefinido" data-cy="option-filter-tipo-indefinido">Indefinido</option>
+                        </select>
+                    </div>
+                    <div class="nav-buttons" data-cy="nav-buttons">
+                        <button class="btn-nav btn-summary" data-cy="btn-summary" onclick="abrirModalResumo()" style="display: none;">📊 Ver Resumo</button>
+                        <button class="btn-nav btn-execute" data-cy="btn-execute" onclick="abrirModalExecutarTestes()" style="display: none;">▶️ Executar Testes</button>
+                        <button class="btn-nav btn-approve-all" data-cy="btn-approve-all" onclick="abrirModalAprovarTodos()" style="display: none;">✅ Aprovar Todos</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controles de paginação para lista de CTs -->
+            <div class="pagination-controls" data-cy="pagination-controls" style="display: none;">
+                <div class="pagination-nav" data-cy="pagination-nav">
+                    <button id="pagination-prev-btn" data-cy="pagination-prev-btn" onclick="paginaAnteriorCT()" disabled>← Anterior</button>
+                    <span id="pagination-info" data-cy="pagination-info" class="pagination-info">01-10 de 00</span>
+                    <button id="pagination-next-btn" data-cy="pagination-next-btn" onclick="proximaPaginaCT()" disabled>Próximo →</button>
+                </div>
+            </div>
+            
+            <div id="scenario-tabs" class="scenario-tabs" data-cy="scenario-tabs"></div>
+            
+            <div class="test-scenarios-container" id="test-scenarios-container" data-cy="test-scenarios-container">
+                <!-- Os casos de teste serão gerados dinamicamente aqui -->
+            </div>
+            
+            <!-- Mensagem inicial quando não há CTs -->
+            <div id="no-ct-message" class="no-ct-message" data-cy="no-ct-message">
+                <p id="no-ct-message-text" data-cy="no-ct-message-text">Para começar a documentar sua feature, adicione casos de teste usando os botões acima.</p>
+            </div>
+        </div>
+
+        <div class="section hidden-section observacao-section" id="observacao-section" data-cy="observacao-section">
+            <h3 data-cy="observacao-section-title"><svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 8px;" data-cy="svg-observacao-icon">
+                    <!-- Bloco de notas -->
+                    <path d="M3 2H15C16.1 2 17 2.9 17 4V16C17 17.1 16.1 18 15 18H3C1.9 18 1 17.1 1 16V4C1 2.9 1.9 2 3 2Z" fill="#e8f4fc" stroke="#000" stroke-width="0.5" data-cy="svg-path-notebook"/>
+                    <!-- Linhas do papel pautado -->
+                    <line x1="4" y1="6" x2="14" y2="6" stroke="#333" stroke-width="0.4" data-cy="svg-path-line1"/>
+                    <line x1="4" y1="9" x2="14" y2="9" stroke="#333" stroke-width="0.4" data-cy="svg-path-line2"/>
+                    <line x1="4" y1="12" x2="14" y2="12" stroke="#333" stroke-width="0.4" data-cy="svg-path-line3"/>
+                    <line x1="4" y1="15" x2="11" y2="15" stroke="#333" stroke-width="0.4" data-cy="svg-path-line4"/>
+                    <!-- Furos do caderno -->
+                    <circle cx="5" cy="3.5" r="0.7" fill="#f0c14b" stroke="#000" stroke-width="0.25" data-cy="svg-path-hole1"/>
+                    <circle cx="9" cy="3.5" r="0.7" fill="#f0c14b" stroke="#000" stroke-width="0.25" data-cy="svg-path-hole2"/>
+                    <circle cx="13" cy="3.5" r="0.7" fill="#f0c14b" stroke="#000" stroke-width="0.25" data-cy="svg-path-hole3"/>
+                    <!-- Lápis (corpo amarelo) -->
+                    <path d="M11 7L19 2L20 3L14 11L11 7Z" fill="#ffd54f" stroke="#000" stroke-width="0.5" stroke-linejoin="round" data-cy="svg-path-pencil"/>
+                    <!-- Borracha rosa -->
+                    <path d="M19 2L20 3L19 4L18 3L19 2Z" fill="#f48fb1" stroke="#000" stroke-width="0.25" data-cy="svg-path-eraser"/>
+                    <!-- Ponta do grafite -->
+                    <circle cx="13" cy="9" r="0.4" fill="#333" data-cy="svg-path-tip"/>
+                </svg>OBSERVAÇÕES</h3>
+            <div class="info-grid" data-cy="observacao-info-grid">
+                <div class="info-row" data-cy="observacao-info-row">
+                    <div class="info-item info-item-full" data-cy="info-item-observacao">
+                        <textarea id="observacao" name="observacao" data-cy="observacao" rows="4" placeholder="Observações adicionais sobre a documentação..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions" id="save-section" data-cy="save-section">
+            <div class="action-buttons" data-cy="action-buttons">
+                <button class="btn btn-cancel" id="cancel-btn" data-cy="cancel-btn" onclick="showCancelModal()">Cancelar</button>
+                <button class="btn btn-secondary" id="save-btn" data-cy="save-btn" onclick="salvar()" disabled>Salvar Documentação</button>
+            </div>
+        </div>
+        </div>
+
+    </div>
+
+    <!-- Modal para criar CT em massa (Componente) -->
+    <div id="modal-criar-casos-teste-container"></div>
+
+    <!-- Modal para deletar CT em massa -->
+    <div id="modalDeletarEmMassa" class="modal" style="display: none;" data-cy="modal-deletar-massa">
+        <div class="modal-content" data-cy="modal-deletar-massa-content">
+            <div class="modal-header" style="background-color: #dc3545;" data-cy="modal-deletar-massa-header">
+                <h3 style="color: white;" data-cy="modal-deletar-massa-title">Deletar Casos de Teste em Massa</h3>
+                <span class="close" onclick="fecharModalDeletarEmMassa()" data-cy="modal-deletar-massa-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-deletar-massa-body">
+                <!-- Filtros -->
+                <div class="resumo-filtros" data-cy="resumo-filtros-delete">
+                    <div class="filtro-group" data-cy="filtro-group-status-delete">
+                        <label for="filtro-status-delete" data-cy="label-filtro-status-delete">Status:</label>
+                        <select id="filtro-status-delete" onchange="aplicarFiltroDelete()" data-cy="select-filtro-status-delete">
+                            <option value="todos" data-cy="option-filtro-status-todos">Todos</option>
+                            <option value="na" data-cy="option-filtro-status-na">N/A</option>
+                            <option value="nao_executado" data-cy="option-filtro-status-nao-executado">Não Executado</option>
+                            <option value="aprovado" data-cy="option-filtro-status-aprovado">Aprovado</option>
+                            <option value="reprovado" data-cy="option-filtro-status-reprovado">Reprovado</option>
+                            <option value="bloqueado" data-cy="option-filtro-status-bloqueado">Bloqueado</option>
+                        </select>
+                    </div>
+                    <div class="filtro-group" data-cy="filtro-group-fonte-delete">
+                        <label for="filtro-fonte-delete" data-cy="label-filtro-fonte-delete">Fonte:</label>
+                        <select id="filtro-fonte-delete" onchange="aplicarFiltroDelete()" data-cy="select-filtro-fonte-delete">
+                            <option value="todos" data-cy="option-filtro-fonte-todos">Todos</option>
+                            <option value="IA" data-cy="option-filtro-fonte-ia">IA</option>
+                            <option value="usuário" data-cy="option-filtro-fonte-manual">Usuário</option>
+                        </select>
+                    </div>
+                    <div class="filtro-group" data-cy="filtro-group-tipo-delete">
+                        <label for="filtro-tipo-delete" data-cy="label-filtro-tipo-delete">Tipo:</label>
+                        <select id="filtro-tipo-delete" onchange="aplicarFiltroDelete()" data-cy="select-filtro-tipo-delete">
+                            <option value="todos" data-cy="option-filtro-tipo-todos">Todos</option>
+                            <option value="funcional" data-cy="option-filtro-tipo-funcional">Funcional</option>
+                            <option value="regressao" data-cy="option-filtro-tipo-regressao">Regressão</option>
+                            <option value="integracao" data-cy="option-filtro-tipo-integracao">Integração</option>
+                            <option value="usabilidade" data-cy="option-filtro-tipo-usabilidade">Usabilidade</option>
+                            <option value="performance" data-cy="option-filtro-tipo-performance">Performance</option>
+                            <option value="técnica de qa" data-cy="option-filtro-tipo-tecnica-qa">Técnica de QA</option>
+                            <option value="sem informação" data-cy="option-filtro-tipo-sem-info">Sem Informação</option>
+                        </select>
+                    </div>
+                    <div class="filtro-info" data-cy="filtro-info-delete">
+                        <span id="delete-contador" data-cy="delete-contador">0 CTs selecionados</span>
+                    </div>
+                </div>
+                
+                <!-- Lista de CTs com checkboxes -->
+                <div id="checkboxesCT" class="resumo-lista" data-cy="checkboxes-ct-list">
+                    <!-- Checkboxes serão gerados dinamicamente -->
+                </div>
+            </div>
+            
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;" data-cy="modal-deletar-massa-footer">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                    <div class="resumo-paginacao" id="pagination-controls-delete" data-cy="pagination-controls-delete" style="display: none;">
+                        <button class="btn-pagina" id="pagination-prev-btn-delete" data-cy="pagination-prev-btn-delete" onclick="paginaAnteriorDelete()" disabled>← Anterior</button>
+                        <span id="pagination-info-delete" data-cy="pagination-info-delete">Página 1 de 1</span>
+                        <button class="btn-pagina" id="pagination-next-btn-delete" data-cy="pagination-next-btn-delete" onclick="proximaPaginaDelete()" disabled>Próxima →</button>
+                    </div>
+                    <div data-cy="modal-deletar-massa-footer-left">
+                        <button class="btn btn-info" onclick="revisarDuplicidade()" data-cy="btn-revisar-duplicidade">
+                            🤖 Revisar Duplicidade
+                        </button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;" data-cy="modal-deletar-massa-footer-right">
+                    <button class="btn btn-selecionar-todos" id="btn-selecionar-todos" onclick="selecionarTodosCT()" style="background-color: white; color: #333; border: 1px solid #ddd; transition: all 0.3s ease;" data-cy="btn-selecionar-todos-delete">Selecionar Todos</button>
+                    <button class="btn btn-secondary" onclick="fecharModalDeletarEmMassa()" data-cy="btn-cancel-delete-massa">Cancelar</button>
+                    <button class="btn btn-danger" onclick="confirmarDeletarEmMassa()" data-cy="btn-confirm-delete-massa">Deletar Selecionados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para exibir análise de duplicatas -->
+    <div id="modalDuplicatas" class="modal" style="display: none;" data-cy="modal-duplicatas">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow-y: auto;" data-cy="modal-duplicatas-content">
+            <div class="modal-header" style="background-color: #17a2b8;" data-cy="modal-duplicatas-header">
+                <h3 style="color: white;" data-cy="modal-duplicatas-title">🔍 Análise de Duplicatas Semânticas</h3>
+                <span class="close" onclick="fecharModalDuplicatas()" data-cy="modal-duplicatas-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-duplicatas-body">
+                <div id="duplicatas-loading" style="text-align: center; padding: 20px; display: none;" data-cy="duplicatas-loading">
+                    <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid #17a2b8; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;" data-cy="duplicatas-spinner"></div>
+                    <p data-cy="duplicatas-loading-text">Analisando casos de teste...</p>
+                </div>
+                <div id="duplicatas-content" style="display: none;" data-cy="duplicatas-content">
+                    <div id="duplicatas-resumo" style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;" data-cy="duplicatas-resumo">
+                        <h4 data-cy="duplicatas-resumo-title">📊 Resumo da Análise</h4>
+                        <p data-cy="duplicatas-resumo-total"><strong>Total de CTs analisados:</strong> <span id="total-cts-analisados" data-cy="total-cts-analisados">0</span></p>
+                        <p data-cy="duplicatas-resumo-unicos"><strong>CTs únicos:</strong> <span id="total-cts-unicos" style="color: #28a745;" data-cy="total-cts-unicos">0</span></p>
+                        <p data-cy="duplicatas-resumo-duplicatas"><strong>CTs com duplicatas:</strong> <span id="total-cts-duplicatas" style="color: #dc3545;" data-cy="total-cts-duplicatas">0</span></p>
+                    </div>
+                    <div id="duplicatas-lista" data-cy="duplicatas-lista">
+                        <!-- Lista de duplicatas será gerada aqui -->
+                    </div>
+                </div>
+                <div id="duplicatas-error" style="display: none; padding: 20px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24;" data-cy="duplicatas-error">
+                    <p data-cy="duplicatas-error-message"><strong>❌ Erro:</strong> <span id="duplicatas-error-message" data-cy="duplicatas-error-text"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;" data-cy="modal-duplicatas-footer">
+                <div style="flex: 1;" data-cy="modal-duplicatas-footer-left">
+                    <button id="btn-selecionar-todos-duplicatas" class="btn btn-info" onclick="selecionarTodosDuplicatas()" style="margin-right: 10px;" disabled data-cy="btn-selecionar-todos-duplicatas">
+                        ☑ Selecionar Todos
+                    </button>
+                    <button id="btn-deselecionar-todos-duplicatas" class="btn btn-info" onclick="deselecionarTodosDuplicatas()" style="margin-right: 10px;" disabled data-cy="btn-deselecionar-todos-duplicatas">
+                        ☐ Desmarcar Todos
+                    </button>
+                </div>
+                <div style="display: flex; gap: 10px;" data-cy="modal-duplicatas-footer-right">
+                    <button class="btn btn-secondary" onclick="fecharModalDuplicatas()" data-cy="btn-fechar-duplicatas">Fechar</button>
+                    <button id="btn-excluir-duplicados" class="btn btn-danger" onclick="excluirDuplicadosSelecionados()" disabled data-cy="btn-excluir-duplicados">Excluir Duplicados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para deletar feature -->
+    <div id="deleteModal" class="modal" data-cy="modal-delete-feature">
+        <div class="modal-content" data-cy="modal-delete-feature-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-delete-feature-header">
+                <h2 class="modal-title" data-cy="modal-delete-feature-title">Confirmar Exclusão</h2>
+                <span class="close" onclick="closeDeleteModal()" data-cy="modal-delete-feature-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-delete-feature-body">
+                <p data-cy="modal-delete-feature-message">Tem certeza que deseja excluir esta feature? Esta ação não pode ser desfeita.</p>
+                <div class="warning-message" data-cy="modal-delete-feature-warning">
+                    <p data-cy="modal-delete-feature-warning-text"><strong>⚠️ Atenção:</strong> Esta ação irá deletar permanentemente os casos de teste selecionados e todos os seus anexos.</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-delete-feature-footer">
+                <button class="btn-cancel" onclick="closeDeleteModal()" data-cy="btn-cancel-delete-feature">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmDelete()" data-cy="btn-confirm-delete-feature">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para deletar CTs em massa (Componente) -->
+    <div id="modal-deletar-casos-teste-container"></div>
+
+    <!-- Modal de confirmação para deletar bug -->
+    <div id="deleteBugModal" class="modal" data-cy="delete-bug-modal">
+        <div class="modal-content">
+            <div class="modal-header modal-header-alert">
+                <h2 class="modal-title" data-cy="delete-bug-modal-title">Confirmar Exclusão de Bug</h2>
+                <span class="close" onclick="closeDeleteBugModal()" data-cy="delete-bug-modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p data-cy="delete-bug-modal-message">Tem certeza que deseja remover este bug? Esta ação não pode ser desfeita.</p>
+                <div class="bug-info" data-cy="delete-bug-modal-info">
+                    <strong>Jira:</strong> <span id="bug-jira-delete-info" data-cy="delete-bug-modal-jira">-</span><br>
+                    <strong>Descrição:</strong> <span id="bug-descricao-delete-info" data-cy="delete-bug-modal-descricao">-</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDeleteBugModal()" data-cy="delete-bug-modal-cancel">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmDeleteBug()" data-cy="delete-bug-modal-confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de aviso (Componente) -->
+    <div id="modal-aviso-container"></div>
+
+    <!-- Modal de confirmação (Componente) -->
+    <div id="modal-confirmacao-container"></div>
+
+    <!-- Modal de confirmação para deletar imagem (Substituído pelo componente modal-confirmacao) -->
+    <!-- <div id="deleteImageModal" class="modal" style="display: none;" data-cy="modal-delete-image">
+        <div class="modal-content" data-cy="modal-delete-image-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-delete-image-header">
+                <h2 class="modal-title" data-cy="modal-delete-image-title">Confirmar Exclusão de Imagem</h2>
+                <span class="close" onclick="closeDeleteImageModal()" data-cy="modal-delete-image-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-delete-image-body">
+                <p id="deleteImageMessage" data-cy="modal-delete-image-message">Tem certeza que deseja excluir esta imagem?</p>
+                <div class="warning-message" data-cy="modal-delete-image-warning">
+                    <p data-cy="modal-delete-image-warning-text"><strong>⚠️ Atenção:</strong> A imagem será removida permanentemente do S3. Esta ação não pode ser desfeita.</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-delete-image-footer">
+                <button class="btn-cancel" onclick="closeDeleteImageModal()" data-cy="btn-cancel-delete-image">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmDeleteImage()" data-cy="btn-confirm-delete-image">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Modal de confirmação para deletar CT -->
+    <div id="deleteCTModal" class="modal" data-cy="modal-delete-ct">
+        <div class="modal-content" data-cy="modal-delete-ct-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-delete-ct-header">
+                <h2 class="modal-title" data-cy="modal-delete-ct-title">Confirmar Exclusão de CT</h2>
+                <span class="close" onclick="closeDeleteCTModal()" data-cy="modal-delete-ct-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-delete-ct-body">
+                <p data-cy="modal-delete-ct-message">Tem certeza que deseja excluir o caso de teste selecionado? Esta ação não pode ser desfeita.</p>
+                <div class="ct-info" data-cy="ct-info-delete">
+                    <strong data-cy="ct-info-titulo-label">CT:</strong> <span id="ct-titulo-info" data-cy="ct-titulo-info-delete"></span><br>
+                    <strong data-cy="ct-info-status-label">Status:</strong> <span id="ct-status-info" data-cy="ct-status-info-delete"></span>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-delete-ct-footer">
+                <button class="btn-cancel" onclick="closeDeleteCTModal()" data-cy="btn-cancel-delete-ct">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmDeleteCT()" data-cy="btn-confirm-delete-ct">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para cancelar documentação -->
+    <div id="cancelModal" class="modal" data-cy="modal-cancel">
+        <div class="modal-content" data-cy="modal-cancel-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-cancel-header">
+                <h2 class="modal-title" data-cy="modal-cancel-title">Confirmar Cancelamento</h2>
+                <span class="close" onclick="closeCancelModal()" data-cy="modal-cancel-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-cancel-body">
+                <p data-cy="modal-cancel-message">Tem certeza que deseja cancelar a documentação atual?</p>
+                <div class="warning-message" data-cy="modal-cancel-warning">
+                    <p data-cy="modal-cancel-warning-text"><strong>⚠️ Atenção:</strong> Todas as alterações não salvas serão perdidas e você será redirecionado para a tela inicial.</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-cancel-footer">
+                <button class="btn-cancel" onclick="closeCancelModal()" data-cy="btn-continue-editing">Não, continuar editando</button>
+                <button class="btn-confirm" onclick="confirmCancel()" data-cy="btn-confirm-cancel">Sim, cancelar atualização</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para organizar casos de teste -->
+    <div id="reorganizeCTModal" class="modal" style="display: none;" data-cy="modal-reorganize-ct">
+        <div class="modal-content" data-cy="modal-reorganize-ct-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-reorganize-ct-header">
+                <h2 class="modal-title" data-cy="modal-reorganize-ct-title">🔄 Organizar Casos de Teste</h2>
+                <span class="close" onclick="closeReorganizeCTModal()" data-cy="modal-reorganize-ct-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-reorganize-ct-body">
+                <p id="reorganizeCTMessage" data-cy="reorganize-ct-message">A IA irá organizar os CTs seguindo a melhor ordem lógica para execução, considerando as ações (cadastrar, editar, visualizar, excluir, etc.) e agrupando por tipo de teste (Funcional, Regressão, Usabilidade, Integração, Performance).</p>
+            </div>
+            <div class="modal-footer" data-cy="modal-reorganize-ct-footer">
+                <button class="btn-cancel" onclick="closeReorganizeCTModal()" data-cy="btn-cancel-reorganize-ct">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmReorganizeCT()" data-cy="btn-confirm-reorganize-ct">OK</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal para adicionar bug -->
+        <div id="modalAdicionarBug" class="modal" style="display: none;" data-cy="modal-adicionar-bug">
+            <div class="modal-content" data-cy="modal-adicionar-bug-content">
+                <div class="modal-header" style="background-color: #e53e3e;" data-cy="modal-adicionar-bug-header">
+                    <h3 data-cy="modal-adicionar-bug-title">🐞 Registrar Novo Bug</h3>
+                    <span class="close" onclick="fecharModalAdicionarBug()" data-cy="modal-adicionar-bug-close">&times;</span>
+                </div>
+                <div class="modal-body" data-cy="modal-adicionar-bug-body">
+                    <div class="form-row" data-cy="form-row-bug">
+                        <div class="form-group form-group-50" data-cy="form-group-bug-jira">
+                            <label for="bug-jira" data-cy="label-bug-jira">Link do Jira:</label>
+                            <input type="url" id="bug-jira" placeholder="https://jira.exemplo.com/bug-123" onblur="validarJiraLink(this)" data-cy="input-bug-jira">
+                            <small class="jira-validation" style="display: none; color: #e53e3e; font-size: 12px;" data-cy="jira-validation-message">O link deve conter "www" ou "http"</small>
+                        </div>
+                        <div class="form-group form-group-50" data-cy="form-group-bug-descricao">
+                            <label for="bug-descricao" data-cy="label-bug-descricao">Descrição do Bug:</label>
+                            <textarea id="bug-descricao" placeholder="Descreva brevemente o bug encontrado (máximo 250 caracteres)" maxlength="250" rows="3" data-cy="textarea-bug-descricao"></textarea>
+                            <small class="char-count" data-cy="char-count-bug">0/250 caracteres</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" data-cy="modal-adicionar-bug-footer">
+                    <button class="btn-cancel" onclick="fecharModalAdicionarBug()" data-cy="btn-cancel-adicionar-bug">Cancelar</button>
+                    <button class="btn-confirm" onclick="confirmarAdicionarBug()" data-cy="btn-confirm-adicionar-bug">Registrar Bug</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para deletar bug -->
+        <div id="modalDeletarBug" class="modal" style="display: none;" data-cy="modal-deletar-bug">
+            <div class="modal-content" data-cy="modal-deletar-bug-content">
+                <div class="modal-header modal-header-alert" data-cy="modal-deletar-bug-header">
+                    <h3 data-cy="modal-deletar-bug-title">🐞 Deletar Bug</h3>
+                    <span class="close" onclick="fecharModalDeletarBug()" data-cy="modal-deletar-bug-close">&times;</span>
+                </div>
+            <div class="modal-body" data-cy="modal-deletar-bug-body">
+                <p data-cy="modal-deletar-bug-message">Tem certeza que deseja deletar este bug?</p>
+                <div class="bug-info" data-cy="bug-info-delete">
+                    <strong data-cy="bug-info-jira-label">Jira:</strong> <span id="bug-jira-info" data-cy="bug-jira-info-delete"></span><br>
+                    <strong data-cy="bug-info-descricao-label">Descrição:</strong> <span id="bug-descricao-info" data-cy="bug-descricao-info-delete"></span>
+                </div>
+            </div>
+                <div class="modal-footer" data-cy="modal-deletar-bug-footer">
+                    <button class="btn-cancel" onclick="fecharModalDeletarBug()" data-cy="btn-cancel-deletar-bug">Cancelar</button>
+                    <button class="btn-confirm" onclick="confirmarDeletarBug()" data-cy="btn-confirm-deletar-bug">Deletar Bug</button>
+                </div>
+            </div>
+        </div>
+
+    <!-- Modal para geração com IA (Componente) -->
+    <div id="modal-ia-container"></div>
+    
+    <!-- Modal antigo de IA removido - usando componente acima -->
+    
+    <!-- Modal de Avaliar IA -->
+    <div id="modalAvaliarIA" class="modal" style="display: none; z-index: 10003;" data-cy="modal-avaliar-ia">
+        <div class="modal-content" style="max-width: 550px;" data-cy="modal-avaliar-ia-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2);" data-cy="modal-avaliar-ia-header">
+                <h3 style="color: white; margin: 0;" data-cy="modal-avaliar-ia-title">⭐ Avaliar Geração de IA</h3>
+                <span class="close" onclick="fecharModalAvaliarIA()" style="color: white;" data-cy="modal-avaliar-ia-close">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;" data-cy="modal-avaliar-ia-body">
+                <p style="margin-bottom: 30px; color: #666; font-size: 15px;" data-cy="modal-avaliar-ia-description">
+                    Como você avalia a qualidade dos casos de teste gerados pela IA?
+                </p>
+                
+                <div id="stars-container" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;" data-cy="stars-container">
+                    <div class="star-wrapper" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" data-cy="star-wrapper-1" onclick="selecionarNota(1)">
+                        <div class="star" data-star="1" style="font-size: 40px;" data-cy="star-1">⭐</div>
+                        <div style="font-size: 11px; color: #999; max-width: 60px; text-align: center;" data-cy="star-label-1">1 - Ruim</div>
+                    </div>
+                    <div class="star-wrapper" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" data-cy="star-wrapper-2" onclick="selecionarNota(2)">
+                        <div class="star" data-star="2" style="font-size: 40px;" data-cy="star-2">⭐</div>
+                        <div style="font-size: 11px; color: #999; max-width: 60px; text-align: center;" data-cy="star-label-2">2</div>
+                    </div>
+                    <div class="star-wrapper" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" data-cy="star-wrapper-3" onclick="selecionarNota(3)">
+                        <div class="star" data-star="3" style="font-size: 40px;" data-cy="star-3">⭐</div>
+                        <div style="font-size: 11px; color: #999; max-width: 60px; text-align: center;" data-cy="star-label-3">3 - Bom</div>
+                    </div>
+                    <div class="star-wrapper" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" data-cy="star-wrapper-4" onclick="selecionarNota(4)">
+                        <div class="star" data-star="4" style="font-size: 40px;" data-cy="star-4">⭐</div>
+                        <div style="font-size: 11px; color: #999; max-width: 60px; text-align: center;" data-cy="star-label-4">4</div>
+                    </div>
+                    <div class="star-wrapper" style="display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;" data-cy="star-wrapper-5" onclick="selecionarNota(5)">
+                        <div class="star" data-star="5" style="font-size: 40px;" data-cy="star-5">⭐</div>
+                        <div style="font-size: 11px; color: #999; max-width: 60px; text-align: center;" data-cy="star-label-5">5 - Ótimo</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: left;">
+                    <label for="comentario-avaliacao" style="display: block; margin-bottom: 8px; color: #666; font-size: 14px; font-weight: 500;">Comentário (opcional):</label>
+                    <textarea 
+                        id="comentario-avaliacao" 
+                        name="comentario-avaliacao"
+                        placeholder="Digite seu comentário sobre a avaliação..."
+                        style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; transition: border-color 0.3s;"
+                        data-cy="comentario-avaliacao"
+                        onfocus="this.style.borderColor='#667eea'"
+                        onblur="this.style.borderColor='#ddd'"
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between; gap: 10px;" data-cy="modal-avaliar-ia-footer">
+                <button class="btn btn-secondary" onclick="fecharModalAvaliarIA()" style="background-color: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 500;" data-cy="btn-cancelar-avaliacao">Cancelar</button>
+                <button id="btn-salvar-avaliacao" class="btn btn-primary" onclick="salvarAvaliacaoIA()" disabled style="background: linear-gradient(135deg, #28a745, #218838); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: not-allowed; font-size: 15px; font-weight: 500; opacity: 0.5;" data-cy="btn-salvar-avaliacao">Salvar Avaliação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Análise de Cobertura -->
+    <div id="modalCobertura" class="modal" style="display: none;" data-cy="modal-cobertura">
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh;" data-cy="modal-cobertura-content">
+            <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 2px solid #e0e0e0;" data-cy="modal-cobertura-header">
+                <h3 style="color: #333; margin: 0;" data-cy="modal-cobertura-title">📊 Análise de Cobertura</h3>
+                <span class="close" onclick="fecharModalCobertura()" style="color: #333;" data-cy="modal-cobertura-close">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px; overflow-y: auto; color: #666;" data-cy="modal-cobertura-body">
+                <div id="cobertura-loading" class="ai-loading" style="display: none;" data-cy="cobertura-loading">
+                    <div class="ai-spinner" data-cy="cobertura-spinner"></div>
+                    <p id="cobertura-loading-text" data-cy="cobertura-loading-text">🤖 Analisando cobertura de testes...</p>
+                    <small data-cy="cobertura-loading-hint">Isso pode levar alguns segundos</small>
+                </div>
+                <div id="cobertura-content" style="display: none;" data-cy="cobertura-content">
+                    <!-- Conteúdo será preenchido dinamicamente -->
+                </div>
+                <div id="cobertura-preview" class="ai-preview" style="display: none;" data-cy="cobertura-preview">
+                    <h4 data-cy="cobertura-preview-title">📋 Casos de Teste Gerados:</h4>
+                    <div id="cobertura-scenarios-list" class="ai-scenarios-list" data-cy="cobertura-scenarios-list">
+                        <!-- Casos de teste serão exibidos aqui -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;" data-cy="modal-cobertura-footer">
+                <button class="btn btn-secondary" onclick="fecharModalCobertura()" data-cy="btn-fechar-cobertura">Fechar</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="btn-aplicar-ct-cobertura" onclick="aplicarCasosTesteCobertura()" style="display: none;" data-cy="btn-aplicar-ct-cobertura">✅ Aplicar Casos de Teste Sugeridos</button>
+                    <button class="btn btn-danger" id="btn-remover-irrelevantes-cobertura" onclick="removerCasosIrrelevantesCobertura()" style="display: none;" data-cy="btn-remover-irrelevantes-cobertura">🗑️ Remover Selecionados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de resumo de status (Componente) -->
+    <div id="modal-resumo-container"></div>
+
+    <!-- Modal para editar título do CT (Componente) -->
+    <div id="modal-editar-titulo-container"></div>
+
+    <!-- Modal para aprovar todos os CTs -->
+    <div id="modalAprovarTodos" class="modal" style="display: none;" data-cy="modal-aprovar-todos">
+        <div class="modal-content" data-cy="modal-aprovar-todos-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-aprovar-todos-header">
+                <h3 data-cy="modal-aprovar-todos-title" style="font-size: 16px; margin: 0;">✅ Aprovar Todos os Casos de Teste</h3>
+                <span class="close" onclick="fecharModalAprovarTodos()" data-cy="modal-aprovar-todos-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-aprovar-todos-body">
+                <div class="warning-message" style="background-color: white; border: 1px solid #c3e6cb; color: black; padding: 10px 12px; margin-bottom: 0;" data-cy="modal-aprovar-todos-warning">
+                    <p style="color: black !important; font-size: 13px; line-height: 1.4; margin-bottom: 6px;" data-cy="modal-aprovar-todos-warning-text-1"><strong>⚠️ Atenção:</strong> Esta ação irá atualizar o status de TODOS os casos de teste para "Aprovado".</p>
+                    <p style="color: black !important; font-size: 13px; line-height: 1.4; margin: 0;" data-cy="modal-aprovar-todos-warning-text-2">Esta operação não pode ser desfeita. Tem certeza que deseja continuar?</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-aprovar-todos-footer" style="padding: 10px 15px;">
+                <button class="btn btn-secondary" data-cy="btn-cancel-approve-all" onclick="fecharModalAprovarTodos()" style="padding: 6px 12px; font-size: 13px;">Cancelar</button>
+                <button class="btn btn-primary" data-cy="btn-confirm-approve-all" onclick="confirmarAprovarTodos()" style="padding: 6px 12px; font-size: 13px;">Aprovar Todos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de sucesso -->
+    <div id="successPopup" class="success-popup" data-cy="success-popup">
+        <span id="successMessage" data-cy="success-message">Operação realizada com sucesso!</span>
+    </div>
+
+    <!-- Modal de confirmação para cancelar criação/edição -->
+    <div id="modalConfirmarCancelar" class="modal" style="display: none;" data-cy="modal-confirmar-cancelar">
+        <div class="modal-content" data-cy="modal-confirmar-cancelar-content">
+            <div class="modal-header modal-header-alert" data-cy="modal-confirmar-cancelar-header">
+                <h2 class="modal-title" data-cy="modal-confirmar-cancelar-title">Confirmar Cancelamento</h2>
+                <span class="close" onclick="fecharModalConfirmarCancelar()" data-cy="modal-confirmar-cancelar-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-confirmar-cancelar-body">
+                <div class="warning-message" style="background-color: #fff3cd; border: 1px solid #ffc107; color: #856404;" data-cy="modal-confirmar-cancelar-warning">
+                    <p data-cy="modal-confirmar-cancelar-warning-text-1"><strong>⚠️ Atenção:</strong> Esta ação irá descartar todas as alterações.</p>
+                    <p data-cy="modal-confirmar-cancelar-warning-text-2">Tem certeza que deseja cancelar e voltar para a tela inicial?</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-confirmar-cancelar-footer">
+                <button class="btn-cancel" onclick="fecharModalConfirmarCancelar()" data-cy="btn-continue-editing-cancelar">Continuar Editando</button>
+                <button class="btn-confirm" onclick="confirmarCancelamento()" data-cy="btn-confirm-cancelar">Sim, Descartar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para execução de testes -->
+    <div id="modalConfirmarExecucao" class="modal" data-cy="modal-confirm-execution" style="display: none;">
+        <div class="modal-content" data-cy="modal-confirm-content">
+            <div class="modal-header" style="background-color: #17a2b8;" data-cy="modal-confirm-header">
+                <h3 data-cy="modal-confirm-title" style="color: white;">▶️ Executar Testes</h3>
+                <span class="close" data-cy="modal-confirm-close" onclick="fecharModalConfirmarExecucao()">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-confirm-body">
+                <div class="confirm-message" data-cy="confirm-message">
+                    <p data-cy="confirm-message-text">Como você deseja prosseguir com a execução dos testes?</p>
+                </div>
+                <div class="confirm-options" data-cy="confirm-options">
+                    <div class="confirm-option" data-cy="confirm-option-new" onclick="escolherNovaBateria()">
+                        <div class="option-icon" data-cy="option-icon-new">🆕</div>
+                        <div class="option-content" data-cy="option-content-new">
+                            <h4 data-cy="option-title-new">Nova Bateria de Testes</h4>
+                            <p data-cy="option-description-new">Iniciar uma nova bateria de testes, zerando todos os status atuais.</p>
+                        </div>
+                    </div>
+                    <div class="confirm-option" data-cy="confirm-option-continue" onclick="escolherContinuarStatus()">
+                        <div class="option-icon" data-cy="option-icon-continue">🔄</div>
+                        <div class="option-content" data-cy="option-content-continue">
+                            <h4 data-cy="option-title-continue">Continuar Status Atuais</h4>
+                            <p data-cy="option-description-continue">Continuar a partir dos status já definidos nos casos de teste.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-confirm-footer">
+                <a href="#" class="history-link" data-cy="view-history-link" onclick="event.preventDefault(); abrirHistoricoTestes();">📊 Ver Histórico de Testes</a>
+                <button class="btn btn-secondary" data-cy="confirm-btn-cancel" onclick="fecharModalConfirmarExecucao()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de execução de testes (Componente) -->
+    <div id="modal-executar-testes-container"></div>
+
+    <!-- Modal de confirmação para salvar status -->
+    <div id="modalConfirmarSalvarStatus" class="modal" data-cy="modal-confirm-save-status" style="display: none;">
+        <div class="modal-content" data-cy="modal-confirm-save-content">
+            <div class="modal-body" data-cy="modal-confirm-save-body">
+                <p data-cy="modal-confirm-save-message">
+                    <strong>Todos os status foram atualizados.</strong>
+                </p>
+                <div class="warning-message" data-cy="modal-confirm-save-warning">
+                    <p data-cy="modal-confirm-save-warning-text"><strong>⚠️ Atenção:</strong> Não se esqueça de salvar a documentação!</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-confirm-save-footer">
+                <button class="btn btn-primary" data-cy="modal-confirm-save-ok" onclick="fecharModalConfirmarSalvarStatus()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para fechar execução -->
+    <div id="modalConfirmarFecharExecucao" class="modal" data-cy="modal-confirm-close-execution" style="display: none;">
+        <div class="modal-content" data-cy="modal-confirm-close-content" style="max-width: 450px; padding: 0;">
+            <div class="modal-header modal-header-alert" style="padding: 12px 20px; border-bottom: 1px solid rgba(0,0,0,0.1);" data-cy="modal-confirm-close-header">
+                <h2 style="margin: 0; font-size: 18px;" data-cy="modal-confirm-close-title">Confirmar Cancelamento</h2>
+                <span class="close" onclick="fecharModalConfirmarFecharExecucao()" style="font-size: 28px; line-height: 1; cursor: pointer;" data-cy="modal-confirm-close-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-confirm-close-body" style="padding: 15px 20px !important; margin: 0;">
+                <div class="warning-message" style="background-color: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 10px 12px; border-radius: 4px; margin: 0;" data-cy="modal-confirm-close-warning">
+                    <p style="margin: 0 0 6px 0; font-size: 14px; line-height: 1.4;" data-cy="modal-confirm-close-warning-text-1"><strong>⚠️ Atenção:</strong> Todas as alterações realizadas serão perdidas!</p>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.4;" data-cy="modal-confirm-close-warning-text-2">Tem certeza que deseja cancelar a execução?</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-confirm-close-footer" style="padding: 12px 20px !important; border-top: 1px solid #ddd; display: flex; gap: 10px; justify-content: flex-end; margin: 0;">
+                <button class="btn btn-secondary" data-cy="modal-confirm-close-continue" onclick="fecharModalConfirmarFecharExecucao()">Continuar Editando</button>
+                <button class="btn btn-danger" data-cy="modal-confirm-close-cancel" onclick="confirmarFecharExecucao()">Sim, Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação para salvar status de execução -->
+    <div id="modalConfirmarSalvarStatusExecucao" class="modal" data-cy="modal-confirm-save-status" style="display: none;">
+        <div class="modal-content" data-cy="modal-confirm-save-status-content" style="max-width: 450px; padding: 0;">
+            <div class="modal-header modal-header-alert" style="padding: 12px 20px; border-bottom: 1px solid rgba(0,0,0,0.1);" data-cy="modal-confirm-save-status-header">
+                <h2 style="margin: 0; font-size: 18px;" data-cy="modal-confirm-save-status-title">Confirmar Salvamento</h2>
+                <span class="close" onclick="fecharModalConfirmarSalvarStatusExecucao()" style="font-size: 28px; line-height: 1; cursor: pointer;" data-cy="modal-confirm-save-status-close">&times;</span>
+            </div>
+            <div class="modal-body" data-cy="modal-confirm-save-status-body" style="padding: 15px 20px !important; margin: 0;">
+                <div class="info-message" style="padding: 10px 12px; margin: 0;" data-cy="modal-confirm-save-status-message">
+                    <p style="margin: 0; font-size: 14px; line-height: 1.4;" data-cy="modal-confirm-save-status-message-text">Deseja salvar as alterações de status dos casos de teste?</p>
+                </div>
+            </div>
+            <div class="modal-footer" data-cy="modal-confirm-save-status-footer" style="padding: 12px 20px !important; border-top: 1px solid #ddd; display: flex; gap: 10px; justify-content: flex-end; margin: 0;">
+                <button class="btn btn-secondary" data-cy="modal-confirm-save-status-cancel" onclick="fecharModalConfirmarSalvarStatusExecucao()">Cancelar</button>
+                <button class="btn btn-success" data-cy="modal-confirm-save-status-confirm" onclick="confirmarSalvarStatusExecucao()">Sim, Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        // Função para verificar flag de manutenção
+        async function verificarManutencao() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags && data.flags.manutencao === true) {
+                    // Mostrar alerta de manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'block';
+                        console.log('🔧 Sistema em manutenção');
+                    }
+                    
+                    // Ocultar conteúdo principal
+                    const container = document.querySelector('.container');
+                    if (container) {
+                        container.style.opacity = '0.5';
+                        container.style.pointerEvents = 'none';
+                    }
+                    
+                    // Bloquear todos os botões e inputs
+                    const buttons = document.querySelectorAll('button, input, select, textarea');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.5';
+                    });
+                    
+                    return true; // Sistema em manutenção
+                } else {
+                    // Ocultar alerta de manutenção se não estiver em manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'none';
+                    }
+                    return false; // Sistema não está em manutenção
+                }
+            } catch (error) {
+                console.error('❌ Erro ao verificar flag de manutenção:', error);
+                return false; // Em caso de erro, não bloquear o sistema
+            }
+        }
+        
+        // Variável global para armazenar flag modalIA (default alinhado às flags: modal IA habilitado)
+        let flagModalIA = true;
+        
+        // Função para carregar flags e verificar modalIA
+        async function carregarFlagsModalIA() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags) {
+                    flagModalIA = data.flags.modalIA ?? true;
+                    atualizarVisibilidadeBotaoAvaliarIA();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar flags:', error);
+                flagModalIA = true;
+                atualizarVisibilidadeBotaoAvaliarIA();
+            }
+        }
+        
+        // Função para atualizar visibilidade do botão
+        function atualizarVisibilidadeBotaoAvaliarIA() {
+            const btnAvaliarIA = document.getElementById('btn-avaliar-ia');
+            if (!btnAvaliarIA) return;
+            
+            // Só mostrar se flag modalIA for true
+            if (flagModalIA) {
+                btnAvaliarIA.style.display = 'block';
+                verificarHabilitarBotaoAvaliarIA();
+            } else {
+                btnAvaliarIA.style.display = 'none';
+            }
+        }
+        
+        // Verificar manutenção ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarManutencao();
+            carregarFlagsModalIA();
+            // Verificar periodicamente se o botão deve ser habilitado
+            setInterval(() => {
+                if (flagModalIA) {
+                    verificarHabilitarBotaoAvaliarIA();
+                }
+            }, 1000);
+            // Verificar flag periodicamente
+            setInterval(carregarFlagsModalIA, 5000);
+        });
+        
+        // Variável para armazenar a nota selecionada
+        let notaSelecionada = 0;
+        
+        // Função para verificar se o botão "Avaliar IA" deve ser habilitado
+        function verificarHabilitarBotaoAvaliarIA() {
+            const btnAvaliarIA = document.getElementById('btn-avaliar-ia');
+            if (!btnAvaliarIA || !flagModalIA) return;
+            
+            const ctAplicadosIA = localStorage.getItem('ct_aplicadosIA') === 'true';
+            const tempCtIA = localStorage.getItem('temp_ct_ia');
+            
+            // Habilitar se ct_aplicadosIA for true OU temp_ct_ia existir
+            if (ctAplicadosIA || tempCtIA) {
+                btnAvaliarIA.disabled = false;
+            } else {
+                btnAvaliarIA.disabled = true;
+            }
+        }
+        
+        // Função para abrir o modal de avaliar IA
+        function abrirModalAvaliarIA() {
+            const modal = document.getElementById('modalAvaliarIA');
+            if (modal) {
+                modal.style.display = 'block';
+                notaSelecionada = 0;
+                resetarEstrelas();
+                atualizarBotaoSalvar();
+                // Limpar campo de comentário
+                const comentarioField = document.getElementById('comentario-avaliacao');
+                if (comentarioField) {
+                    comentarioField.value = '';
+                }
+            }
+        }
+        
+        // Função para fechar o modal de avaliar IA
+        function fecharModalAvaliarIA() {
+            const modal = document.getElementById('modalAvaliarIA');
+            if (modal) {
+                modal.style.display = 'none';
+                notaSelecionada = 0;
+                resetarEstrelas();
+                // Limpar campo de comentário
+                const comentarioField = document.getElementById('comentario-avaliacao');
+                if (comentarioField) {
+                    comentarioField.value = '';
+                }
+            }
+        }
+        
+        // Função para selecionar nota
+        function selecionarNota(nota) {
+            notaSelecionada = nota;
+            atualizarEstrelas(nota);
+            atualizarBotaoSalvar();
+        }
+        
+        // Função para atualizar visual das estrelas
+        function atualizarEstrelas(nota) {
+            const estrelas = document.querySelectorAll('.star');
+            estrelas.forEach((estrela, index) => {
+                const numEstrela = parseInt(estrela.getAttribute('data-star'));
+                if (numEstrela <= nota) {
+                    estrela.classList.add('selected');
+                    estrela.style.color = '#ffc107';
+                } else {
+                    estrela.classList.remove('selected');
+                    estrela.style.color = '#ddd';
+                }
+            });
+        }
+        
+        // Função para resetar estrelas
+        function resetarEstrelas() {
+            const estrelas = document.querySelectorAll('.star');
+            estrelas.forEach(estrela => {
+                estrela.classList.remove('selected');
+                estrela.style.color = '#ddd';
+            });
+        }
+        
+        // Função para atualizar estado do botão salvar
+        function atualizarBotaoSalvar() {
+            const btnSalvar = document.getElementById('btn-salvar-avaliacao');
+            if (btnSalvar) {
+                if (notaSelecionada > 0) {
+                    btnSalvar.disabled = false;
+                    btnSalvar.style.opacity = '1';
+                    btnSalvar.style.cursor = 'pointer';
+                } else {
+                    btnSalvar.disabled = true;
+                    btnSalvar.style.opacity = '0.5';
+                    btnSalvar.style.cursor = 'not-allowed';
+                }
+            }
+        }
+        
+        // Função para salvar avaliação
+        async function salvarAvaliacaoIA() {
+            if (notaSelecionada === 0) {
+                alert('Por favor, selecione uma nota antes de salvar.');
+                return;
+            }
+            
+            const btnSalvar = document.getElementById('btn-salvar-avaliacao');
+            if (btnSalvar) {
+                btnSalvar.disabled = true;
+                btnSalvar.textContent = 'Salvar Avaliação';
+            }
+            
+            try {
+                // Obter dados necessários
+                const resumoProduto = localStorage.getItem('resumoDescricaoProduto') || '';
+                const tempCtIA = localStorage.getItem('temp_ct_ia');
+                
+                let ctGerados = [];
+                
+                // Se temp_ct_ia existe, usar ele
+                if (tempCtIA) {
+                    try {
+                        ctGerados = JSON.parse(tempCtIA);
+                    } catch (e) {
+                        console.error('Erro ao parsear temp_ct_ia:', e);
+                    }
+                } else {
+                    // Caso contrário, buscar da API
+                    const featureId = document.getElementById('feature-id')?.value;
+                    if (featureId) {
+                        try {
+                            const response = await fetch(`/api/features/${featureId}`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.success && data.data && data.data.cenarios) {
+                                    ctGerados = data.data.cenarios;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Erro ao buscar cenários da API:', e);
+                        }
+                    }
+                }
+                
+                // Gerar hash_id único
+                const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let hashId = '';
+                for (let i = 0; i < 6; i++) {
+                    hashId += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+                }
+                
+                // Data e hora atual
+                const dataHora = new Date().toISOString();
+                
+                // Obter comentário (opcional)
+                const comentarioField = document.getElementById('comentario-avaliacao');
+                const comentario = comentarioField ? comentarioField.value.trim() : '';
+                
+                // Preparar dados da avaliação
+                const avaliacao = {
+                    nota: notaSelecionada,
+                    resumo_produto: resumoProduto,
+                    ct_gerados: ctGerados,
+                    data_hora: dataHora,
+                    hash_id: hashId,
+                    ct_aplicadosIA: localStorage.getItem('ct_aplicadosIA') === 'true'
+                };
+                
+                // Adicionar comentário apenas se preenchido
+                if (comentario) {
+                    avaliacao.comentario = comentario;
+                }
+                
+                // Enviar para o backend
+                const response = await fetch('/api/avaliar-ia', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(avaliacao)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Mostrar toast de sucesso
+                    if (typeof mostrarToast === 'function') {
+                        mostrarToast('✅ Avaliação salva com sucesso!', 'success');
+                    } else if (typeof showSuccessPopup === 'function') {
+                        showSuccessPopup('✅ Avaliação salva com sucesso!');
+                    } else {
+                        alert('✅ Avaliação salva com sucesso!');
+                    }
+                    fecharModalAvaliarIA();
+                } else {
+                    // Mostrar toast de erro
+                    if (typeof mostrarToast === 'function') {
+                        mostrarToast('❌ Erro ao salvar avaliação: ' + (result.error || 'Erro desconhecido'), 'error');
+                    } else {
+                        alert('❌ Erro ao salvar avaliação: ' + (result.error || 'Erro desconhecido'));
+                    }
+                    if (btnSalvar) {
+                        btnSalvar.disabled = false;
+                        btnSalvar.textContent = 'Salvar Avaliação';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao salvar avaliação:', error);
+                // Mostrar toast de erro
+                if (typeof mostrarToast === 'function') {
+                    mostrarToast('❌ Erro ao salvar avaliação. Tente novamente.', 'error');
+                } else {
+                    alert('❌ Erro ao salvar avaliação. Tente novamente.');
+                }
+                if (btnSalvar) {
+                    btnSalvar.disabled = false;
+                    btnSalvar.textContent = 'Salvar Avaliação';
+                }
+            }
+        }
+        
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalAvaliarIA');
+            if (event.target === modal) {
+                fecharModalAvaliarIA();
+            }
+        };
+    </script>
+    
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+    <script src="../js/components-loader.js"></script>
+</body>
+</html>

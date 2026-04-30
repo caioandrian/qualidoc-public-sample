@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flags - QualiDoc</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="/js/client-storage-api.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 13px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .flags-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            column-gap: 20px;
+        }
+
+        .flag-section-header {
+            margin: 20px 0 10px 0;
+            padding: 0;
+            grid-column: 1 / -1; /* Ocupa ambas as colunas */
+        }
+
+        .flag-section-header:first-child {
+            margin-top: 0;
+        }
+
+        .flag-section-header h3 {
+            color: #0066cc;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            padding: 8px 0;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .flag-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 18px;
+            margin-bottom: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .flag-item:hover {
+            border-color: #0066cc;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+
+        .flag-item:has(input[type="checkbox"]:checked) {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .flag-item:has(input[type="checkbox"]:not(:checked)) {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .flag-header {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .flag-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .flag-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tooltip-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            background-color: #0066cc;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: help;
+            position: relative;
+            vertical-align: middle;
+        }
+
+        .tooltip-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #666;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: normal;
+            white-space: normal;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: max-content;
+            max-width: 300px;
+            text-align: left;
+        }
+
+        .tooltip-icon:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 2px;
+            border: 6px solid transparent;
+            border-top-color: #666;
+            z-index: 1001;
+        }
+
+        .switch-group {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .switch-container {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch-container input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #dc3545;
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .switch-container input:checked + .switch-slider {
+            background-color: #28a745;
+        }
+
+        .switch-container input:checked + .switch-slider:before {
+            transform: translateX(22px);
+        }
+
+        .switch-label {
+            font-size: 12px;
+            color: #333;
+            user-select: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .switch-group:has(input:checked) .switch-label {
+            color: #28a745;
+        }
+
+        .switch-group:not(:has(input:checked)) .switch-label {
+            color: #dc3545;
+        }
+
+        .actions {
+            position: relative;
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Botão de salvar flutuante e fixo na lateral */
+        .btn-salvar {
+            position: fixed !important;
+            right: 20px;
+            bottom: 80px;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            transition: all 0.3s ease;
+            margin: 0 !important;
+            padding: 12px 24px !important;
+            min-width: 150px !important;
+            height: 50px !important;
+            font-size: 16px !important;
+            background: linear-gradient(135deg, #28a745, #218838) !important;
+            color: white !important;
+        }
+
+        .btn-salvar:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        @media (max-width: 768px) {
+            .btn-salvar {
+                right: 15px;
+                bottom: 70px;
+                min-width: 130px !important;
+                font-size: 14px !important;
+                padding: 10px 18px !important;
+                height: 45px !important;
+            }
+        }
+
+        .btn-salvar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            background: #6c757d !important;
+            color: #ffffff !important;
+        }
+
+        .btn-cancelar {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancelar:hover {
+            background: #5a6268;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Estilos base para modais */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 0;
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            padding: 20px;
+            color: #666;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .btn-cancel {
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-cancel:hover {
+            background-color: #dee2e6;
+            color: #495057;
+        }
+
+        .btn-confirm {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-confirm:hover {
+            background-color: #218838;
+        }
+
+        /* Estilos do Modal de Senha */
+        .capslock-warning {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #856404;
+            display: none;
+        }
+
+        /* Estilos do Modal de Revisão */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="color: white;">Flags - QualiDoc</h1>
+            <p>Gerencie as configurações do sistema</p>
+        </div>
+
+        <div class="content">
+            <div class="env-panel" style="margin-bottom: 24px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; background: #fafbfc;">
+                <h3 style="color: #0066cc; font-size: 17px; margin-bottom: 8px;">Variáveis de ambiente (localStorage)</h3>
+                <p style="font-size: 13px; color: #555; margin-bottom: 16px;">PASSWORD_ADMIN e OPENAI_API_KEY ficam apenas neste navegador. A chave OpenAI é enviada ao servidor de IA via cabeçalho quando a variável de ambiente no servidor estiver vazia.</p>
+                <div style="margin-bottom: 14px;">
+                    <label for="env-password-admin" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">PASSWORD_ADMIN</label>
+                    <input type="password" id="env-password-admin" autocomplete="new-password" style="width: 100%; max-width: 480px; padding: 8px 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label for="env-openai-key" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">OPENAI_API_KEY</label>
+                    <input type="password" id="env-openai-key" autocomplete="off" style="width: 100%; max-width: 480px; padding: 8px 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
+                </div>
+                <button type="button" class="btn btn-salvar" id="btn-salvar-env" onclick="abrirModalSalvarEnv()">Salvar variáveis</button>
+            </div>
+
+            <div id="flags-container" class="loading">
+                Carregando configurações...
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-salvar" id="btn-salvar" onclick="salvarFlags()" disabled>Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="success-message">
+        ✅ Flags salvas com sucesso!
+    </div>
+
+    <div class="error-message" id="error-message">
+        ❌ Erro ao salvar flags. Tente novamente.
+    </div>
+
+    <!-- Modal de Revisão -->
+    <div id="modal-revisao-flags-container"></div>
+
+    <!-- Modal de Senha Admin -->
+    <div id="modal-senha-admin-container"></div>
+
+    <script>
+        let flags = {}; // Flags serão carregadas do servidor
+
+        // Carregar flags ao carregar a página
+        async function carregarFlags() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success) {
+                    flags = data.flags;
+                    // Salvar valores originais para comparação
+                    flagsOriginais = JSON.parse(JSON.stringify(flags));
+                    preencherCamposEnvDoLocalStorage();
+                    renderizarFlags();
+                    // Desabilitar botão após carregar (sem alterações ainda)
+                    verificarAlteracoes();
+                } else {
+                    console.error('Erro ao carregar flags:', data.error);
+                    document.getElementById('flags-container').innerHTML = 
+                        '<div class="loading">Erro ao carregar configurações</div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar flags:', error);
+                document.getElementById('flags-container').innerHTML = 
+                    '<div class="loading">Erro ao carregar configurações</div>';
+            }
+        }
+
+        function preencherCamposEnvDoLocalStorage() {
+            const ek = window.__QUALIDOC_ENV_KEYS__;
+            if (!ek) return;
+            const pa = document.getElementById('env-password-admin');
+            const ok = document.getElementById('env-openai-key');
+            if (pa) pa.value = localStorage.getItem(ek.PASSWORD_ADMIN) || '';
+            if (ok) ok.value = localStorage.getItem(ek.OPENAI_API_KEY) || '';
+        }
+
+        function abrirModalSalvarEnv() {
+            abrirModalSenhaAdmin(
+                '🔒 Autenticação Necessária',
+                'Digite a senha de admin atual para salvar PASSWORD_ADMIN e OPENAI_API_KEY:',
+                async () => {
+                    await salvarVariaveisAmbienteComSenha();
+                }
+            );
+        }
+
+        async function salvarVariaveisAmbienteComSenha() {
+            const btn = document.getElementById('btn-salvar-env');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Salvando...';
+            }
+            try {
+                const ek = window.__QUALIDOC_ENV_KEYS__;
+                if (!ek) {
+                    mostrarMensagemErro('Camada client-storage não carregada.');
+                    return;
+                }
+                const pa = document.getElementById('env-password-admin');
+                const ok = document.getElementById('env-openai-key');
+                const passVal = pa ? pa.value : '';
+                const keyVal = ok ? ok.value : '';
+                localStorage.setItem(ek.PASSWORD_ADMIN, passVal);
+                localStorage.setItem(ek.OPENAI_API_KEY, keyVal);
+                if (passVal) {
+                    localStorage.setItem('qualiDoc_ls_v1:cfg:admin_secret', passVal);
+                } else {
+                    localStorage.removeItem('qualiDoc_ls_v1:cfg:admin_secret');
+                }
+                mostrarMensagemSucessoEnv();
+            } catch (e) {
+                console.error(e);
+                mostrarMensagemErro('Erro ao salvar variáveis.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Salvar variáveis';
+                }
+            }
+        }
+
+        function mostrarMensagemSucessoEnv() {
+            const msg = document.getElementById('success-message');
+            if (!msg) return;
+            const prev = msg.textContent;
+            msg.textContent = '✅ Variáveis salvas no localStorage!';
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+                msg.textContent = prev;
+            }, 3000);
+        }
+
+        // Função helper para criar um switch
+        function criarSwitch(flagName, flagValue) {
+            return `
+                <div class="switch-group">
+                    <label class="switch-container">
+                        <input 
+                            type="checkbox" 
+                            id="${flagName}-switch"
+                            ${flagValue ? 'checked' : ''}
+                            onchange="atualizarFlag('${flagName}', this.checked)"
+                        >
+                        <span class="switch-slider"></span>
+                    </label>
+                    <span class="switch-label">${flagValue ? 'Ativado' : 'Desativado'}</span>
+                </div>
+            `;
+        }
+
+        // Renderizar flags na interface
+        function renderizarFlags() {
+            const container = document.getElementById('flags-container');
+            
+            // Usar flags diretamente do servidor (sem valores padrão)
+            // Se alguma flag não existir, será undefined e o switch mostrará como desativado
+            
+            container.innerHTML = `
+                <ul class="flags-list">
+                    <!-- Seção: Sistema -->
+                    <li class="flag-section-header" data-cy="flag-section-sistema">
+                        <h3>Sistema</h3>
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Modo de Manutenção</span>
+                        </div>
+                        ${criarSwitch('manutencao', flags.manutencao)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">
+                                Recuperador Dados Não Salvos
+                                <span class="tooltip-icon" data-tooltip="Exibir alerta de dados não salvos para o usuário">?</span>
+                            </span>
+                        </div>
+                        ${criarSwitch('recuperadorDados', flags.recuperadorDados)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">
+                                Editar Prompts
+                                <span class="tooltip-icon" data-tooltip="Permitir edição de prompts da IA ao inserir a senha de admin">?</span>
+                            </span>
+                        </div>
+                        ${criarSwitch('editarPrompts', flags.editarPrompts)}
+                    </li>
+                    
+                    <!-- Seção: Documentação -->
+                    <li class="flag-section-header" data-cy="flag-section-documentacao">
+                        <h3>Configurações de Documentação</h3>
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Excluir Documentação</span>
+                        </div>
+                        ${criarSwitch('excluirDocumentacao', flags.excluirDocumentacao)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">
+                                Forçar Edição de Documentação
+                                <span class="tooltip-icon" data-tooltip="Permitir que outro usuário acesse uma documentação que já está aberta por outro usuário">?</span>
+                            </span>
+                        </div>
+                        ${criarSwitch('forcarEdicaoDocumentacao', flags.forcarEdicaoDocumentacao)}
+                    </li>
+                    
+                    <!-- Seção: Inteligência Artificial -->
+                    <li class="flag-section-header" data-cy="flag-section-ia">
+                        <h3>Configurações de IA</h3>
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Revisar CT Duplicados</span>
+                        </div>
+                        ${criarSwitch('revisarCTDuplicados', flags.revisarCTDuplicados)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Alterar ordem dos CT</span>
+                        </div>
+                        ${criarSwitch('organizarCT', flags.organizarCT)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Modal IA</span>
+                        </div>
+                        ${criarSwitch('modalIA', flags.modalIA)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Cobertura de Teste</span>
+                        </div>
+                        ${criarSwitch('iaCoberturaTeste', flags.iaCoberturaTeste)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Inserir imagens do produto</span>
+                        </div>
+                        ${criarSwitch('inserirImagensProduto', flags.inserirImagensProduto)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Executar Script IA</span>
+                        </div>
+                        ${criarSwitch('executarScriptIA', flags.executarScriptIA)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">IA (Opção Funcional)</span>
+                        </div>
+                        ${criarSwitch('iaOpcaoFuncional', flags.iaOpcaoFuncional)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">IA (Opção Regressão)</span>
+                        </div>
+                        ${criarSwitch('iaOpcaoRegressao', flags.iaOpcaoRegressao)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">IA (Opção Integração)</span>
+                        </div>
+                        ${criarSwitch('iaOpcaoIntegracao', flags.iaOpcaoIntegracao)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">IA (Opção Performance)</span>
+                        </div>
+                        ${criarSwitch('iaOpcaoPerformance', flags.iaOpcaoPerformance)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">IA (Opção Usabilidade)</span>
+                        </div>
+                        ${criarSwitch('iaOpcaoUsabilidade', flags.iaOpcaoUsabilidade)}
+                    </li>
+                    
+                    <!-- Seção: Requer Senha do Administrador -->
+                    <li class="flag-section-header" data-cy="flag-section-senha-admin">
+                        <h3>Requer Senha do Administrador</h3>
+                    </li>
+                    <li class="flag-item" style="background: #e7f3ff; border-color: #b3d9ff;">
+                        <div class="flag-header">
+                            <span class="flag-title">
+                                Editar Flags
+                                <span class="tooltip-icon" data-tooltip="Sempre será obrigatório usar a senha para editar flags">🔒</span>
+                            </span>
+                        </div>
+                        <div style="color: #0066cc; font-weight: 600; font-size: 14px;">
+                            Sempre obrigatório
+                        </div>
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Editar Prompts</span>
+                        </div>
+                        ${criarSwitch('senhaEditarPrompts', flags.senhaEditarPrompts)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Excluir Documentação</span>
+                        </div>
+                        ${criarSwitch('senhaExcluirDocumentacao', flags.senhaExcluirDocumentacao)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Manutenção (editar arquivos)</span>
+                        </div>
+                        ${criarSwitch('senhaManutencao', flags.senhaManutencao)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Manutenção (download de arquivos zip)</span>
+                        </div>
+                        ${criarSwitch('senhaDownloadZip', flags.senhaDownloadZip)}
+                    </li>
+                    <li class="flag-item">
+                        <div class="flag-header">
+                            <span class="flag-title">Manutenção (edição em massa)</span>
+                        </div>
+                        ${criarSwitch('senhaEdicaoMassa', flags.senhaEdicaoMassa)}
+                    </li>
+                </ul>
+            `;
+        }
+
+        // Variável para armazenar os valores originais das flags
+        let flagsOriginais = {};
+
+        // Atualizar flag localmente
+        function atualizarFlag(nome, valor) {
+            flags[nome] = valor;
+            // Atualizar label do switch
+            const switchElement = document.getElementById(`${nome}-switch`);
+            if (switchElement) {
+                const switchLabel = switchElement.closest('.switch-group').querySelector('.switch-label');
+                if (switchLabel) {
+                    switchLabel.textContent = valor ? 'Ativado' : 'Desativado';
+                }
+            }
+            // Verificar se houve alterações e habilitar/desabilitar botão
+            verificarAlteracoes();
+        }
+
+        // Verificar se houve alterações e habilitar/desabilitar botão
+        function verificarAlteracoes() {
+            const btnSalvar = document.getElementById('btn-salvar');
+            if (!btnSalvar) return;
+
+            // Comparar valores atuais com valores originais
+            const houveAlteracao = JSON.stringify(flags) !== JSON.stringify(flagsOriginais);
+            
+            if (houveAlteracao) {
+                btnSalvar.disabled = false;
+            } else {
+                btnSalvar.disabled = true;
+            }
+        }
+
+        // Verificar Caps Lock
+        function verificarCapsLock(event, inputId, warningId) {
+            const warning = document.getElementById(warningId);
+            if (!warning) return;
+            
+            // Usar getModifierState se disponível (método mais confiável)
+            if (event.getModifierState && typeof event.getModifierState === 'function') {
+                const capsLockOn = event.getModifierState('CapsLock');
+                warning.style.display = capsLockOn ? 'block' : 'none';
+                return;
+            }
+            
+            // Fallback: verificar através da tecla pressionada
+            const key = event.key;
+            if (key && /^[a-zA-Z]$/.test(key)) {
+                const isUpperCase = key === key.toUpperCase() && key !== key.toLowerCase();
+                const isShiftPressed = event.shiftKey;
+                
+                // Se é maiúscula sem Shift ou minúscula com Shift, Caps Lock está ativado
+                if ((isUpperCase && !isShiftPressed) || (!isUpperCase && isShiftPressed)) {
+                    warning.style.display = 'block';
+                } else {
+                    warning.style.display = 'none';
+                }
+            }
+        }
+        
+        // Expor função globalmente
+        window.verificarCapsLock = verificarCapsLock;
+
+        // Variável global para armazenar callback de senha admin
+        let passwordAdminCallback = null;
+        let passwordAdminTitle = '🔒 Autenticação Necessária';
+        let passwordAdminMessage = 'Digite a senha de admin para confirmar a operação:';
+        
+        // Função genérica para abrir modal de senha admin
+        function abrirModalSenhaAdmin(title, message, callback) {
+            passwordAdminCallback = callback;
+            if (title) passwordAdminTitle = title;
+            if (message) passwordAdminMessage = message;
+            
+            const modal = document.getElementById('password-admin-modal');
+            const titleElement = document.getElementById('password-admin-modal-title');
+            const messageElement = document.getElementById('password-admin-modal-message');
+            const input = document.getElementById('password-admin-input');
+            const error = document.getElementById('password-admin-error');
+            const warning = document.getElementById('capslock-warning-admin');
+            
+            if (modal) {
+                if (titleElement) titleElement.textContent = passwordAdminTitle;
+                if (messageElement) messageElement.textContent = passwordAdminMessage;
+                modal.style.display = 'flex';
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+                if (error) {
+                    error.style.display = 'none';
+                    error.textContent = '';
+                }
+                if (warning) {
+                    warning.style.display = 'none';
+                }
+            }
+        }
+        
+        // Fechar modal de senha admin
+        function fecharModalSenhaAdmin() {
+            const modal = document.getElementById('password-admin-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            passwordAdminCallback = null;
+            passwordAdminTitle = '🔒 Autenticação Necessária';
+            passwordAdminMessage = 'Digite a senha de admin para confirmar a operação:';
+        }
+        
+        // Confirmar senha admin
+        async function confirmarSenhaAdmin() {
+            const password = document.getElementById('password-admin-input').value;
+            const errorElement = document.getElementById('password-admin-error');
+            
+            if (!password) {
+                if (errorElement) {
+                    errorElement.textContent = 'Por favor, digite a senha.';
+                    errorElement.style.display = 'block';
+                }
+                return;
+            }
+
+            // Verificar senha no servidor
+            try {
+                const response = await fetch('/api/verify-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Senha correta, executar callback e depois fechar modal
+                    const callback = passwordAdminCallback; // Guardar callback antes de limpar
+                    if (callback) {
+                        // Fechar modal primeiro
+                        fecharModalSenhaAdmin();
+                        // Executar callback com a senha
+                        await callback(password);
+                    } else {
+                        // Se não houver callback, apenas fechar modal
+                        fecharModalSenhaAdmin();
+                    }
+                } else {
+                    // Senha incorreta
+                    if (errorElement) {
+                        errorElement.textContent = 'Senha incorreta. Tente novamente.';
+                        errorElement.style.display = 'block';
+                    }
+                    const input = document.getElementById('password-admin-input');
+                    if (input) {
+                        input.value = '';
+                        input.focus();
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao verificar senha:', err);
+                if (errorElement) {
+                    errorElement.textContent = 'Erro ao verificar senha. Tente novamente.';
+                    errorElement.style.display = 'block';
+                }
+            }
+        }
+        
+        // Expor funções globalmente
+        window.abrirModalSenhaAdmin = abrirModalSenhaAdmin;
+        window.fecharModalSenhaAdmin = fecharModalSenhaAdmin;
+        window.confirmarSenhaAdmin = confirmarSenhaAdmin;
+        
+        // Abrir modal de senha usando componente genérico
+        function abrirModalSenha() {
+            abrirModalSenhaAdmin(
+                '🔒 Autenticação Necessária',
+                'Digite a senha para salvar as alterações:',
+                async (password) => {
+                    await salvarFlagsComSenha(password);
+                }
+            );
+        }
+
+        // Fechar modal de senha
+        function fecharModalSenha() {
+            fecharModalSenhaAdmin();
+        }
+
+        // Confirmar senha e salvar (mantida para compatibilidade)
+        async function confirmarSenha() {
+            await confirmarSenhaAdmin();
+        }
+
+        // Salvar flags no servidor (chamado após validação da senha)
+        async function salvarFlagsComSenha(password) {
+            const btnSalvar = document.getElementById('btn-salvar');
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+
+            try {
+                const response = await fetch('/api/flags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        flags: flags,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    mostrarMensagemSucesso();
+                    // Atualizar valores originais após salvar com sucesso
+                    flagsOriginais = JSON.parse(JSON.stringify(flags));
+                    btnSalvar.textContent = 'Salvar Alterações';
+                    // Verificar alterações para desabilitar botão se não houver mais alterações
+                    verificarAlteracoes();
+                } else {
+                    mostrarMensagemErro(data.error || 'Erro ao salvar flags');
+                    btnSalvar.disabled = false;
+                    btnSalvar.textContent = 'Salvar Alterações';
+                }
+            } catch (error) {
+                console.error('Erro ao salvar flags:', error);
+                mostrarMensagemErro('Erro ao salvar flags. Tente novamente.');
+                btnSalvar.disabled = false;
+                btnSalvar.textContent = 'Salvar Alterações';
+            }
+        }
+
+        // Salvar flags no servidor (abre modal de senha primeiro)
+        // Mapeamento de nomes técnicos para nomes amigáveis
+        const nomesFlags = {
+            manutencao: 'Modo de Manutenção',
+            excluirDocumentacao: 'Excluir Documentação',
+            modalIA: 'Modal IA',
+            executarScriptIA: 'Executar Script IA',
+            iaOpcaoFuncional: 'IA (Opção Funcional)',
+            iaOpcaoRegressao: 'IA (Opção Regressão)',
+            iaOpcaoIntegracao: 'IA (Opção Integração)',
+            iaOpcaoPerformance: 'IA (Opção Performance)',
+            iaOpcaoUsabilidade: 'IA (Opção Usabilidade)',
+            inserirImagensProduto: 'Inserir imagens do produto',
+            organizarCT: 'Alterar ordem dos CT',
+            revisarCTDuplicados: 'Revisar CT Duplicados',
+            editarPrompts: 'Editar Prompts',
+            forcarEdicaoDocumentacao: 'Forçar Edição de Documentação',
+            senhaEditarPrompts: 'Editar Prompts (Senha)',
+            senhaExcluirDocumentacao: 'Excluir Documentação (Senha)',
+            senhaManutencao: 'Manutenção - Editar arquivos (Senha)',
+            senhaDownloadZip: 'Manutenção - Download ZIP (Senha)',
+            senhaEdicaoMassa: 'Manutenção - Edição em massa (Senha)',
+            recuperadorDados: 'Recuperador Dados Não Salvos'
+        };
+
+        // Função para obter alterações comparando flags atuais com originais
+        function obterAlteracoes() {
+            const alteracoes = [];
+            
+            for (const [key, value] of Object.entries(flags)) {
+                const valorOriginal = flagsOriginais[key];
+                if (valorOriginal !== undefined && valorOriginal !== value) {
+                    alteracoes.push({
+                        nome: key,
+                        nomeAmigavel: nomesFlags[key] || key,
+                        valorAntigo: valorOriginal,
+                        valorNovo: value
+                    });
+                }
+            }
+            
+            return alteracoes;
+        }
+
+        // Abrir modal de revisão
+        function abrirModalRevisao() {
+            const modal = document.getElementById('review-modal');
+            const lista = document.getElementById('review-changes-list');
+            
+            const alteracoes = obterAlteracoes();
+            
+            if (alteracoes.length === 0) {
+                // Se não houver alterações, ir direto para o modal de senha
+                abrirModalSenha();
+                return;
+            }
+            
+            // Limpar lista anterior
+            lista.innerHTML = '';
+            
+            // Adicionar cada alteração à lista
+            alteracoes.forEach(alteracao => {
+                const item = document.createElement('li');
+                item.className = 'review-change-item';
+                
+                const valorAntigoTexto = alteracao.valorAntigo ? 'Ativado' : 'Desativado';
+                const valorNovoTexto = alteracao.valorNovo ? 'Ativado' : 'Desativado';
+                
+                item.innerHTML = `
+                    <span class="review-change-name">${alteracao.nomeAmigavel}</span>
+                    <div class="review-change-value">
+                        <span class="review-change-old">${valorAntigoTexto}</span>
+                        <span class="review-change-arrow">→</span>
+                        <span class="review-change-new">${valorNovoTexto}</span>
+                    </div>
+                `;
+                
+                lista.appendChild(item);
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        // Fechar modal de revisão
+        function fecharModalRevisao() {
+            const modal = document.getElementById('review-modal');
+            modal.style.display = 'none';
+        }
+
+        // Continuar para o modal de senha
+        function continuarParaSenha() {
+            fecharModalRevisao();
+            abrirModalSenha();
+        }
+
+        function salvarFlags() {
+            abrirModalRevisao();
+        }
+
+        // Mostrar mensagem de sucesso
+        function mostrarMensagemSucesso() {
+            const msg = document.getElementById('success-message');
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Mostrar mensagem de erro
+        function mostrarMensagemErro(mensagem) {
+            const msg = document.getElementById('error-message');
+            msg.textContent = `❌ ${mensagem}`;
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Carregar flags ao iniciar
+        carregarFlags();
+    </script>
+    
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+    <script src="../js/components-loader.js"></script>
+</body>
+</html>
+

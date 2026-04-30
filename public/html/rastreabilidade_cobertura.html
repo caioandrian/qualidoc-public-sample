@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Cobertura de Teste - QualiDoc</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="/js/client-storage-api.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        .header h2 {
+            color: #666;
+            margin: 0;
+            font-weight: 400;
+            font-size: 0.95em;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .loading p {
+            font-size: 1.1em;
+        }
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #c33;
+            font-size: 0.9em;
+        }
+        .rastreabilidade-section {
+            margin-top: 20px;
+            position: relative;
+        }
+        body {
+            font-size: 14px;
+        }
+        .container {
+            font-size: 14px;
+        }
+        .mindmap-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            padding: 10px 0;
+        }
+        .contexto-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        .contexto-header {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+        .contexto-titulo {
+            margin: 0;
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #333;
+            text-shadow: none;
+        }
+        .topicos-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .topico-segmento {
+            background: white;
+            border-radius: 6px;
+            padding: 10px 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+        .topico-segmento.nao-coberto {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+            opacity: 0.9;
+        }
+        .topico-segmento:hover {
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+            transform: translateX(2px);
+        }
+        .topico-segmento.nao-coberto:hover {
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+        }
+        .topico-segmento-header {
+            margin-bottom: 6px;
+        }
+        .topico-segmento-titulo {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #444;
+            line-height: 1.3;
+        }
+        .topico-segmento-cts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .ct-badge-small {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        .ct-badge-small:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+        }
+        .ct-badge-small .tooltip {
+            position: absolute;
+            background: #2c3e50;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: normal;
+            max-width: 300px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .ct-badge-small:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        .ct-badge-small .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #2c3e50;
+        }
+        .sem-ct {
+            color: #999;
+            font-style: italic;
+            font-size: 0.8em;
+        }
+        .topico-node {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            overflow: visible;
+        }
+        .topico-node:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .topico-titulo {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
+            line-height: 1.3;
+            min-width: 200px;
+            flex-shrink: 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .connection-arrow {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+        .ct-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+        }
+        .ct-badge {
+            background: white;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s;
+            border: 2px solid #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .ct-badge:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            border-color: white;
+        }
+        .ct-badge {
+            position: relative;
+        }
+        .tooltip {
+            position: absolute;
+            background: #2c3e50;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: normal;
+            max-width: 300px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: #2c3e50;
+        }
+        .ct-badge:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        .btn-voltar {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .btn-voltar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .topico-node {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .topico-node:nth-child(1) { animation-delay: 0.1s; }
+        .topico-node:nth-child(2) { animation-delay: 0.2s; }
+        .topico-node:nth-child(3) { animation-delay: 0.3s; }
+        .topico-node:nth-child(4) { animation-delay: 0.4s; }
+        .topico-node:nth-child(5) { animation-delay: 0.5s; }
+        .topico-node:nth-child(n+6) { animation-delay: 0.6s; }
+        .ct-connection-icon {
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 1.6em;
+            }
+            .topico-node {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            .topico-titulo {
+                min-width: auto;
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+            .connection-arrow {
+                transform: rotate(90deg);
+                margin: 5px 0;
+            }
+            .ct-badge {
+                padding: 6px 12px;
+                font-size: 0.85em;
+            }
+        }
+        .stats-bar {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+            font-size: 0.85em;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.1);
+        }
+        .cobertura-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95em;
+            margin-left: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+        }
+        .cobertura-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .cobertura-alta {
+            background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
+            color: white;
+        }
+        .cobertura-media {
+            background: linear-gradient(135deg, #ffa500 0%, #ff8800 100%);
+            color: white;
+        }
+        .cobertura-baixa {
+            background: linear-gradient(135deg, #ff4444 0%, #cc3333 100%);
+            color: white;
+        }
+        .btn-aplicar-sugeridos {
+            margin-left: 12px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+        }
+        .btn-aplicar-sugeridos:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.5);
+        }
+        .sugestoes-container {
+            margin-top: 8px;
+        }
+        .sugestao-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            gap: 8px;
+        }
+        .sugestao-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #2196f3;
+        }
+        .sugestao-label {
+            flex: 1;
+            font-size: 0.85em;
+            color: #333;
+            cursor: pointer;
+            line-height: 1.3;
+        }
+        .sugestao-label:hover {
+            color: #1976d2;
+        }
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            max-width: 400px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast-success {
+            background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
+            color: white;
+        }
+        .toast-error {
+            background: linear-gradient(135deg, #ff4444 0%, #cc3333 100%);
+            color: white;
+        }
+        .toast-info {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Detalhes da Cobertura de Teste</h1>
+            <h2 id="feature-name">Carregando...</h2>
+        </div>
+        
+        <div id="loading" class="loading">
+            <p>Carregando dados e gerando rastreabilidade...</p>
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="rastreabilidade-content" class="rastreabilidade-section" style="display: none;"></div>
+    </div>
+    
+    <script src="../js/rastreabilidade-script.js"></script>
+</body>
+</html>
+

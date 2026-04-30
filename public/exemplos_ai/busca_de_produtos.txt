@@ -1,0 +1,58 @@
+## Busca e Filtros de Produtos - E-commerce
+
+### Descrição
+Sistema de busca avançada com campo de pesquisa, autocomplete, filtros laterais, ordenação e exibição de resultados em grid/lista.
+
+### Layout
+Campo de busca destacado no topo, filtros laterais à esquerda (sidebar), área de resultados central (grid), barra de ordenação e contador acima do grid, sugestões autocomplete abaixo do campo, breadcrumbs/filtros ativos visíveis, responsivo (filtros colapsam em mobile).
+
+### Funcionalidades
+Busca por texto livre (nome, descrição, categoria), autocomplete com sugestões, filtros (categoria, preço, disponibilidade), ordenação (relevância, preço, nome), contador de resultados, limpar filtros, histórico de buscas, paginação/scroll infinito.
+
+### Elementos Visíveis
+- **Campo de Busca**: Input grande, placeholder "Buscar produtos...", ícone lupa, botão "Buscar" (opcional), área de sugestões abaixo
+- **Autocomplete**: Dropdown com até 5 sugestões (nome + preço), destaque no hover, fecha ao clicar fora/selecionar
+- **Filtros Laterais**: Título "Filtros"/"Refinar Busca", seção Categorias (checkboxes), seção Preço (range slider ou inputs min/máx), checkbox "Apenas disponíveis", botão "Limpar Filtros"
+- **Barra de Resultados**: Contador "X produtos encontrados", dropdown ordenação, toggle grid/lista (opcional)
+- **Grid de Produtos**: Cards com imagem, nome, preço, botão "Adicionar ao Carrinho", badge "Indisponível", badge desconto/promoção
+- **Sem Resultados**: Ícone/ilustração, "Nenhum produto encontrado", sugestão "Tente outros termos"/"Limpar filtros"
+
+### Regras de Negócio
+1. Busca retorna com mínimo 3 caracteres
+2. Máximo 5 sugestões no autocomplete
+3. Case-insensitive, correspondência parcial (contém)
+4. Produtos indisponíveis no final ou ocultos
+5. Ordenação padrão: relevância
+6. Filtros múltiplos: lógica "E" (AND)
+7. Histórico: últimas 10 buscas
+8. Busca vazia retorna todos ou mensagem
+9. Filtros persistem na URL (compartilhamento)
+
+### Validações
+- Campo busca: mensagem se <3 caracteres
+- Autocomplete: aparece após 300ms de inatividade
+- Filtros: atualizam resultados automaticamente
+- Sem resultados: estado visual específico
+- Loading: spinner/skeleton durante carregamento
+- Filtros ativos: indicados visualmente (checkboxes marcados, valores destacados)
+
+### Mensagens
+- "Digite pelo menos 3 caracteres para buscar"
+- "X produtos encontrados"
+- "Nenhum produto encontrado para 'termo'"
+- "Tente outros termos ou limpe os filtros"
+- "Buscas recentes"
+- "Limpar filtros"
+- "Carregando resultados..."
+
+### Comportamentos
+Autocomplete aparece automaticamente (delay 300ms), sugestões atualizam conforme digitação, clique em sugestão executa busca, resultados atualizam ao aplicar/remover filtros, URL atualiza com parâmetros, histórico aparece ao focar campo, ordenação atualiza imediatamente, paginação/scroll carrega mais, loading durante requisições, filtros colapsam/expandem em mobile.
+
+### Estados Visuais
+Campo focado (borda destacada, sugestões aparecem), sugestão hover (destaque), filtro ativo (checkbox marcado, valor destacado), produto disponível (card normal, botão habilitado), indisponível (opacidade reduzida, badge), loading (skeleton/spinner), sem resultados (centralizado, mensagem destacada).
+
+### Ordenação
+Relevância (padrão), Preço: Menor→Maior, Preço: Maior→Menor, Nome: A-Z, Nome: Z-A, Mais Vendidos (se aplicável).
+
+### Filtros
+Categorias (checkboxes), Preço (range slider ou inputs min/máx), Disponibilidade (checkbox "Apenas disponíveis"), Avaliação (estrelas, se aplicável), Marca (checkboxes, se aplicável), Desconto (checkbox "Apenas em promoção", se aplicável).

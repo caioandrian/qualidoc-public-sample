@@ -1,0 +1,76 @@
+<!-- Modal de Confirmação Genérico -->
+<div id="confirmModal" class="modal" style="display: none;" data-cy="modal-confirm">
+    <div class="modal-content modal-confirm-content" data-cy="modal-confirm-content">
+        <div class="modal-header modal-header-alert" data-cy="modal-confirm-header">
+            <h2 class="modal-title" id="confirmModalTitle" data-cy="modal-confirm-title">Confirmar</h2>
+            <span class="close" onclick="closeConfirmModal()" data-cy="modal-confirm-close">&times;</span>
+        </div>
+        <div class="modal-body modal-confirm-body" data-cy="modal-confirm-body">
+            <p id="confirmModalMessage" data-cy="modal-confirm-message">Tem certeza que deseja continuar?</p>
+            <div id="confirmModalWarning" class="warning-message" style="display: none;" data-cy="modal-confirm-warning"></div>
+        </div>
+        <div class="modal-footer modal-confirm-footer" data-cy="modal-confirm-footer">
+            <button class="btn-cancel" onclick="closeConfirmModal()" data-cy="btn-cancel-confirm">Cancelar</button>
+            <button class="btn-confirm" id="btn-confirm-action" onclick="executeConfirmAction()" data-cy="btn-confirm-action">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos compactos para modal de confirmação */
+    #confirmModal {
+        z-index: 20000 !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .modal-confirm-content {
+        max-width: 450px !important;
+        padding: 0 !important;
+    }
+
+    .modal-confirm-content .modal-header {
+        padding: 10px 15px !important;
+        min-height: auto !important;
+    }
+
+    .modal-confirm-content .modal-header h2 {
+        font-size: 16px !important;
+        margin: 0 !important;
+    }
+
+    .modal-confirm-content .modal-body {
+        padding: 12px 15px !important;
+    }
+
+    .modal-confirm-content .modal-body p {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        margin: 0 0 8px 0 !important;
+    }
+
+    .modal-confirm-content .warning-message {
+        padding: 8px 10px !important;
+        margin: 8px 0 0 0 !important;
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+    }
+
+    .modal-confirm-content .warning-message p {
+        margin: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .modal-confirm-content .modal-footer {
+        padding: 10px 15px !important;
+        min-height: auto !important;
+        gap: 8px !important;
+    }
+
+    .modal-confirm-content .btn-cancel,
+    .modal-confirm-content .btn-confirm {
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+    }
+</style>
+

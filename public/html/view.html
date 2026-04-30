@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Documentação de Teste - QualiDoc</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230066cc'/%3E%3Crect x='8' y='6' width='12' height='16' rx='1' fill='white'/%3E%3Crect x='10' y='9' width='8' height='1' fill='%230066cc'/%3E%3Crect x='10' y='11' width='6' height='1' fill='%230066cc'/%3E%3Crect x='10' y='13' width='7' height='1' fill='%230066cc'/%3E%3Crect x='10' y='15' width='5' height='1' fill='%230066cc'/%3E%3Cpath d='M12 18 L14 20 L18 16' stroke='%2300cc66' stroke-width='2' fill='none'/%3E%3Crect x='20' y='8' width='2' height='8' fill='white'/%3E%3Crect x='19' y='16' width='4' height='1' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="/js/client-storage-api.js"></script>
+</head>
+<body>
+    <!-- Mensagem de manutenção -->
+    <div id="manutencao-alert" class="backup-alert" style="display: none; background: #e9ecef; border-color: #6c757d; margin: 20px; position: fixed; top: 0; left: 0; right: 0; z-index: 10000;" data-cy="manutencao-alert">
+        <div class="backup-alert-content">
+            <span class="backup-alert-icon" style="color: #ffc107; font-size: 24px;">⚠️</span>
+            <span class="backup-alert-message" style="font-weight: bold; color: #495057;">O sistema está em manutenção. Por favor, tente novamente mais tarde.</span>
+        </div>
+    </div>
+    
+    <div class="container_view" data-cy="container">
+        <div class="header_view" data-cy="header">
+            <h1 data-cy="page-title">DOCUMENTAÇÃO DE TESTE</h1>
+            <h2 id="feature-name" data-cy="feature-name">Carregando...</h2>
+            <h3 id="jira-link" data-cy="jira-link" style="display: none;"><span data-cy="jira-link-label">Link do Jira:</span> <a href="#" target="_blank" class="jira-link" data-cy="jira-link-url">-</a></h3>
+        </div>
+
+        <div class="section_view" data-cy="info-section">
+            <h3 data-cy="info-section-title">INFORMAÇÕES DO TESTE</h3>
+            <div class="info-grid-view" data-cy="info-grid">
+                <div class="info-item_view" data-cy="info-item-data">
+                    <label data-cy="label-data">Criado em:</label>
+                    <span id="data-teste" data-cy="data-teste">-</span>
+                </div>
+                <div class="info-item_view" data-cy="info-item-ultima-atualizacao">
+                    <label data-cy="label-ultima-atualizacao">Atualizado em:</label>
+                    <span id="ultima-atualizacao" data-cy="ultima-atualizacao">-</span>
+                </div>
+                <div class="info-item_view" data-cy="info-item-testador">
+                    <label data-cy="label-testador">Testador:</label>
+                    <span id="testador" data-cy="testador">-</span>
+                </div>
+                <div class="info-item_view" data-cy="info-item-ambiente">
+                    <label data-cy="label-ambiente">Ambiente:</label>
+                    <span id="ambiente" data-cy="ambiente">-</span>
+                </div>
+                <div class="info-item_view" data-cy="info-item-navegador">
+                    <label data-cy="label-navegador">Navegador:</label>
+                    <span id="navegador" data-cy="navegador">-</span>
+                </div>
+                <div class="info-item_view" data-cy="info-item-dispositivo">
+                    <label data-cy="label-dispositivo">Dispositivo:</label>
+                    <span id="dispositivo" data-cy="dispositivo">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section_view" data-cy="observacao-section">
+            <h3 data-cy="observacao-section-title"><svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 8px;" data-cy="svg-observacao-icon">
+                    <!-- Bloco de notas -->
+                    <path d="M3 2H15C16.1 2 17 2.9 17 4V16C17 17.1 16.1 18 15 18H3C1.9 18 1 17.1 1 16V4C1 2.9 1.9 2 3 2Z" fill="#e8f4fc" stroke="#000" stroke-width="0.5" data-cy="svg-path-notebook"/>
+                    <!-- Linhas do papel pautado -->
+                    <line x1="4" y1="6" x2="14" y2="6" stroke="#333" stroke-width="0.4" data-cy="svg-path-line1"/>
+                    <line x1="4" y1="9" x2="14" y2="9" stroke="#333" stroke-width="0.4" data-cy="svg-path-line2"/>
+                    <line x1="4" y1="12" x2="14" y2="12" stroke="#333" stroke-width="0.4" data-cy="svg-path-line3"/>
+                    <line x1="4" y1="15" x2="11" y2="15" stroke="#333" stroke-width="0.4" data-cy="svg-path-line4"/>
+                    <!-- Furos do caderno -->
+                    <circle cx="5" cy="3.5" r="0.7" fill="#f0c14b" stroke="#000" stroke-width="0.25" data-cy="svg-path-hole1"/>
+                    <circle cx="9" cy="3.5" r="0.7" fill="#f0c14b" stroke="#000" stroke-width="0.25" data-cy="svg-path-hole2"/>
+                    <circle cx="13" cy="3.5" r="0.7" fill="#f0c14b" stroke="#000" stroke-width="0.25" data-cy="svg-path-hole3"/>
+                    <!-- Lápis (corpo amarelo) -->
+                    <path d="M11 7L19 2L20 3L14 11L11 7Z" fill="#ffd54f" stroke="#000" stroke-width="0.5" stroke-linejoin="round" data-cy="svg-path-pencil"/>
+                    <!-- Borracha rosa -->
+                    <path d="M19 2L20 3L19 4L18 3L19 2Z" fill="#f48fb1" stroke="#000" stroke-width="0.25" data-cy="svg-path-eraser"/>
+                    <!-- Ponta do grafite -->
+                    <circle cx="13" cy="9" r="0.4" fill="#333" data-cy="svg-path-tip"/>
+                </svg>OBSERVAÇÕES</h3>
+            <div class="info-grid-view" data-cy="observacao-info-grid">
+                <div class="info-item_view info-item-full" data-cy="info-item-observacao">
+                    <span id="observacao" data-cy="observacao" class="observacao-text">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section_view" id="bugs-section" data-cy="bugs-section" style="display: none;">
+            <h3 data-cy="bugs-title">🐞 BUGS REPORTADOS</h3>
+            <div class="bugs-list" id="bugs-list" data-cy="bugs-list">
+                <!-- Bugs serão carregados dinamicamente aqui -->
+            </div>
+        </div>
+
+        <div class="section_view" id="attachments-section" data-cy="attachments-section">
+            <h3 data-cy="attachments-title">📎 EVIDÊNCIA DE TESTE</h3>
+            <div class="attachments-controls" data-cy="attachments-controls">
+                <div class="attachments-summary" data-cy="attachments-summary">
+                    <p>Total de anexos: <span id="total-attachments" data-cy="total-attachments-count">0</span></p>
+                </div>
+                <div class="attachments-actions" data-cy="attachments-actions">
+                    <button id="download-zip-btn" class="btn-download-zip" data-cy="download-zip-btn" onclick="baixarAnexosZip()">
+                        📦 Baixar Anexos
+                    </button>
+                </div>
+                <div class="attachments-filter" data-cy="attachments-filter">
+                    <label for="filter-type" data-cy="attachments-filter-label">Filtrar por:</label>
+                    <select id="filter-type" data-cy="attachments-filter-select">
+                        <option value="all" data-cy="filter-option-all">Todos os tipos</option>
+                        <optgroup label="Documentos" data-cy="filter-group-documents">
+                            <option value="pdf" data-cy="filter-option-pdf">PDF</option>
+                            <option value="doc,docx" data-cy="filter-option-word">Word</option>
+                            <option value="xls,xlsx" data-cy="filter-option-excel">Excel</option>
+                            <option value="ppt,pptx" data-cy="filter-option-powerpoint">PowerPoint</option>
+                            <option value="txt" data-cy="filter-option-txt">Texto</option>
+                        </optgroup>
+                        <optgroup label="Imagens" data-cy="filter-group-images">
+                            <option value="jpg,jpeg" data-cy="filter-option-jpg">JPG/JPEG</option>
+                            <option value="png" data-cy="filter-option-png">PNG</option>
+                            <option value="bmp" data-cy="filter-option-bmp">BMP</option>
+                        </optgroup>
+                        <optgroup label="Vídeos" data-cy="filter-group-videos">
+                            <option value="gif" data-cy="filter-option-gif">GIF</option>
+                            <option value="mp4" data-cy="filter-option-mp4">MP4</option>
+                            <option value="avi" data-cy="filter-option-avi">AVI</option>
+                            <option value="mov" data-cy="filter-option-mov">MOV</option>
+                        </optgroup>
+                        <optgroup label="Arquivos" data-cy="filter-group-files">
+                            <option value="zip" data-cy="filter-option-zip">ZIP</option>
+                            <option value="rar" data-cy="filter-option-rar">RAR</option>
+                            <option value="7z" data-cy="filter-option-7z">7Z</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            <div class="attachments-list" id="attachments-list" data-cy="attachments-list">
+                <!-- Anexos serão carregados dinamicamente aqui -->
+            </div>
+        </div>
+
+        <div class="section_view" data-cy="test-cases-section">
+            <h3 data-cy="test-cases-title"><svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 8px;" data-cy="svg-test-cases-icon">
+                    <!-- Pasta aberta com contorno preto -->
+                    <path d="M2 4C2 2.9 2.9 2 4 2H8L10 4H20C21.1 4 22 4.9 22 6V16C22 17.1 21.1 18 20 18H4C2.9 18 2 17.1 2 16V4Z" fill="#ffa500" stroke="#000" stroke-width="0.5" data-cy="svg-path-folder"/>
+                    <!-- Linha de dobra da pasta -->
+                    <path d="M2 4L10 4" stroke="#000" stroke-width="0.5" data-cy="svg-path-folder-fold"/>
+                    <!-- Seta diagonal para cima e direita -->
+                    <path d="M3 15L5 13M3 15L5 17M3 15L7 11" stroke="#f0f0f0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" data-cy="svg-path-arrow"/>
+                </svg>CASOS DE TESTE</h3>
+            <div id="cenarios-container" data-cy="cenarios-container">
+                <div class="loading" data-cy="loading">
+                    <div class="spinner" data-cy="spinner"></div>
+                    <p data-cy="loading-text">Carregando cenários...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section_view" data-cy="summary-section">
+            <h3 data-cy="summary-title">📊 RESUMO DOS TESTES</h3>
+            <div class="summary-grid_view" data-cy="summary-grid">
+                <div class="summary-row-total-ia" data-cy="summary-row-total-ia">
+                    <div class="summary-item_view" data-cy="summary-item-total">
+                        <h4 data-cy="summary-label-total">Total de Casos de Teste</h4>
+                        <span id="total-cenarios" data-cy="total-cenarios">0</span>
+                    </div>
+                    <div class="summary-item_view" data-cy="summary-item-ia">
+                        <h4 data-cy="summary-label-ia">Gerados por IA</h4>
+                        <span id="total-ia" data-cy="total-ia">0</span>
+                    </div>
+                </div>
+                <div class="summary-row-status" data-cy="summary-row-status">
+                    <div class="summary-item_view" data-cy="summary-item-aprovados">
+                        <h4 data-cy="summary-label-aprovados">Aprovados</h4>
+                        <span id="aprovados" data-cy="aprovados">0</span>
+                    </div>
+                    <div class="summary-item_view" data-cy="summary-item-reprovados">
+                        <h4 data-cy="summary-label-reprovados">Reprovados</h4>
+                        <span id="reprovados" data-cy="reprovados">0</span>
+                    </div>
+                    <div class="summary-item_view" data-cy="summary-item-bloqueados">
+                        <h4 data-cy="summary-label-bloqueados">Bloqueados</h4>
+                        <span id="bloqueados" data-cy="bloqueados">0</span>
+                    </div>
+                    <div class="summary-item_view" data-cy="summary-item-nao-executados">
+                        <h4 data-cy="summary-label-nao-executados">Não Executados</h4>
+                        <span id="nao-executados" data-cy="nao-executados">0</span>
+                    </div>
+                </div>
+                <div class="summary-taxa-row" data-cy="summary-taxa-row">
+                    <div class="summary-item_view" data-cy="summary-item-taxa">
+                        <h4 data-cy="summary-label-taxa">Taxa de Aprovação</h4>
+                        <span id="taxa-aprovacao" data-cy="taxa-aprovacao">0%</span>
+                    </div>
+                    <div class="summary-item_view" data-cy="summary-item-taxa-execucao">
+                        <h4 data-cy="summary-label-taxa-execucao">Taxa de Execução</h4>
+                        <span id="taxa-execucao" data-cy="taxa-execucao">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/view-script.js?v=1.0.0"></script>
+    <script>
+        // Função para verificar flag de manutenção
+        async function verificarManutencao() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags && data.flags.manutencao === true) {
+                    // Mostrar alerta de manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'block';
+                        console.log('🔧 Sistema em manutenção');
+                    }
+                    
+                    // Ocultar conteúdo principal
+                    const container = document.querySelector('.container_view');
+                    if (container) {
+                        container.style.opacity = '0.5';
+                        container.style.pointerEvents = 'none';
+                    }
+                    
+                    // Bloquear todos os botões e inputs
+                    const buttons = document.querySelectorAll('button, input, select, textarea');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.5';
+                    });
+                    
+                    return true; // Sistema em manutenção
+                } else {
+                    // Ocultar alerta de manutenção se não estiver em manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'none';
+                    }
+                    return false; // Sistema não está em manutenção
+                }
+            } catch (error) {
+                console.error('❌ Erro ao verificar flag de manutenção:', error);
+                return false; // Em caso de erro, não bloquear o sistema
+            }
+        }
+        
+        // Verificar manutenção ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarManutencao();
+        });
+    </script>
+    
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+    <script src="../js/components-loader.js"></script>
+</body>
+</html>

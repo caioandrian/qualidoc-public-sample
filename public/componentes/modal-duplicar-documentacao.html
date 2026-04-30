@@ -1,0 +1,42 @@
+<!-- Modal de duplicação -->
+<div id="duplicateModal" class="modal" data-cy="duplicate-modal">
+    <div class="modal-content" data-cy="duplicate-modal-content" style="max-width: 500px;">
+        <div class="modal-header" data-cy="duplicate-modal-header">
+            <h2 class="modal-title" data-cy="duplicate-modal-title" style="font-size: 18px; margin: 0;">📋 Duplicar Documentação</h2>
+            <span class="close" data-cy="duplicate-modal-close" onclick="closeDuplicateModal()">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="duplicate-modal-body" style="padding: 15px;">
+            <p style="margin-bottom: 12px; color: #666; font-size: 13px;" data-cy="duplicate-modal-instruction">Selecione o novo ambiente de teste e o testador responsável:</p>
+            
+            <div style="margin-bottom: 12px;" data-cy="duplicate-form-group-feature">
+                <label for="duplicate-feature-name" style="display: block; margin-bottom: 4px; font-weight: 600; color: #333; font-size: 13px;" data-cy="label-duplicate-feature-name">Feature:</label>
+                <input type="text" id="duplicate-feature-name" data-cy="duplicate-feature-name" readonly style="width: 100%; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 13px; box-sizing: border-box; background-color: #f5f5f5; color: #666; cursor: not-allowed;">
+            </div>
+            
+            <div style="margin-bottom: 12px;" data-cy="duplicate-form-group-reaproveitar">
+                <label for="duplicate-reaproveitar-cts" style="display: block; margin-bottom: 4px; font-weight: 600; color: #333; font-size: 13px;" data-cy="label-duplicate-reaproveitar-cts">Reaproveitar todos os Casos de Teste?</label>
+                <select id="duplicate-reaproveitar-cts" data-cy="duplicate-reaproveitar-cts" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    <option value="sim" selected data-cy="option-duplicate-reaproveitar-sim">Sim</option>
+                    <option value="nao" data-cy="option-duplicate-reaproveitar-nao">Não</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 12px;" data-cy="duplicate-form-group-ambiente">
+                <label for="duplicate-ambiente" style="display: block; margin-bottom: 4px; font-weight: 600; color: #333; font-size: 13px;" data-cy="label-duplicate-ambiente">Ambiente: <span style="color: #dc3545;" data-cy="required-asterisk-ambiente">*</span></label>
+                <select id="duplicate-ambiente" data-cy="duplicate-ambiente" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    <option value="" data-cy="option-duplicate-ambiente-selecione">Selecione um ambiente</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 0;" data-cy="duplicate-form-group-testador">
+                <label for="duplicate-testador" style="display: block; margin-bottom: 4px; font-weight: 600; color: #333; font-size: 13px;" data-cy="label-duplicate-testador">Testador: <span style="color: #dc3545;" data-cy="required-asterisk-testador">*</span></label>
+                <input type="text" id="duplicate-testador" data-cy="duplicate-testador" placeholder="Nome do testador" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; box-sizing: border-box;">
+            </div>
+        </div>
+        <div class="modal-footer" data-cy="duplicate-modal-footer" style="padding: 12px 15px;">
+            <button class="btn-cancel" data-cy="duplicate-btn-cancel" onclick="closeDuplicateModal()" style="padding: 8px 16px; font-size: 13px;">Cancelar</button>
+            <button class="btn-confirm" id="duplicate-btn-confirm" data-cy="duplicate-btn-confirm" onclick="confirmDuplicate()" disabled style="opacity: 0.5; cursor: not-allowed; padding: 8px 16px; font-size: 13px;">Confirmar</button>
+        </div>
+    </div>
+</div>
+

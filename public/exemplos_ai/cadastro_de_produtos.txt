@@ -1,0 +1,39 @@
+## Sistema de Cadastro de Produtos
+
+### Descrição
+Tela de cadastro de produtos com formulário completo, upload de imagem, preview visual e validações em tempo real.
+
+### Layout
+Formulário centralizado com campos organizados, área de upload com drag-and-drop, preview de imagem, botões de ação no rodapé, mensagens de validação abaixo dos campos, indicadores visuais de campos obrigatórios.
+
+### Funcionalidades
+Cadastrar/editar/excluir produtos, upload de imagem com preview, validação em tempo real, geração automática de SKU, listagem de produtos.
+
+### Elementos Visíveis
+- **Campos**: Nome (obrigatório, 3-100 chars), Descrição (opcional, max 500), Preço (obrigatório, >0, 2 decimais), Categoria (dropdown obrigatório), SKU (gerado automaticamente, somente leitura)
+- **Upload**: Botão/seleção ou drag-and-drop, formatos JPG/PNG, max 5MB, preview imediato
+- **Botões**: Salvar (habilitado quando válido), Cancelar, Excluir (modo edição)
+- **Lista**: Tabela com Nome, Categoria, Preço, Ações (Editar)
+
+### Regras de Negócio
+1. Nome obrigatório (3-100 chars), não permite duplicados
+2. Preço >0, até 2 decimais
+3. Categoria obrigatória (lista pré-definida)
+4. SKU gerado: CAT-YYYYMMDD-XXX (ex: ELET-20240115-001)
+5. Imagem opcional (JPG/PNG, max 5MB)
+6. Exclusão bloqueada se produto vinculado a pedidos ativos
+7. Botão Salvar desabilitado até campos obrigatórios preenchidos
+
+### Validações
+- Nome: erro se vazio, <3, >100 chars ou duplicado
+- Preço: erro se ≤0, negativo ou formato inválido
+- Categoria: erro se não selecionada
+- Imagem: erro se formato inválido ou >5MB
+- Campos obrigatórios marcados com asterisco (*)
+
+### Mensagens
+- Sucesso: "Produto cadastrado/atualizado/excluído com sucesso" (toast verde)
+- Erros: "Nome obrigatório", "Preço deve ser >0", "Selecione categoria", "Imagem muito grande (max 5MB)", "Formato inválido (JPG/PNG)", "Produto duplicado", "Não é possível excluir produto vinculado a pedidos"
+
+### Comportamentos
+Preview imediato após seleção de imagem, validação onBlur, botão Salvar muda estado conforme validação, mensagens aparecem/desaparecem dinamicamente, SKU gerado ao selecionar categoria, confirmação de exclusão via modal, redirecionamento para lista após salvar.

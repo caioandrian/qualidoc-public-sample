@@ -1,0 +1,24 @@
+{
+  "manutencao": false,
+  "excluirDocumentacao": true,
+  "modalIA": true,
+  "executarScriptIA": false,
+  "revisarCTDuplicados": false,
+  "iaOpcaoFuncional": true,
+  "iaOpcaoRegressao": false,
+  "iaOpcaoIntegracao": false,
+  "iaOpcaoPerformance": false,
+  "iaOpcaoUsabilidade": false,
+  "inserirImagensProduto": false,
+  "organizarCT": false,
+  "iaCoberturaTeste": true,
+  "editarPrompts": true,
+  "forcarEdicaoDocumentacao": true,
+  "senhaEditarPrompts": true,
+  "senhaExcluirDocumentacao": true,
+  "senhaManutencao": true,
+  "senhaDownloadZip": true,
+  "senhaEdicaoMassa": true,
+  "recuperadorDados": true
+}
+

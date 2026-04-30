@@ -1,0 +1,22 @@
+<!-- Modal de confirmação para deletar CTs em massa (Substituído pelo componente modal-confirmacao) -->
+<!-- Mantido apenas para compatibilidade com testes Cypress -->
+<div id="confirmDeleteCTModal" class="modal" style="display: none;" data-cy="modal-confirm-delete-ct">
+    <!-- Este modal não é mais usado diretamente. A função showDeleteModal agora usa showConfirmModal -->
+    <!-- <div class="modal-content" data-cy="modal-confirm-delete-ct-content">
+        <div class="modal-header modal-header-alert" data-cy="modal-confirm-delete-ct-header">
+            <h2 class="modal-title" data-cy="modal-confirm-delete-ct-title">Confirmar Exclusão de Casos de Teste</h2>
+            <span class="close" onclick="closeConfirmDeleteCTModal()" data-cy="modal-confirm-delete-ct-close">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="modal-confirm-delete-ct-body">
+            <p data-cy="modal-confirm-delete-ct-message">Tem certeza que deseja deletar <strong id="confirm-delete-count" data-cy="confirm-delete-count">0</strong> caso(s) de teste?</p>
+            <div class="warning-message" data-cy="modal-confirm-delete-ct-warning">
+                <p data-cy="modal-confirm-delete-ct-warning-text"><strong>⚠️ Atenção:</strong> Esta ação irá deletar permanentemente os casos de teste selecionados e todos os seus anexos vinculados. Esta ação não pode ser desfeita.</p>
+            </div>
+        </div>
+        <div class="modal-footer" data-cy="modal-confirm-delete-ct-footer">
+            <button class="btn-cancel" onclick="closeConfirmDeleteCTModal()" data-cy="btn-cancel-confirm-delete-ct">Cancelar</button>
+            <button class="btn-confirm" onclick="proceedDeleteCTs()" data-cy="btn-confirm-delete-ct">Confirmar</button>
+        </div>
+    </div> -->
+</div>
+

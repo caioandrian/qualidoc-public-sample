@@ -1,0 +1,258 @@
+<!-- Modal para geração com IA -->
+<div id="modalGerarIA" class="modal" style="display: none;" data-cy="modal-gerar-ia">
+    <div class="modal-content" style="display: flex; flex-direction: column;" data-cy="modal-gerar-ia-content">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" data-cy="modal-gerar-ia-header">
+            <h3 style="color: white;" data-cy="modal-gerar-ia-title">🤖 Gerar Casos de Teste com IA</h3>
+            <span class="close" onclick="fecharModalGerarIA()" data-cy="modal-gerar-ia-close">&times;</span>
+        </div>
+        
+        <div style="display: flex; flex: 1; overflow: hidden;">
+            <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-top: 15px;" data-cy="modal-gerar-ia-body">
+                <style>
+                    #modalGerarIA .modal-body > .ai-input-section {
+                        margin-top: 15px;
+                    }
+                </style>
+                <!-- Indicadores de Etapas -->
+                <div class="ai-steps-indicator" data-cy="ai-steps-indicator">
+                    <div class="step-item" data-step="1" onclick="irParaEtapa(1)" data-cy="step-item-1">
+                        <div class="step-number active" data-cy="step-number-1">1</div>
+                        <div class="step-label" data-cy="step-label-1">Configurações</div>
+                    </div>
+                    <div class="step-connector" data-cy="step-connector-1"></div>
+                    <div class="step-item" data-step="2" onclick="irParaEtapa(2)" data-cy="step-item-2">
+                        <div class="step-number" data-cy="step-number-2">2</div>
+                        <div class="step-label" data-cy="step-label-2">Tipo</div>
+                    </div>
+                    <div class="step-connector" data-cy="step-connector-2"></div>
+                    <div class="step-item" data-step="3" onclick="irParaEtapa(3)" data-cy="step-item-3">
+                        <div class="step-number" data-cy="step-number-3">3</div>
+                        <div class="step-label" data-cy="step-label-3">Imagens</div>
+                    </div>
+                    <div class="step-connector" data-cy="step-connector-3"></div>
+                    <div class="step-item" data-step="4" onclick="irParaEtapa(4)" data-cy="step-item-4">
+                        <div class="step-number" data-cy="step-number-4">4</div>
+                        <div class="step-label" data-cy="step-label-4">Descrição</div>
+                    </div>
+                </div>
+            <div class="ai-input-section" data-cy="ai-input-section">
+                <!-- Etapa 1: Configurações -->
+                <div class="ai-step-content" id="step-1" style="display: block;" data-cy="ai-step-1">
+                    <div class="ai-options-horizontal" data-cy="ai-options-horizontal">
+                        <div class="form-group" data-cy="form-group-ai-provider">
+                            <label for="ai-provider" data-cy="label-ai-provider">Provedor de IA:</label>
+                        <select id="ai-provider" class="ai-select" onchange="alterarProvedorIA()" data-cy="select-ai-provider">
+                            <option value="openai" selected data-cy="option-ai-openai">OpenAI GPT-3.5/4</option>
+                        </select>
+                            <small class="input-hint" data-cy="hint-ai-provider">Escolha o provedor de IA para geração</small>
+                        </div>
+                        
+                        <div class="form-group" data-cy="form-group-ai-test-type">
+                            <label for="ai-test-type" data-cy="label-ai-test-type">Tipo de teste:</label>
+                            <select id="ai-test-type" class="ai-select" data-cy="select-ai-test-type">
+                                <option value="funcional" selected data-cy="option-ai-type-funcional">Funcional</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 2: Tipo -->
+                <div class="ai-step-content" id="step-2" style="display: none;" data-cy="ai-step-2">
+                    <div class="input-type-selector" data-cy="input-type-selector">
+                        <div style="width: 50%; box-sizing: border-box;" data-cy="input-type-option-text">
+                            <label class="input-type-option" data-cy="label-input-type-text">
+                                <input type="radio" name="input-type" value="text" checked onchange="toggleInputType()" data-cy="radio-input-type-text">
+                                <span class="radio-custom" data-cy="radio-custom-text"></span>
+                                <div class="option-content" data-cy="option-content-text">
+                                    <strong data-cy="option-text-label">Livre</strong>
+                                </div>
+                            </label>
+                            <p style="font-size: 12px; color: #666; margin: 10px 0 0 0;" data-cy="option-text-hint">Adicione o texto da feature, requisitos, regras e/ou imagens.</p>
+                        </div>
+                        <div style="width: 50%; box-sizing: border-box;" data-cy="input-type-option-jira">
+                            <label class="input-type-option" style="opacity: 0.5; cursor: not-allowed;" data-cy="label-input-type-jira">
+                                <input type="radio" name="input-type" value="jira" disabled onchange="toggleInputType()" data-cy="radio-input-type-jira">
+                                <span class="radio-custom" data-cy="radio-custom-jira"></span>
+                                <div class="option-content" data-cy="option-content-jira">
+                                    <strong data-cy="option-jira-label">Link do Jira</strong>
+                                </div>
+                            </label>
+                            <p style="font-size: 12px; color: #666; margin: 10px 0 0 0;" data-cy="option-jira-hint">Em breve - funcionalidade será disponibilizada em versão futura</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 3: Imagens -->
+                <div class="ai-step-content" id="step-3" style="display: none;" data-cy="ai-step-3">
+                    <div class="ai-input-container" style="display: grid; grid-template-columns: 200px 220px 1fr; gap: 15px; align-items: flex-start;" data-cy="ai-input-container-images">
+                        <!-- Coluna 1: Usar exemplo -->
+                        <div class="test-text-option" style="flex-shrink: 0;" data-cy="test-text-option-images">
+                            <label for="example-image-selector" style="font-size: 14px; font-weight: normal; color: #333; margin: 0 0 8px 0; white-space: nowrap; display: block;" data-cy="label-example-image-selector">Usar exemplo:</label>
+                            <select id="example-image-selector" class="ai-select" onchange="carregarExemploImagem()" style="width: 100%;" data-cy="select-example-image">
+                                <option value="" data-cy="option-example-image-none">Nenhum</option>
+                                <option value="cadastro_de_produtos" data-cy="option-example-image-cadastro">Cadastro de Produto</option>
+                                <option value="busca_de_produtos" data-cy="option-example-image-busca">Busca de Produtos</option>
+                                <option value="carrinho_de_compras" data-cy="option-example-image-carrinho">Carrinho de Compras</option>
+                                <option value="sistema_de_login" data-cy="option-example-image-login">Sistema de Login</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Coluna 2: Selecionar / input imagens -->
+                        <div data-cy="image-upload-container" style="max-width: 220px;">
+                            <div class="ai-image-upload-section" data-cy="ai-image-upload-section">
+                                <label for="ai-images-input" style="font-size: 14px; display: block; margin-bottom: 8px; font-weight: normal; color: #333;" data-cy="label-ai-images">Anexar Imagens (até 5):</label>
+                                <input type="file" id="ai-images-input" multiple accept="image/*" style="display: none;" onchange="previewIAImages()" data-cy="input-ai-images">
+                                <button type="button" class="btn-upload-images" onclick="document.getElementById('ai-images-input').click()" style="background: #e0e0e0; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;" data-cy="btn-upload-images"> Selecionar Imagens
+                                </button>
+                                <small class="input-hint" style="display: block; margin-top: 5px;" data-cy="hint-ai-images">Adicione screenshots, wireframes ou mockups para análise visual (opcional, máximo 5 imagens)</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Coluna 3: Lista de miniaturas selecionadas -->
+                        <div data-cy="images-preview-column">
+                            <label style="font-size: 14px; display: block; margin-bottom: 8px; font-weight: normal; color: #333;" data-cy="label-images-preview">Clique para selecionar ou excluir</label>
+                            <div id="ai-images-preview" style="display: none; max-height: 400px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 6px; padding: 10px; background: #f8f9fa;" data-cy="ai-images-preview"></div>
+                            <div id="no-images-message" style="display: block; text-align: center; padding: 20px; color: #999; font-size: 13px; border: 1px solid #e0e0e0; border-radius: 6px; background: #f8f9fa;" data-cy="no-images-message">Nenhuma imagem selecionada</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Etapa 4: Descrição -->
+                <div class="ai-step-content" id="step-4" style="display: none;" data-cy="ai-step-4">
+                    <div class="ai-input-container" data-cy="ai-input-container">
+                        <div id="jira-input-section" class="input-section" data-cy="jira-input-section">
+                            <label for="jira-url" data-cy="label-jira-url">URL do Ticket do Jira:</label>
+                            <input type="url" id="jira-url" placeholder="https://sua-empresa.atlassian.net/browse/PROJ-123" class="ai-input" disabled data-cy="input-jira-url">
+                            <small class="input-hint" data-cy="hint-jira-url">Cole aqui o link completo do ticket do Jira</small>
+                        </div>
+                        
+                        <div id="text-input-section" class="input-section active" style="display: flex; gap: 15px; align-items: flex-start;" data-cy="text-input-section">
+                            <div class="test-text-option" style="flex-shrink: 0;" data-cy="test-text-option">
+                                <label for="example-selector" style="font-size: 14px; font-weight: normal; color: #333; margin: 0 0 8px 0; white-space: nowrap; display: block;" data-cy="label-example-selector">Usar exemplo:</label>
+                                <select id="example-selector" class="ai-select" onchange="carregarExemplo()" style="width: 200px;" data-cy="select-example">
+                                    <option value="" data-cy="option-example-none">Nenhum</option>
+                                    <option value="cadastro_de_produtos" data-cy="option-example-cadastro">Cadastro de Produto</option>
+                                    <option value="busca_de_produtos" data-cy="option-example-busca">Busca de Produtos</option>
+                                    <option value="carrinho_de_compras" data-cy="option-example-carrinho">Carrinho de Compras</option>
+                                    <option value="sistema_de_login" data-cy="option-example-login">Sistema de Login</option>
+                                </select>
+                                <button id="btn-adicionar-informacoes" onclick="abrirModalAdicionarInformacoes()" class="btn" style="display: none; margin-top: 10px; width: 200px; font-size: 13px; padding: 8px 12px;" data-cy="btn-adicionar-informacoes">Adicionar Informações</button>
+                                <button id="btn-remover-atualizar-informacoes" onclick="removerAtualizarInformacoes()" class="btn" style="display: none; margin-top: 10px; width: 200px; font-size: 13px; padding: 8px 12px; background-color: #dc3545; color: white;" data-cy="btn-remover-atualizar-informacoes">Remover/Atualizar Informações</button>
+                            </div>
+                            <div style="flex: 1;" data-cy="feature-text-container">
+                                <label for="feature-text" style="font-size: 14px; font-weight: normal; color: #333; margin: 0 0 8px 0; display: block;" data-cy="label-feature-text">Descrição do Produto ou Funcionalidade:</label>
+                                <textarea id="feature-text" placeholder="Descreva a feature, requisitos, critérios de aceitação..." class="ai-textarea" rows="8" maxlength="8000" oninput="atualizarContadorCaracteres(); salvarFeatureTextLocalStorage()" data-cy="textarea-feature-text"></textarea>
+                                <div class="character-counter" data-cy="character-counter">
+                                    <small class="input-hint" data-cy="hint-feature-text">Cole aqui o texto com os requisitos da feature</small>
+                                    <small id="char-count" class="char-count" data-cy="char-count-display">0/8000 caracteres</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div id="ai-loading" class="ai-loading" style="display: none;" data-cy="ai-loading">
+                <div class="ai-spinner" data-cy="ai-spinner"></div>
+                <p data-cy="ai-loading-text">🤖 IA analisando e gerando casos de teste...</p>
+                <small data-cy="ai-loading-hint">Isso pode levar alguns segundos</small>
+            </div>
+            
+                <div id="ai-preview" class="ai-preview" style="display: none;" data-cy="ai-preview">
+                    <h4 data-cy="ai-preview-title">📋 Casos de Teste Gerados:</h4>
+                    <div id="ai-scenarios-list" class="ai-scenarios-list" data-cy="ai-scenarios-list">
+                        <!-- Casos de teste serão exibidos aqui -->
+                    </div>
+                    
+                    <div id="ai-prompt-section" class="ai-prompt-section" style="display: none;" data-cy="ai-prompt-section">
+                        <div class="ai-prompt-header" data-cy="ai-prompt-header">
+                            <h4 data-cy="ai-prompt-header-title">🔍 Prompt Utilizado:</h4>
+                            <button class="btn-toggle-prompt" id="btn-toggle-prompt" onclick="togglePromptFinal()" title="Mostrar/ocultar prompt utilizado" data-cy="btn-toggle-prompt">
+                                <span class="toggle-text" data-cy="toggle-text">Mostrar Prompt</span>
+                            </button>
+                        </div>
+                        <div id="ai-prompt-content-container" class="ai-prompt-content-container collapsed" data-cy="ai-prompt-content-container">
+                            <div class="ai-prompt-container" data-cy="ai-prompt-container">
+                                <pre id="ai-prompt-content" class="ai-prompt-content" data-cy="ai-prompt-content"></pre>
+                                <button class="btn-copy-prompt" onclick="copiarPrompt()" title="Copiar prompt para área de transferência" data-cy="btn-copy-prompt">📋 Copiar Prompt</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 300px; min-width: 300px; border-left: 1px solid #e0e0e0; padding: 20px; background: #f8f9fa; overflow-y: auto;" data-cy="modal-gerar-ia-footer">
+                <style>
+                    #modalGerarIA .modal-footer .btn {
+                        font-size: 13px;
+                    }
+                </style>
+                <div style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;" data-cy="modal-gerar-ia-footer-left">
+                    <div id="cobertura-teste-section" style="border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px; width: 100%; margin-bottom: 10px;" data-cy="cobertura-teste-section">
+                        <h4 id="cobertura-teste-title" style="margin: 0 0 10px 0; font-size: 13px; font-weight: 600; color: #333; text-align: center;" data-cy="cobertura-teste-title">Cobertura de Teste</h4>
+                        <div id="cobertura-buttons-container" style="display: flex; align-items: center; gap: 8px; width: 100%;" data-cy="cobertura-buttons-container">
+                            <button class="btn btn-cobertura" id="btn-mapeamento-cobertura" onclick="abrirMapeamentoCobertura()" data-cy="btn-mapeamento-cobertura">Avaliar</button>
+                        </div>
+                        <div id="mensagem-alteracoes-avaliar" style="display: none; margin-top: 8px; font-size: 12px; color: #dc3545;"></div>
+                        <div id="cobertura-info-container" style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px; width: 100%;" data-cy="cobertura-info-container">
+                            <small id="cobertura-info-text" style="color: #666; text-align: center; font-size: 10px; padding-left: 0; flex: 1;" data-cy="cobertura-info-text">Análise realizada a partir da descrição (etapa 4)<br>e tipo de teste selecionado: <strong><span id="cobertura-test-type-display" data-cy="cobertura-test-type-display">funcional</span></strong> (etapa 1).</small>
+                            <hr id="cobertura-info-separator" style="margin: 5px 0; border: none; border-top: 1px solid #e0e0e0; width: 100%;" data-cy="cobertura-info-separator">
+                            <div id="cobertura-value-container" style="display: flex; align-items: center; gap: 8px;" data-cy="cobertura-value-container">
+                                <span class="cobertura-icon-tooltip" id="cobertura-icon-tooltip" data-cy="cobertura-icon-tooltip" style="flex-shrink: 0;">
+                                    📊
+                                </span>
+                                <span id="cobertura-value-text" style="color: #666; font-size: 10px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;" data-cy="cobertura-value-text">Nenhuma cobertura salva para este tipo de teste</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; width: 100%; margin-top: auto;" data-cy="modal-gerar-ia-footer-right">
+                    <div id="imagens-selecionadas-aviso-ia" style="display: none; text-align: right; color: red; font-size: 11px; line-height: 1.4; margin-bottom: 5px; width: 100%;" data-cy="imagens-selecionadas-aviso-ia"></div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: stretch; width: 100%;" data-cy="modal-gerar-ia-buttons">
+                        <button class="btn btn-ai-generate" id="btn-generate-ai" onclick="gerarCenariosIA()" style="display: block; opacity: 0.5; cursor: not-allowed;" disabled data-cy="btn-generate-ai">Gerar</button>
+                        <button class="btn btn-primary" id="btn-apply-ai" onclick="aplicarCenariosIA()" style="display: none;" data-cy="btn-apply-ai">✅ Aplicar Casos de Teste</button>
+                    </div>
+                    <small style="color: transparent; margin-top: 5px; text-align: right; font-size: 11px; line-height: 1.4; visibility: hidden; height: auto;" data-cy="modal-gerar-ia-spacer">Análise realizada a partir da descrição (etapa 4)<br>e tipo de teste selecionado: funcional (etapa 1).</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para adicionar informações adicionais -->
+<div id="modalAdicionarInformacoes" class="modal" style="display: none; z-index: 10001;" data-cy="modal-adicionar-informacoes">
+    <div class="modal-content" style="max-width: 800px; display: flex; flex-direction: column;" data-cy="modal-adicionar-informacoes-content">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" data-cy="modal-adicionar-informacoes-header">
+            <h3 style="color: white;" data-cy="modal-adicionar-informacoes-title">Adicionar Informações</h3>
+            <span class="close" onclick="fecharModalAdicionarInformacoes()" data-cy="modal-adicionar-informacoes-close">&times;</span>
+        </div>
+        
+        <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; padding: 20px;" data-cy="modal-adicionar-informacoes-body">
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;" data-cy="modal-adicionar-informacoes-info">
+                <div style="flex: 1;">
+                    <small style="color: #666; font-size: 13px; line-height: 1.5;" data-cy="modal-adicionar-informacoes-hint">
+                        O texto adicional será inserido na descrição do produto e poderá gerar novos casos de teste a partir da nova informação.
+                    </small>
+                </div>
+            </div>
+            
+            <div style="flex: 1; display: flex; flex-direction: column;" data-cy="modal-adicionar-informacoes-input-container">
+                <label for="texto-adicional" style="font-size: 14px; font-weight: normal; color: #333; margin: 0 0 8px 0; display: block;" data-cy="label-texto-adicional">Texto Adicional:</label>
+                <textarea id="texto-adicional" placeholder="Adicione informações complementares sobre a feature, requisitos adicionais, regras de negócio, etc..." class="ai-textarea" rows="10" maxlength="8000" data-cy="textarea-texto-adicional"></textarea>
+                <div class="character-counter" data-cy="character-counter-adicional">
+                    <small class="input-hint" data-cy="hint-texto-adicional">Este texto será usado para gerar novos casos de teste</small>
+                    <small id="char-count-adicional" class="char-count" data-cy="char-count-adicional-display">0/8000 caracteres</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer" style="display: flex; align-items: center; padding: 15px 20px; border-top: 1px solid #e0e0e0;" data-cy="modal-adicionar-informacoes-footer">
+            <div id="imagens-selecionadas-aviso-adicional" style="display: none; text-align: left; color: red; font-size: 11px; line-height: 1.4;" data-cy="imagens-selecionadas-aviso-adicional"></div>
+            <div style="display: flex; gap: 10px; align-items: center; margin-left: auto;" data-cy="modal-adicionar-informacoes-footer-right">
+                <button class="btn" onclick="fecharModalAdicionarInformacoes()" style="font-size: 13px; padding: 8px 16px; background-color: #e0e0e0; color: #333;" data-cy="btn-cancelar-adicionar-informacoes">Cancelar</button>
+                <button class="btn btn-primary" id="btn-gerar-adicionar-informacoes" onclick="gerarCenariosComInformacoesAdicionais()" style="font-size: 13px; padding: 8px 16px; opacity: 0.5; cursor: not-allowed;" disabled data-cy="btn-gerar-adicionar-informacoes">Gerar</button>
+            </div>
+        </div>
+    </div>
+</div>
+

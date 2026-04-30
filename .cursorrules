@@ -1,0 +1,32 @@
+# Regras de Segurança do Cursor
+
+## Comandos Bloqueados
+- NUNCA execute comandos que contenham `-Force` ou `--force`
+- NUNCA execute comandos destrutivos sem confirmação explícita
+- NUNCA execute comandos que possam causar perda de dados
+
+## Comandos Permitidos
+- Comandos de leitura (ls, dir, cat, type, etc.)
+- Comandos de navegação (cd, pwd)
+- Comandos de desenvolvimento (npm, node, git)
+- Comandos de rede (curl, ping, netstat)
+
+## Política de Execução
+1. Sempre perguntar antes de executar comandos potencialmente perigosos
+2. Explicar o que o comando fará antes de executar
+3. Sugerir alternativas mais seguras quando possível
+4. Bloquear automaticamente comandos com flags de força
+
+## Exemplos de Comandos Bloqueados
+- `rm -rf` (deletar recursivo forçado)
+- `git push --force` (push forçado)
+- `npm install --force` (instalação forçada)
+- `taskkill /f` (matar processo forçado)
+- `Remove-Item -Force` (PowerShell force)
+
+## Exemplos de Comandos Permitidos
+- `npm install` (instalação normal)
+- `git add .` (adicionar arquivos)
+- `ls -la` (listar arquivos)
+- `git status` (status do git)
+- `npm run dev` (executar script)

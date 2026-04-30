@@ -1,0 +1,160 @@
+<!-- Modal de Senha Admin Genérico -->
+<div id="password-admin-modal" class="modal" style="display: none;" data-cy="password-admin-modal">
+    <style>
+        /* Estilos compactos para modal de senha admin */
+        #password-admin-modal {
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 20000 !important;
+        }
+        
+        #password-admin-modal .modal-content {
+            background-color: #fefefe !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            width: 90% !important;
+            max-width: 400px !important;
+            min-width: 300px !important;
+            border: none !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+        }
+        
+        #password-admin-modal .modal-header {
+            background: linear-gradient(135deg, #0066cc, #0052a3) !important;
+            color: white !important;
+            padding: 10px 15px !important;
+            min-height: auto !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: none !important;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        
+        #password-admin-modal .modal-header .modal-title {
+            color: white !important;
+            margin: 0 !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+        }
+        
+        #password-admin-modal .modal-header .close {
+            color: white !important;
+            font-size: 28px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            line-height: 1 !important;
+        }
+        
+        #password-admin-modal .modal-header .close:hover {
+            opacity: 0.7 !important;
+        }
+        
+        #password-admin-modal .modal-body {
+            padding: 15px !important;
+        }
+        
+        #password-admin-modal .modal-body p {
+            font-size: 13px !important;
+            margin: 0 0 10px 0 !important;
+            color: #333 !important;
+        }
+        
+        #password-admin-modal .password-input {
+            width: 100% !important;
+            padding: 8px 10px !important;
+            border: 2px solid #ddd !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            box-sizing: border-box !important;
+            margin-top: 8px !important;
+        }
+        
+        #password-admin-modal .capslock-warning {
+            margin-top: 6px !important;
+            font-size: 11px !important;
+            color: #856404 !important;
+            display: none !important;
+        }
+        
+        #password-admin-modal .password-error {
+            margin-top: 8px !important;
+            padding: 8px !important;
+            background-color: #f8d7da !important;
+            border: 1px solid #dc3545 !important;
+            border-radius: 4px !important;
+            color: #721c24 !important;
+            font-size: 12px !important;
+        }
+        
+        #password-admin-modal .modal-footer {
+            padding: 10px 15px !important;
+            min-height: auto !important;
+            gap: 8px !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+        }
+        
+        #password-admin-modal .btn-cancel {
+            background-color: #e9ecef !important;
+            color: #495057 !important;
+            border: 1px solid #dee2e6 !important;
+            padding: 6px 12px !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+        }
+        
+        #password-admin-modal .btn-cancel:hover {
+            background-color: #dee2e6 !important;
+            color: #495057 !important;
+        }
+        
+        #password-admin-modal .btn-confirm {
+            background-color: #28a745 !important;
+            color: white !important;
+            border: none !important;
+            padding: 6px 12px !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+        }
+        
+        #password-admin-modal .btn-confirm:hover {
+            background-color: #218838 !important;
+        }
+    </style>
+    <div class="modal-content" data-cy="password-admin-modal-content">
+        <div class="modal-header" data-cy="password-admin-modal-header">
+            <h2 class="modal-title" id="password-admin-modal-title" data-cy="password-admin-modal-title">🔒 Autenticação Necessária</h2>
+            <span class="close" data-cy="password-admin-modal-close" onclick="fecharModalSenhaAdmin()">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="password-admin-modal-body">
+            <p id="password-admin-modal-message" data-cy="password-admin-modal-message">Digite a senha de admin para confirmar a operação:</p>
+            <input 
+                type="password" 
+                id="password-admin-input" 
+                class="password-input" 
+                placeholder="Digite a senha"
+                onkeypress="if(event.key === 'Enter') confirmarSenhaAdmin()"
+                onkeydown="verificarCapsLock(event, 'password-admin-input', 'capslock-warning-admin')"
+                onkeyup="verificarCapsLock(event, 'password-admin-input', 'capslock-warning-admin')"
+                autofocus
+                data-cy="password-admin-input"
+            >
+            <div id="capslock-warning-admin" class="capslock-warning">⚠️ Caps Lock está ativado</div>
+            <div id="password-admin-error" class="password-error" style="display: none;" data-cy="password-admin-error"></div>
+        </div>
+        <div class="modal-footer" data-cy="password-admin-modal-footer">
+            <button class="btn-cancel" data-cy="password-admin-btn-cancel" onclick="fecharModalSenhaAdmin()">Cancelar</button>
+            <button class="btn-confirm" data-cy="password-admin-btn-confirm" onclick="confirmarSenhaAdmin()">Confirmar</button>
+        </div>
+    </div>
+</div>
+

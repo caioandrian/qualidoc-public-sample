@@ -1,0 +1,58 @@
+{
+  "cursor.general.enableCommandExecution": true,
+  "cursor.general.commandExecutionPolicy": "restricted",
+  "cursor.general.blockedCommands": [
+    {
+      "pattern": ".*-Force.*",
+      "reason": "Comandos com -Force são bloqueados por segurança"
+    },
+    {
+      "pattern": ".*--force.*",
+      "reason": "Comandos com --force são bloqueados por segurança"
+    },
+    {
+      "pattern": ".*-f\\b.*",
+      "reason": "Comandos com -f (force) são bloqueados por segurança"
+    }
+  ],
+  "cursor.general.allowedCommands": [
+    "npm",
+    "node",
+    "git",
+    "ls",
+    "dir",
+    "cd",
+    "pwd",
+    "echo",
+    "cat",
+    "type",
+    "curl",
+    "wget",
+    "ping",
+    "netstat",
+    "tasklist",
+    "ps",
+    "kill",
+    "taskkill",
+    "mkdir",
+    "rmdir",
+    "rm",
+    "del",
+    "copy",
+    "move",
+    "ren",
+    "rename"
+  ],
+  "cursor.general.commandValidation": {
+    "enabled": true,
+    "strictMode": true,
+    "blockDangerousCommands": true
+  },
+  "cursor.security.commandFiltering": {
+    "enabled": true,
+    "blockForceFlags": true,
+    "blockDestructiveCommands": true,
+    "requireConfirmation": true
+  },
+  "cursor.general.disableHttp2": true
+}

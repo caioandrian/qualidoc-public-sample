@@ -1,0 +1,68 @@
+# Dependências
+node_modules
+npm-debug.log
+yarn-error.log
+# package-lock.json é necessário para npm ci - NÃO ignorar
+
+# Arquivos de ambiente (serão configurados via variáveis de ambiente no container)
+.env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.yml
+Dockerfile*
+.dockerignore
+# Manter docker-entrypoint.sh
+!docker-entrypoint.sh
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentação
+*.md
+!README.md
+
+# Testes
+test/
+cypress/
+*.test.js
+*.spec.js
+
+# Scripts de desenvolvimento (não necessários em produção)
+scripts/
+# Diagnóstico no container (ver Dockerfile)
+!scripts/docker-diagnose.sh
+# config/s3.config.js é necessário para a aplicação - NÃO ignorar
+
+# Arquivos temporários e de desenvolvimento
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Arquivos de dados locais (serão gerenciados via S3 ou volumes)
+public/anexos/*
+public/features/*
+public/historico/*
+!public/anexos/.gitkeep
+!public/features/.gitkeep
+!public/historico/.gitkeep
+
+# Arquivos de build e cache
+dist
+build
+.cache
+.parcel-cache
+
+# CI/CD
+.github/workflows/*.yml.bak
+

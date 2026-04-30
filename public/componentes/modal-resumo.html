@@ -1,0 +1,60 @@
+<!-- Modal de resumo de status -->
+<div id="modalResumo" class="modal" style="display: none;" data-cy="modal-resumo">
+    <div class="modal-content" data-cy="modal-resumo-content">
+        <div class="modal-header" style="background-color: #e3f2fd;" data-cy="modal-resumo-header">
+            <h3 data-cy="modal-resumo-title">Resumo dos Casos de Teste</h3>
+            <span class="close" onclick="fecharModalResumo()" data-cy="modal-resumo-close">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="modal-resumo-body">
+            <!-- Filtros -->
+            <div class="resumo-filtros" data-cy="resumo-filtros">
+                <div class="filtro-group" data-cy="filtro-group-status-resumo">
+                    <label for="filtro-status" data-cy="label-filtro-status-resumo">Status:</label>
+                    <select id="filtro-status" onchange="aplicarFiltroResumo()" data-cy="select-filtro-status-resumo">
+                        <option value="todos" data-cy="option-filtro-todos">Todos</option>
+                        <option value="na" data-cy="option-filtro-na">N/A</option>
+                        <option value="nao_executado" data-cy="option-filtro-nao-executado">Não Executado</option>
+                        <option value="aprovado" data-cy="option-filtro-aprovado">Aprovado</option>
+                        <option value="reprovado" data-cy="option-filtro-reprovado">Reprovado</option>
+                        <option value="bloqueado" data-cy="option-filtro-bloqueado">Bloqueado</option>
+                    </select>
+                </div>
+                <div class="filtro-group" data-cy="filtro-group-fonte-resumo">
+                    <label for="filtro-fonte" data-cy="label-filtro-fonte-resumo">Fonte:</label>
+                    <select id="filtro-fonte" onchange="aplicarFiltroResumo()" data-cy="select-filtro-fonte-resumo">
+                        <option value="todos" data-cy="option-filtro-fonte-todos">Todos</option>
+                        <option value="IA" data-cy="option-filtro-fonte-ia">IA</option>
+                        <option value="usuário" data-cy="option-filtro-fonte-manual">Usuário</option>
+                    </select>
+                </div>
+                <div class="filtro-group" data-cy="filtro-group-tipo-resumo">
+                    <label for="filtro-tipo" data-cy="label-filtro-tipo-resumo">Tipo:</label>
+                    <select id="filtro-tipo" onchange="aplicarFiltroResumo()" data-cy="select-filtro-tipo-resumo">
+                        <option value="todos" data-cy="option-filtro-tipo-todos">Todos</option>
+                        <option value="funcional" data-cy="option-filtro-tipo-funcional">Funcional</option>
+                        <option value="regressao" data-cy="option-filtro-tipo-regressao">Regressão</option>
+                        <option value="integracao" data-cy="option-filtro-tipo-integracao">Integração</option>
+                        <option value="usabilidade" data-cy="option-filtro-tipo-usabilidade">Usabilidade</option>
+                        <option value="performance" data-cy="option-filtro-tipo-performance">Performance</option>
+                        <option value="técnica de qa" data-cy="option-filtro-tipo-tecnica-qa">Técnica de QA</option>
+                        <option value="sem informação" data-cy="option-filtro-tipo-sem-info">Sem Informação</option>
+                    </select>
+                </div>
+                <div class="filtro-info" data-cy="filtro-info-resumo">
+                    <span id="resumo-contador" data-cy="resumo-contador">0 CTs encontrados</span>
+                </div>
+            </div>
+            
+            <!-- Lista de CTs -->
+            <div id="resumo-lista" class="resumo-lista" data-cy="resumo-lista">
+                <!-- Lista será gerada dinamicamente aqui -->
+            </div>
+        </div>
+        <div class="modal-footer" data-cy="modal-resumo-footer" style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="fecharModalResumo()" data-cy="btn-fechar-resumo">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+

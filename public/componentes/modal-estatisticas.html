@@ -1,0 +1,125 @@
+<!-- Modal de Estatísticas -->
+<div id="statsModal" class="modal" data-cy="stats-modal" style="display: none;">
+    <style>
+        /* Centralização vertical e horizontal do modal */
+        #statsModal {
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        #statsModal .modal-content {
+            margin: 0 !important;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+        }
+        
+        #statsModal .modal-body {
+            padding: 12px 15px !important;
+        }
+        #statsModal #stats-loading {
+            padding: 20px !important;
+        }
+        #statsModal #stats-content {
+            font-size: 13px;
+        }
+        #statsModal #stats-warning-text {
+            margin-bottom: 10px !important;
+            font-size: 12px;
+        }
+        #statsModal .stats-columns {
+            gap: 20px !important;
+        }
+        #statsModal .compare-stats {
+            margin-bottom: 0 !important;
+        }
+        #statsModal .compare-stat {
+            margin-bottom: 4px !important;
+            padding: 3px 0 !important;
+            font-size: 13px;
+        }
+        #statsModal .compare-stat-label {
+            font-size: 13px;
+        }
+        #statsModal .compare-stat-value {
+            font-size: 13px;
+        }
+        #statsModal .modal-header {
+            padding: 12px 15px !important;
+        }
+        #statsModal .modal-header h3 {
+            font-size: 16px;
+            margin: 0;
+        }
+    </style>
+    <div class="modal-content" data-cy="stats-modal-content">
+        <div class="modal-header" data-cy="stats-modal-header">
+            <h3 data-cy="stats-modal-title">📊 Estatísticas</h3>
+            <span class="close" data-cy="stats-modal-close" onclick="fecharModalEstatisticas()">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="stats-modal-body">
+            <div id="stats-loading" style="text-align: center; padding: 20px;" data-cy="stats-loading">
+                <div class="spinner" data-cy="stats-spinner"></div>
+                <p data-cy="stats-loading-text">Carregando estatísticas...</p>
+            </div>
+            <div id="stats-content" style="display: none;" data-cy="stats-content">
+                <p id="stats-warning-text" style="color: #666; margin-bottom: 10px; font-size: 12px;" data-cy="stats-warning-text"><em>Resultado Geral (sem filtros aplicados).</em></p>
+                <div class="stats-columns" data-cy="stats-columns">
+                    <div class="stats-column" data-cy="stats-column-1">
+                        <div class="compare-stats" data-cy="compare-stats-1">
+                            <div class="compare-stat" data-cy="compare-stat-total-ct">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-total-ct">Total de Casos de Teste:</span>
+                                <span class="compare-stat-value" id="stat-total-ct" data-cy="stat-total-ct">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-total-ia">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-total-ia">Gerados por IA:</span>
+                                <span class="compare-stat-value" id="stat-total-ia" data-cy="stat-total-ia">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-total-manual">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-total-manual">Gerados pelos usuários:</span>
+                                <span class="compare-stat-value" id="stat-total-manual" data-cy="stat-total-manual">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-aprovados">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-aprovados">Aprovados:</span>
+                                <span class="compare-stat-value" id="stat-aprovados" data-cy="stat-aprovados">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-reprovados">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-reprovados">Reprovados:</span>
+                                <span class="compare-stat-value" id="stat-reprovados" data-cy="stat-reprovados">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-bloqueados">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-bloqueados">Bloqueados:</span>
+                                <span class="compare-stat-value" id="stat-bloqueados" data-cy="stat-bloqueados">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-nao-executados">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-nao-executados">Não Executados:</span>
+                                <span class="compare-stat-value" id="stat-nao-executados" data-cy="stat-nao-executados">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-sem-info">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-sem-info">Sem Informação:</span>
+                                <span class="compare-stat-value" id="stat-sem-info" data-cy="stat-sem-info">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-column" data-cy="stats-column-2">
+                        <div class="compare-stats" data-cy="compare-stats-2">
+                            <div id="stats-ambientes-container" data-cy="stats-ambientes-container">
+                                <!-- Será preenchido dinamicamente -->
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-taxa-alta">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-taxa-alta">Taxa Acima de 70%:</span>
+                                <span class="compare-stat-value" id="stat-taxa-alta" data-cy="stat-taxa-alta">0</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-taxa-baixa">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-taxa-baixa">Taxa Abaixo de 70%:</span>
+                                <span class="compare-stat-value" id="stat-taxa-baixa" data-cy="stat-taxa-baixa">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

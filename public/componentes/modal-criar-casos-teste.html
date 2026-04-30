@@ -1,0 +1,41 @@
+<!-- Modal para criar CT em massa -->
+<div id="modalCriarEmMassa" class="modal" style="display: none;" data-cy="modal-criar-massa">
+    <div class="modal-content" data-cy="modal-criar-massa-content">
+        <div class="modal-header" data-cy="modal-criar-massa-header">
+            <h3 data-cy="modal-criar-massa-title">Criar Casos de Teste em Massa</h3>
+            <span class="close" onclick="fecharModalCriarEmMassa()" data-cy="modal-criar-massa-close">&times;</span>
+        </div>
+        <div class="modal-body" data-cy="modal-criar-massa-body">
+            <div class="form-group" data-cy="form-group-quantidade">
+                <div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <label for="quantidadeCT" data-cy="label-quantidade-ct">Quantidade:</label>
+                        <div class="quantidade-container" data-cy="quantidade-container">
+                            <input type="number" id="quantidadeCT" min="1" max="50" value="1" onchange="gerarCamposCT()" data-cy="input-quantidade-ct">
+                            <button type="button" class="btn-add-quantidade" data-cy="btn-add-quantidade" onclick="adicionarUmCT()" title="Adicionar um caso de teste">+</button>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="tipoCT" data-cy="label-tipo-ct">Tipo de teste:</label>
+                        <select id="tipoCT" class="ai-select" data-cy="select-tipo-ct">
+                            <option value="indefinido">Indefinido</option>
+                            <option value="funcional">Funcional</option>
+                            <option value="regressao">Regressão</option>
+                            <option value="integracao">Integração</option>
+                            <option value="usabilidade">Usabilidade</option>
+                            <option value="performance">Performance</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="camposCT" class="campos-ct-container" data-cy="campos-ct-container">
+                <!-- Campos serão gerados dinamicamente -->
+            </div>
+        </div>
+        <div class="modal-footer" data-cy="modal-criar-massa-footer">
+            <button class="btn btn-secondary" data-cy="btn-cancel-mass" onclick="fecharModalCriarEmMassa()">Cancelar</button>
+            <button class="btn btn-primary" data-cy="btn-confirm-mass" onclick="confirmarCriarEmMassa()">Confirmar</button>
+        </div>
+    </div>
+</div>
+

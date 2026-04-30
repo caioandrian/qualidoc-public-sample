@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Testes - QualidDoc</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="/js/client-storage-api.js"></script>
+    <style>
+        .historico-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Forçar scrollbar para evitar deslocamento */
+        html {
+            overflow-y: scroll;
+        }
+
+        .historico-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #0066cc, #0052a3);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .historico-header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .historico-header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .historico-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .historico-info-tooltip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 13px;
+            position: relative;
+            cursor: help;
+        }
+        
+        .historico-info-tooltip .info-icon {
+            font-size: 16px;
+            color: #007bff;
+        }
+        
+        .historico-info-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 280px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 0;
+            font-size: 12px;
+            line-height: 1.4;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .historico-info-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        
+        .historico-info-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .historico-controls:has(.search-container[style*="display: none"]) {
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .selection-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-container select {
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            min-width: 200px;
+        }
+
+        .filter-container select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box input {
+            padding: 10px 40px 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            width: 250px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .clear-icon {
+            position: absolute;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .clear-icon:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+
+        .refresh-btn {
+            padding: 6px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background: #28a745;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: #218838;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            height: 40px;
+        }
+
+        .clear-selection-btn {
+            font-weight: normal !important;
+            background: #f8f9fa !important;
+            color: #495057 !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .clear-selection-btn:hover {
+            background: #dc3545 !important;
+            border-color: #c82333 !important;
+            color: white !important;
+        }
+
+        .compare-btn:disabled {
+            background: #6c757d !important;
+            color: #fff !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+
+        .compare-btn:not(:disabled) {
+            background: #28a745 !important;
+            color: white !important;
+            cursor: pointer !important;
+        }
+
+        .compare-btn:not(:disabled):hover {
+            background: #218838 !important;
+        }
+
+        /* Botão de comparar flutuante e fixo na lateral */
+        .action-btn.compare-btn {
+            position: fixed !important;
+            right: 20px;
+            bottom: 80px;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            transition: all 0.3s ease;
+            margin: 0 !important;
+            padding: 12px 24px !important;
+            min-width: 150px !important;
+            height: 50px !important;
+            font-size: 16px !important;
+        }
+
+        .action-btn.compare-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Quando o modal de comparação estiver aberto, botão fica abaixo */
+        .action-btn.compare-btn.modal-aberto {
+            z-index: 999 !important;
+        }
+
+        /* Quando o modal de alerta estiver aberto, botão fica abaixo */
+        .action-btn.compare-btn.alert-aberto {
+            z-index: 999 !important;
+        }
+
+        /* Ajustar o container selection-controls para não deixar espaço vazio */
+        .selection-controls {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .action-btn.compare-btn {
+                right: 15px;
+                bottom: 70px;
+                min-width: 130px !important;
+                font-size: 14px !important;
+                padding: 10px 18px !important;
+                height: 45px !important;
+            }
+        }
+
+        .historico-list {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .historico-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .historico-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .historico-checkbox {
+            flex-shrink: 0;
+        }
+
+        .historico-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .historico-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .historico-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .historico-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .historico-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .historico-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .historico-tags-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .testador-tag {
+            display: none !important;
+        }
+        
+        .testador-tag .tag {
+            border-radius: 12px;
+        }
+
+        .ambiente-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ambiente-tag-container {
+            background: transparent !important;
+            padding: 4px !important;
+            text-align: left !important;
+        }
+
+        .ambiente-desenvolvimento {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .ambiente-homologacao {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .ambiente-producao {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .ambiente-indefinido {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .historico-stats {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 8px 12px;
+            text-align: center;
+            width: 60px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            margin: 2px 0 0 0;
+            line-height: 1;
+        }
+
+        .historico-meta {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 11px;
+            color: #666;
+            flex-shrink: 0;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            height: 50px;
+            justify-content: center;
+        }
+
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Estilos para paginação de histórico */
+        .historico-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .historico-pagination .total-historico {
+            font-size: 14px;
+            font-weight: 500;
+            color: #999;
+        }
+        
+        .historico-pagination .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .historico-pagination button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .historico-pagination button:hover:not(:disabled) {
+            background: #0052a3;
+        }
+        
+        .historico-pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .historico-pagination .pagination-info {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 80%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .csv-content {
+            background: #f8f9fa;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .compare-modal-content {
+            max-width: none;
+        }
+
+        .compare-content {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .compare-column {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            max-width: none;
+            display: flex;
+            flex-direction: column;
+            min-height: fit-content;
+        }
+
+        .compare-column h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            text-align: center;
+        }
+
+        .posicao-indicator {
+            color: #666;
+            font-size: 12px;
+            font-weight: normal;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .compare-column h6 {
+            margin: 0 0 15px 0;
+            color: #666;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .compare-ct-list h5 {
+            margin: 0 0 8px 0;
+            color: #333;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .compare-ct-list h6 {
+            margin: 0 0 15px 0;
+            color: #666;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .compare-stats {
+            margin-bottom: 20px;
+            font-size: 12px;
+            padding-bottom: 12px;
+        }
+
+        .compare-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding: 4px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .compare-stat:last-child {
+            margin-bottom: 0;
+            padding-bottom: 8px;
+            border-bottom: none;
+        }
+
+        .compare-stat-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .compare-stat-value {
+            color: #333;
+            font-weight: normal;
+        }
+
+        .compare-stat-value.taxa-aprovacao {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .compare-stat-value.casos-teste {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .compare-stat-value.anexos {
+            color: #6c757d;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .compare-ct-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .compare-anexos-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border-top: 2px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        .compare-ct-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .compare-anexos-list h6 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #6c757d;
+        }
+        
+        .compare-ct-list h6 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            margin: 0 0 12px 0;
+        }
+
+        .ct-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .compare-ct-title {
+            flex: 1;
+            font-size: 12px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .compare-ct-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+
+        .status-aprovado {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-reprovado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-bloqueado {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-pendente {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-novo {
+            background: #e2e3e5;
+            color: #383d41;
+            font-weight: bold;
+        }
+        
+        .status-removido {
+            background: #ffeaa7;
+            color: #d63031;
+            font-weight: bold;
+        }
+        
+        .status-renomeado {
+            background: #b3d9ff;
+            color: #0056b3;
+            font-weight: bold;
+        }
+
+        .compare-btn:disabled {
+            background: #6c757d !important;
+            color: #fff !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+
+        .compare-btn:not(:disabled) {
+            background: #28a745 !important;
+            color: white !important;
+            cursor: pointer !important;
+        }
+
+        .compare-btn:not(:disabled):hover {
+            background: #218838 !important;
+        }
+
+        @media (max-width: 768px) {
+            .historico-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .search-container {
+                flex: 1;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .selection-controls {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .filter-container select {
+                min-width: 180px;
+            }
+
+            .historico-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .historico-left {
+                justify-content: center;
+            }
+
+            .historico-center {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .historico-right {
+                justify-content: center;
+            }
+
+            .historico-item-title {
+                width: 100%;
+                text-align: center;
+            }
+
+            .historico-tags-header {
+                justify-content: center;
+            }
+
+            .historico-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .historico-meta {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .compare-modal-content {
+                margin: 5px;
+                max-width: none;
+            }
+
+            .compare-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .compare-column {
+                max-width: none;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .compare-modal-content {
+                max-width: none;
+            }
+
+            .compare-content {
+                gap: 12px;
+            }
+
+            .compare-column {
+                max-width: none;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mensagem de manutenção -->
+    <div id="manutencao-alert" class="backup-alert" style="display: none; background: #e9ecef; border-color: #6c757d; margin: 20px; position: fixed; top: 0; left: 0; right: 0; z-index: 10000;" data-cy="manutencao-alert">
+        <div class="backup-alert-content">
+            <span class="backup-alert-icon" style="color: #ffc107; font-size: 24px;">⚠️</span>
+            <span class="backup-alert-message" style="font-weight: bold; color: #495057;">O sistema está em manutenção. Por favor, tente novamente mais tarde.</span>
+        </div>
+    </div>
+    
+    <div class="historico-container" data-cy="historico-container">
+        <div class="historico-header" data-cy="historico-header">
+            <h1 data-cy="historico-title">📊 Histórico de Testes</h1>
+            <p data-cy="historico-subtitle">Visualize e compare o histórico de execução dos testes</p>
+        </div>
+
+        <div class="historico-controls" data-cy="historico-controls">
+            <div class="historico-info-tooltip" data-cy="historico-info-tooltip">
+                <span class="info-icon">ℹ️</span>
+                <span class="info-text">Informação</span>
+                <span class="tooltip-text">Novas versões de histórico são geradas quando há alterações significativas nos casos de teste e anexos.</span>
+            </div>
+            <div class="search-container" data-cy="search-container" style="display: none;">
+                <div class="search-box" data-cy="search-box">
+                    <input type="text" id="searchInput" data-cy="search-input" placeholder="Buscar por feature, testador">
+                    <span class="search-icon" data-cy="search-icon">🔍</span>
+                    <span class="clear-icon" id="clear-search" data-cy="clear-search" onclick="limparPesquisaHistorico()" style="display: none;">✕</span>
+                </div>
+            </div>
+            <div class="selection-controls" data-cy="selection-controls">
+                <div class="filter-container" data-cy="historico-ambiente-filter-container">
+                    <select id="historico-ambiente-filter" data-cy="historico-ambiente-filter" onchange="filtrarHistoricoPorAmbiente()">
+                        <option value="" data-cy="option-historico-ambiente-todos">Todos os ambientes</option>
+                        <option value="desenvolvimento" data-cy="option-historico-ambiente-dev">Desenvolvimento</option>
+                        <option value="homologacao" data-cy="option-historico-ambiente-hom">Homologação</option>
+                        <option value="producao" data-cy="option-historico-ambiente-prod">Produção</option>
+                    </select>
+                </div>
+                <button class="action-btn compare-btn" data-cy="compare-btn" onclick="abrirModalComparacao()" disabled>
+                    📊 Comparar
+                </button>
+                <button class="action-btn clear-selection-btn" data-cy="clear-selection-btn" onclick="limparSelecaoHistorico()">
+                    Desmarcar Seleção
+                </button>
+            </div>
+        </div>
+
+        <!-- Paginação de Histórico -->
+        <div class="historico-pagination" id="historico-pagination" data-cy="historico-pagination">
+            <span class="total-historico" id="total-historico" data-cy="total-historico">Total: 0</span>
+            <div class="pagination-controls" data-cy="historico-pagination-controls">
+                <button id="historico-prev-btn" data-cy="historico-prev-btn" onclick="paginaAnteriorHistorico()" disabled>← Anterior</button>
+                <span class="pagination-info" id="historico-pagination-info" data-cy="historico-pagination-info">Página 1 de 1</span>
+                <button id="historico-next-btn" data-cy="historico-next-btn" onclick="proximaPaginaHistorico()" disabled>Próximo →</button>
+            </div>
+        </div>
+
+        <div id="historicoList" class="historico-list" data-cy="historico-list">
+            <div class="loading" data-cy="historico-loading">
+                <p data-cy="historico-loading-text">Carregando histórico...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar CSV -->
+    <div id="csvModal" class="modal" data-cy="csv-modal">
+        <div class="modal-content" data-cy="csv-modal-content">
+            <div class="modal-header" data-cy="csv-modal-header">
+                <h3 data-cy="csv-modal-title">📄 Conteúdo do Histórico</h3>
+                <span class="close" data-cy="csv-modal-close" onclick="fecharModal()">&times;</span>
+            </div>
+            <div id="csvContent" class="csv-content" data-cy="csv-content"></div>
+        </div>
+    </div>
+
+    <!-- Modal para comparação de histórico (Componente) -->
+    <div id="modal-comparar-historico-container"></div>
+
+    <!-- Modal para alerta de limite de seleção -->
+    <div id="alertModal" class="modal" data-cy="alert-modal">
+        <div class="modal-content" style="max-width: 400px;" data-cy="alert-modal-content">
+            <div class="modal-header" data-cy="alert-modal-header">
+                <h3 data-cy="alert-modal-title">⚠️ Limite de Seleção</h3>
+            </div>
+            <div style="padding: 20px; text-align: center;" data-cy="alert-modal-body">
+                <p id="alertMessage" style="font-size: 16px; margin-bottom: 20px;" data-cy="alert-message"></p>
+                <button class="action-btn" onclick="fecharAlertModal()" style="min-width: 100px;" data-cy="alert-btn-ok">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let historicoData = [];
+        let historicoDataFiltrado = [];
+        let paginaAtualHistorico = 1;
+        const itensPorPaginaHistorico = 5; // 5 itens por página
+        let itensSelecionados = new Set(); // Armazenar file_names dos itens selecionados
+
+        // Função para verificar flag de manutenção
+        async function verificarManutencao() {
+            try {
+                const response = await fetch('/api/flags');
+                const data = await response.json();
+                
+                if (data.success && data.flags && data.flags.manutencao === true) {
+                    // Mostrar alerta de manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'block';
+                        console.log('🔧 Sistema em manutenção');
+                    }
+                    
+                    // Ocultar conteúdo principal
+                    const container = document.querySelector('.historico-container');
+                    if (container) {
+                        container.style.opacity = '0.5';
+                        container.style.pointerEvents = 'none';
+                    }
+                    
+                    // Bloquear todos os botões e inputs
+                    const buttons = document.querySelectorAll('button, input, select, textarea');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.5';
+                    });
+                    
+                    return true; // Sistema em manutenção
+                } else {
+                    // Ocultar alerta de manutenção se não estiver em manutenção
+                    const manutencaoAlert = document.getElementById('manutencao-alert');
+                    if (manutencaoAlert) {
+                        manutencaoAlert.style.display = 'none';
+                    }
+                    return false; // Sistema não está em manutenção
+                }
+            } catch (error) {
+                console.error('❌ Erro ao verificar flag de manutenção:', error);
+                return false; // Em caso de erro, não bloquear o sistema
+            }
+        }
+        
+        // Carregar histórico ao inicializar a página
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar manutenção primeiro
+            const emManutencao = await verificarManutencao();
+            
+            if (!emManutencao) {
+                carregarHistorico();
+                
+                // Configurar busca em tempo real
+                document.getElementById('searchInput').addEventListener('input', filtrarHistorico);
+                
+                // Configurar filtro de ambiente
+                document.getElementById('historico-ambiente-filter').addEventListener('change', filtrarHistoricoPorAmbiente);
+            }
+        });
+
+        async function carregarHistorico() {
+            try {
+                // Mostrar loading
+                const container = document.getElementById('historicoList');
+                container.innerHTML = '<div class="loading" data-cy="historico-loading-initial"><p data-cy="historico-loading-initial-text">Carregando histórico...</p></div>';
+                
+                // Construir URL com filtros da URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const searchParam = urlParams.get('search') || '';
+                const ambienteParam = urlParams.get('ambiente') || '';
+                const featureIdParam = urlParams.get('featureId') || '';
+                
+                let apiUrl = '/api/test-history/list?';
+                if (searchParam) apiUrl += `search=${encodeURIComponent(searchParam)}&`;
+                if (ambienteParam) apiUrl += `ambiente=${encodeURIComponent(ambienteParam)}&`;
+                if (featureIdParam) apiUrl += `featureId=${encodeURIComponent(featureIdParam)}&`;
+                
+                console.log(`🔍 Carregando histórico com filtros: search="${searchParam}", ambiente="${ambienteParam}", featureId="${featureIdParam}"`);
+                
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+                
+                if (result.success) {
+                    historicoData = result.historico;
+                    
+                    console.log('📋 Histórico recebido da API:');
+                    historicoData.forEach((item, index) => {
+                        console.log(`   ${index + 1}. file_name: "${item.file_name}"`);
+                        console.log(`      feature_name: "${item.feature_name}"`);
+                    });
+                    
+                    if (historicoData.length > 0) {
+                        // Mostrar loading para processamento dos dados
+                        container.innerHTML = '<div class="loading" data-cy="historico-processing-loading"><p data-cy="historico-processing-loading-text">Processando dados dos cenários...</p></div>';
+                        
+                        // Carregar dados detalhados de cada item
+                        await carregarDadosDetalhados();
+                    }
+                    
+                    renderizarHistorico(historicoData);
+                    
+                    // Verificar se há parâmetros na URL após carregar os dados
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const searchParam = urlParams.get('search');
+                    const ambienteParam = urlParams.get('ambiente');
+                    
+                    if (searchParam) {
+                        // Preencher campo de busca
+                        const searchInput = document.getElementById('searchInput');
+                        searchInput.value = searchParam;
+                    }
+                    
+                    if (ambienteParam) {
+                        // Aplicar filtro de ambiente
+                        const ambienteFilter = document.getElementById('historico-ambiente-filter');
+                        ambienteFilter.value = ambienteParam;
+                    }
+                    
+                    // Executar filtro se algum parâmetro foi passado
+                    if (searchParam || ambienteParam) {
+                        filtrarHistorico();
+                    }
+                } else {
+                    mostrarErro('Erro ao carregar histórico: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+                mostrarErro('Erro de conexão ao carregar histórico');
+            }
+        }
+
+        async function carregarDadosDetalhados() {
+            for (let i = 0; i < historicoData.length; i++) {
+                try {
+                    console.log(`🔍 Carregando detalhes do arquivo: ${historicoData[i].file_name}`);
+                    // Codificar o nome do arquivo para evitar problemas com caracteres especiais (# é interpretado como fragment)
+                    const encodedFileName = encodeURIComponent(historicoData[i].file_name);
+                    const response = await fetch(`/api/test-history/${encodedFileName}`);
+                    const result = await response.json();
+                    
+                    if (!result.success) {
+                        console.error(`❌ Erro ao carregar ${historicoData[i].file_name}:`, result);
+                        // Continuar com próximo arquivo
+                        continue;
+                    }
+                    
+                    if (result.success) {
+                        // Extrair dados do CSV
+                        const csvContent = result.content;
+                        const lines = csvContent.split('\n');
+                        
+                        console.log(`📄 CSV com ${lines.length} linhas`);
+                        
+                        let totalCenarios = 0;
+                        let aprovados = 0;
+                        let cenarios = [];
+                        let anexos = [];
+                        let testador = '';
+                        let ambiente = '';
+                        let dataExecucao = '';
+                        let horaExecucao = '';
+                        let totalAnexos = 0;
+                        let isAnexosSection = false;
+                        let isCenariosSection = false;
+                        let headerColumns = [];
+                        
+                        // Parse CSV respeitando campos entre aspas
+                        const parseCSVLine = (line) => {
+                            const result = [];
+                            let current = '';
+                            let inQuotes = false;
+                            
+                            for (let i = 0; i < line.length; i++) {
+                                const char = line[i];
+                                
+                                if (char === '"') {
+                                    if (inQuotes && line[i + 1] === '"') {
+                                        // Aspas duplas escapadas
+                                        current += '"';
+                                        i++; // Pular próxima aspa
+                                    } else {
+                                        // Toggle quotes
+                                        inQuotes = !inQuotes;
+                                    }
+                                } else if (char === ',' && !inQuotes) {
+                                    result.push(current.trim());
+                                    current = '';
+                                } else {
+                                    current += char;
+                                }
+                            }
+                            result.push(current.trim());
+                            return result;
+                        };
+                        
+                        // Processar linhas do CSV
+                        lines.forEach((line, lineIndex) => {
+                            if (line.trim()) {
+                                // Detectar seção de anexos (formato antigo)
+                                if (line.trim() === 'Anexos') {
+                                    isAnexosSection = true;
+                                    console.log(`📎 Seção de anexos detectada na linha ${lineIndex}`);
+                                    return;
+                                }
+                                
+                                // Pular cabeçalho da seção de anexos (formato antigo)
+                                if (isAnexosSection && line.includes('Caso de Teste,Quantidade')) {
+                                    console.log(`📋 Cabeçalho de anexos detectado na linha ${lineIndex}`);
+                                    return;
+                                }
+                                
+                                const parts = parseCSVLine(line);
+                                
+                                // Detectar cabeçalho dos casos de teste (novo formato com anexos)
+                                if (line.includes('Caso de Teste,Status,Fonte,Tipo,Total Anexos,Nomes dos Anexos')) {
+                                    isCenariosSection = true;
+                                    headerColumns = parts;
+                                    console.log(`📋 Cabeçalho de casos de teste com anexos detectado na linha ${lineIndex}`);
+                                    return;
+                                }
+                                
+                                // Extrair testador, ambiente, data e hora do cabeçalho
+                                if (line.includes('Data da Execução,')) {
+                                    dataExecucao = parts[1] ? parts[1].trim() : '';
+                                }
+                                if (line.includes('Hora da Execução,')) {
+                                    horaExecucao = parts[1] ? parts[1].trim() : '';
+                                }
+                                if (line.includes('Testador,')) {
+                                    testador = parts[1] ? parts[1].trim() : '';
+                                }
+                                if (line.includes('Ambiente,')) {
+                                    ambiente = parts[1] ? parts[1].trim() : '';
+                                }
+                                
+                                // Processar anexos (formato antigo - seção separada)
+                                if (isAnexosSection && line.trim() && parts.length >= 2) {
+                                    let titulo = parts[0] ? parts[0].trim() : '';
+                                    const quantidade = parseInt(parts[1] ? parts[1].trim() : '0');
+                                    const arquivos = parts[2] ? parts[2].trim().replace(/"/g, '') : '';
+                                    
+                                    // Remover aspas do título se houver
+                                    titulo = titulo.replace(/^"|"$/g, '');
+                                    
+                                    // Verificar se é um caso de teste (começa com CT ou tem formato válido)
+                                    if (titulo && (titulo.startsWith('CT') || titulo.match(/^CT\d+/))) {
+                                        console.log(`  📁 Anexo encontrado: ${titulo} - ${quantidade} arquivo(s) - ${arquivos}`);
+                                        
+                                        totalAnexos += quantidade;
+                                        
+                                        // Apenas adicionar se tiver anexos (quantidade > 0)
+                                        if (quantidade > 0 && arquivos !== 'Nenhum anexo' && arquivos !== 'Nenhum') {
+                                            anexos.push({
+                                                titulo: titulo,
+                                                quantidade: quantidade,
+                                                arquivos: arquivos
+                                            });
+                                        }
+                                    }
+                                    return;
+                                }
+                                
+                                // Processar casos de teste (novo formato com anexos na mesma linha)
+                                if (isCenariosSection && line.trim() && parts.length >= 5) {
+                                    let titulo = parts[0] ? parts[0].trim() : '';
+                                    const status = parts[1] ? parts[1].trim() : '';
+                                    const totalAnexosCT = parseInt(parts[4] ? parts[4].trim() : '0');
+                                    let nomesAnexos = parts[5] ? parts[5].trim().replace(/^"|"$/g, '') : '';
+                                    
+                                    // Remover aspas do título se houver
+                                    titulo = titulo.replace(/^"|"$/g, '');
+                                    
+                                    // Verificar se é um caso de teste (começa com CT ou tem formato válido)
+                                    if (titulo && status && (titulo.startsWith('CT') || titulo.match(/^CT\d+/))) {
+                                        totalCenarios++;
+                                        if (status.toLowerCase() === 'aprovado') {
+                                            aprovados++;
+                                        }
+                                        
+                                        cenarios.push({
+                                            titulo: titulo,
+                                            status: status.toLowerCase()
+                                        });
+                                        
+                                        // Processar anexos deste caso de teste
+                                        if (totalAnexosCT > 0 && nomesAnexos && nomesAnexos !== 'Nenhum' && nomesAnexos !== 'Nenhum anexo') {
+                                            totalAnexos += totalAnexosCT;
+                                            
+                                            // Criar um objeto de anexo por CT com todos os arquivos concatenados
+                                            // O formato esperado é: arquivos separados por "; "
+                                            anexos.push({
+                                                titulo: titulo,
+                                                quantidade: totalAnexosCT,
+                                                arquivos: nomesAnexos.trim()
+                                            });
+                                            
+                                            console.log(`  📁 Anexos encontrados para ${titulo}: ${totalAnexosCT} arquivo(s) - ${nomesAnexos}`);
+                                        }
+                                    }
+                                    return;
+                                }
+                                
+                                // Processar casos de teste (formato antigo - sem anexos na linha)
+                                if (!isAnexosSection && !isCenariosSection && line.trim() && parts.length >= 2) {
+                                    let titulo = parts[0] ? parts[0].trim() : '';
+                                    const status = parts[1] ? parts[1].trim() : '';
+                                    
+                                    // Remover aspas do título se houver
+                                    titulo = titulo.replace(/^"|"$/g, '');
+                                    
+                                    // Verificar se é um caso de teste (começa com CT ou tem formato válido)
+                                    if (titulo && status && (titulo.startsWith('CT') || titulo.match(/^CT\d+/))) {
+                                        totalCenarios++;
+                                        if (status.toLowerCase() === 'aprovado') {
+                                            aprovados++;
+                                        }
+                                        
+                                        cenarios.push({
+                                            titulo: titulo,
+                                            status: status.toLowerCase()
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                        
+                        // Calcular taxa de aprovação
+                        const taxaAprovacao = totalCenarios > 0 ? Math.round((aprovados / totalCenarios) * 100) : 0;
+                        
+                        // Converter data e hora do CSV para objeto Date
+                        let dataHoraExecucao = null;
+                        if (dataExecucao && horaExecucao) {
+                            try {
+                                // Formato esperado: DD/MM/YYYY e HH:MM:SS
+                                const partesData = dataExecucao.split('/');
+                                const partesHora = horaExecucao.split(':');
+                                if (partesData.length === 3 && partesHora.length >= 2) {
+                                    const dia = parseInt(partesData[0], 10);
+                                    const mes = parseInt(partesData[1], 10) - 1; // Mês é 0-indexed
+                                    const ano = parseInt(partesData[2], 10);
+                                    const hora = parseInt(partesHora[0], 10);
+                                    const minuto = parseInt(partesHora[1], 10);
+                                    const segundo = partesHora.length >= 3 ? parseInt(partesHora[2], 10) : 0;
+                                    dataHoraExecucao = new Date(ano, mes, dia, hora, minuto, segundo);
+                                }
+                            } catch (e) {
+                                console.warn('Erro ao converter data/hora do CSV:', e);
+                            }
+                        }
+                        
+                        // Adicionar dados ao item
+                        historicoData[i].totalCenarios = totalCenarios;
+                        historicoData[i].taxaAprovacao = taxaAprovacao;
+                        historicoData[i].cenarios = cenarios;
+                        historicoData[i].anexos = anexos;
+                        historicoData[i].totalAnexos = totalAnexos;
+                        historicoData[i].testador = testador || 'N/A';
+                        historicoData[i].ambiente = ambiente || 'N/A';
+                        historicoData[i].dataExecucao = dataExecucao || '';
+                        historicoData[i].horaExecucao = horaExecucao || '';
+                        historicoData[i].dataHoraExecucao = dataHoraExecucao; // Objeto Date para ordenação
+                        
+                        // Debug: mostrar dados extraídos
+                        console.log(`=== DADOS EXTRAÍDOS DO ARQUIVO ${historicoData[i].file_name} ===`);
+                        console.log('Testador:', testador);
+                        console.log('Ambiente:', ambiente);
+                        console.log('Total Cenários:', totalCenarios);
+                        console.log('Aprovados:', aprovados);
+                        console.log('Taxa Aprovação:', taxaAprovacao + '%');
+                        console.log('Total Anexos:', totalAnexos);
+                        console.log(`Anexos encontrados: ${anexos.length} item(s)`);
+                        console.log('Anexos:', anexos);
+                        if (anexos.length > 0) {
+                            console.log('📋 Detalhes dos anexos:');
+                            anexos.forEach((anexo, idx) => {
+                                console.log(`  ${idx + 1}. ${anexo.titulo}: ${anexo.quantidade} arquivo(s)`);
+                                console.log(`     Arquivos: "${anexo.arquivos}"`);
+                            });
+                        }
+                        console.log('Cenários:', cenarios);
+                    }
+                } catch (error) {
+                    console.error(`Erro ao carregar dados do arquivo ${historicoData[i].file_name}:`, error);
+                    // Valores padrão em caso de erro
+                    historicoData[i].totalCenarios = 0;
+                    historicoData[i].taxaAprovacao = 0;
+                    historicoData[i].cenarios = [];
+                    historicoData[i].anexos = [];
+                    historicoData[i].totalAnexos = 0;
+                    historicoData[i].testador = 'N/A';
+                    historicoData[i].ambiente = 'N/A';
+                    historicoData[i].dataExecucao = '';
+                    historicoData[i].horaExecucao = '';
+                    historicoData[i].dataHoraExecucao = null;
+                }
+            }
+        }
+
+        function renderizarHistorico(data) {
+            const container = document.getElementById('historicoList');
+            
+            // Atualizar dados filtrados
+            historicoDataFiltrado = data;
+            
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" data-cy="empty-state">
+                        <h3 data-cy="empty-state-title">📭 Nenhum histórico encontrado</h3>
+                        <p data-cy="empty-state-message">Execute alguns testes para ver o histórico aqui</p>
+                    </div>
+                `;
+                atualizarPaginacaoHistorico();
+                return;
+            }
+
+            // Ordenar por data de execução do CSV decrescente (mais recente primeiro)
+            const dadosOrdenados = data.sort((a, b) => {
+                // Usar dataHoraExecucao do CSV se disponível, senão usar data_modificacao
+                const dataA = a.dataHoraExecucao || new Date(a.data_modificacao);
+                const dataB = b.dataHoraExecucao || new Date(b.data_modificacao);
+                return dataB - dataA; // Decrescente
+            });
+
+            // Calcular índices da página atual
+            const inicio = (paginaAtualHistorico - 1) * itensPorPaginaHistorico;
+            const fim = Math.min(inicio + itensPorPaginaHistorico, dadosOrdenados.length);
+            const dadosDaPagina = dadosOrdenados.slice(inicio, fim);
+
+            container.innerHTML = dadosDaPagina.map((item, indexLocal) => {
+                const indexGlobal = inicio + indexLocal; // Índice global no array filtrado
+                
+                // Usar data e hora do CSV se disponível, senão usar data_modificacao do arquivo
+                let dataFormatada, horaFormatada;
+                if (item.dataHoraExecucao) {
+                    dataFormatada = item.dataExecucao || item.dataHoraExecucao.toLocaleDateString('pt-BR');
+                    horaFormatada = item.horaExecucao || item.dataHoraExecucao.toLocaleTimeString('pt-BR');
+                } else {
+                    // Fallback para data_modificacao do arquivo
+                    dataFormatada = new Date(item.data_modificacao).toLocaleDateString('pt-BR');
+                    horaFormatada = new Date(item.data_modificacao).toLocaleTimeString('pt-BR');
+                }
+                
+                // Usar dados extraídos do CSV ou valores padrão
+                const testador = item.testador || 'N/A';
+                const ambiente = item.ambiente || 'N/A';
+                
+                // Verificar se o item está selecionado
+                const estaSelecionado = itensSelecionados.has(item.file_name);
+                
+                return `
+                    <div class="historico-item" data-cy="historico-item" data-file-name="${item.file_name}" style="${estaSelecionado ? 'background-color: #f8f9fa; border-color: #007bff;' : ''}">
+                        <div class="historico-checkbox" data-cy="historico-checkbox">
+                            <input type="checkbox" id="checkbox-${indexLocal}" data-cy="historico-checkbox-input" ${estaSelecionado ? 'checked' : ''} onchange="toggleHistoricoSelection('${item.file_name}')">
+                        </div>
+                        <div class="historico-content" data-cy="historico-content">
+                            <div class="historico-left" data-cy="historico-left">
+                                <h3 class="historico-item-title" data-cy="historico-item-title" title="${item.feature_name}">
+                                    ${item.feature_name}
+                                </h3>
+                            </div>
+                            
+                            <div class="historico-center" data-cy="historico-center">
+                                <div class="historico-tags-header" data-cy="historico-tags-header">
+                                    <div class="testador-tag" data-cy="testador-tag">
+                                        <span class="tag" style="background: #e9ecef; color: #6c757d; padding: 4px 8px;" data-cy="testador-tag-span">${testador}</span>
+                                    </div>
+                                    <div class="ambiente-tag-container" data-cy="ambiente-tag-container">
+                                        <span class="ambiente-tag ambiente-${ambiente.toLowerCase()}" data-cy="ambiente-tag-span">${ambiente.toUpperCase()}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="historico-stats" data-cy="historico-stats">
+                                    <div class="stat-item" data-cy="stat-item-cenarios">
+                                        <div class="stat-value" data-cy="stat-value-cenarios">${item.totalCenarios || 0}</div>
+                                        <div class="stat-label" data-cy="stat-label-cenarios">Cenários</div>
+                                    </div>
+                                    <div class="stat-item" data-cy="stat-item-taxa">
+                                        <div class="stat-value" data-cy="stat-value-taxa" style="color: #0066cc;">${item.taxaAprovacao || 0}%</div>
+                                        <div class="stat-label" data-cy="stat-label-taxa">Taxa Aprovação</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="historico-right" data-cy="historico-right">
+                                <div class="historico-meta" data-cy="historico-meta">
+                                    <div data-cy="historico-meta-date">${dataFormatada}</div>
+                                    <div data-cy="historico-meta-time">${horaFormatada}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Atualizar paginação
+            atualizarPaginacaoHistorico();
+        }
+
+        function filtrarHistorico() {
+            const termo = document.getElementById('searchInput').value.toLowerCase();
+            const ambienteFiltro = document.getElementById('historico-ambiente-filter').value;
+            const clearIcon = document.getElementById('clear-search');
+            
+            // Mostrar/ocultar ícone de limpar baseado no conteúdo do campo
+            if (termo.length > 0) {
+                clearIcon.style.display = 'block';
+            } else {
+                clearIcon.style.display = 'none';
+            }
+            
+            let filtrado = historicoData;
+            
+            // Aplicar filtro de texto
+            if (termo) {
+                filtrado = filtrado.filter(item => 
+                    item.feature_name.toLowerCase().includes(termo) ||
+                    item.feature_id.toLowerCase().includes(termo) ||
+                    item.file_name.toLowerCase().includes(termo) ||
+                    (item.testador && item.testador.toLowerCase().includes(termo))
+                );
+            }
+            
+            // Aplicar filtro de ambiente
+            if (ambienteFiltro) {
+                filtrado = filtrado.filter(item => 
+                    item.ambiente && item.ambiente.toLowerCase() === ambienteFiltro.toLowerCase()
+                );
+            }
+            
+            // Armazenar dados filtrados para uso na comparação
+            historicoDataFiltrado = filtrado;
+            
+            // Resetar para primeira página ao filtrar
+            paginaAtualHistorico = 1;
+            
+            renderizarHistorico(filtrado);
+        }
+
+        function filtrarHistoricoPorAmbiente() {
+            filtrarHistorico();
+        }
+
+        function limparPesquisaHistorico() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clear-search').style.display = 'none';
+            filtrarHistorico();
+        }
+
+        async function visualizarCSV(filename) {
+            try {
+                console.log(`👁️ Visualizando arquivo: ${filename}`);
+                // Codificar o nome do arquivo para evitar problemas com caracteres especiais
+                const encodedFileName = encodeURIComponent(filename);
+                const response = await fetch(`/api/test-history/${encodedFileName}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('csvContent').textContent = result.content;
+                    document.getElementById('csvModal').style.display = 'block';
+                } else {
+                    console.error('❌ Erro ao visualizar:', result);
+                    alert('Erro ao carregar arquivo: ' + result.message + 
+                          (result.arquivos_disponiveis ? '\n\nArquivos disponíveis:\n' + result.arquivos_disponiveis.join('\n') : ''));
+                }
+            } catch (error) {
+                console.error('Erro ao visualizar CSV:', error);
+                alert('Erro de conexão ao carregar arquivo');
+            }
+        }
+
+        function baixarCSV(filename) {
+            console.log(`⬇️ Baixando arquivo: ${filename}`);
+            // Codificar o nome do arquivo para evitar problemas com caracteres especiais
+            const encodedFileName = encodeURIComponent(filename);
+            const link = document.createElement('a');
+            link.href = `/api/test-history/${encodedFileName}`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function fecharModal() {
+            document.getElementById('csvModal').style.display = 'none';
+        }
+
+        function formatarTamanho(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function mostrarErro(mensagem) {
+            const container = document.getElementById('historicoList');
+            container.innerHTML = `
+                <div class="empty-state" data-cy="error-state">
+                    <h3 data-cy="error-state-title">❌ Erro</h3>
+                    <p data-cy="error-state-message">${mensagem}</p>
+                </div>
+            `;
+        }
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            const csvModal = document.getElementById('csvModal');
+            const alertModal = document.getElementById('alertModal');
+            const compareModal = document.getElementById('compareModal');
+            
+            if (event.target === csvModal) {
+                fecharModal();
+            }
+            
+            if (event.target === alertModal) {
+                fecharAlertModal();
+            }
+            
+            if (event.target === compareModal) {
+                fecharModalComparacao();
+            }
+        }
+
+        // Função para gerenciar seleção de itens do histórico
+        function toggleHistoricoSelection(fileName) {
+            const item = document.querySelector(`[data-file-name="${fileName}"]`);
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            
+            // Verificar se já tem 3 selecionados E o usuário está tentando selecionar (checked = true)
+            if (checkbox.checked && itensSelecionados.size >= 3) {
+                // Desmarcar o checkbox que acabou de ser marcado
+                checkbox.checked = false;
+                
+                // Mostrar modal de alerta
+                mostrarAlertModal('Você pode selecionar no máximo 3 itens para comparação.');
+                return;
+            }
+            
+            if (checkbox.checked) {
+                item.style.backgroundColor = '#f8f9fa';
+                item.style.borderColor = '#007bff';
+                itensSelecionados.add(fileName);
+            } else {
+                item.style.backgroundColor = 'white';
+                item.style.borderColor = '#ddd';
+                itensSelecionados.delete(fileName);
+            }
+            
+            // Atualizar estado do botão de comparar
+            atualizarEstadoBotaoComparar();
+            
+            // Atualizar informação de selecionados no total
+            atualizarPaginacaoHistorico();
+        }
+        
+        // Função para limpar toda a seleção
+        function limparSelecaoHistorico() {
+            itensSelecionados.clear();
+            atualizarEstadoBotaoComparar();
+            renderizarHistorico(historicoDataFiltrado);
+        }
+        
+        // Função para mostrar modal de alerta
+        function mostrarAlertModal(message) {
+            const modal = document.getElementById('alertModal');
+            const messageElement = document.getElementById('alertMessage');
+            messageElement.textContent = message;
+            modal.style.display = 'block';
+            
+            // Ajustar z-index do botão para ficar abaixo do modal de alerta
+            const compareBtn = document.querySelector('[data-cy="compare-btn"]');
+            if (compareBtn) {
+                compareBtn.classList.add('alert-aberto');
+            }
+        }
+        
+        // Função para fechar modal de alerta
+        function fecharAlertModal() {
+            const modal = document.getElementById('alertModal');
+            modal.style.display = 'none';
+            
+            // Restaurar z-index do botão
+            const compareBtn = document.querySelector('[data-cy="compare-btn"]');
+            if (compareBtn) {
+                compareBtn.classList.remove('alert-aberto');
+            }
+        }
+
+
+        // Função para atualizar o estado do botão de comparar
+        function atualizarEstadoBotaoComparar() {
+            const compareBtn = document.querySelector('[data-cy="compare-btn"]');
+            
+            if (itensSelecionados.size >= 2 && itensSelecionados.size <= 3) {
+                compareBtn.disabled = false;
+                compareBtn.style.background = '#28a745';
+                compareBtn.style.cursor = 'pointer';
+            } else {
+                compareBtn.disabled = true;
+                compareBtn.style.background = '#6c757d';
+                compareBtn.style.cursor = 'not-allowed';
+            }
+        }
+
+        // Função para abrir o modal de comparação
+        function abrirModalComparacao() {
+            if (itensSelecionados.size < 2 || itensSelecionados.size > 3) {
+                alert('Selecione entre 2 e 3 históricos para comparar.');
+                return;
+            }
+
+            // Buscar os itens selecionados baseado no file_name
+            const selectedItems = historicoDataFiltrado.filter(item => 
+                itensSelecionados.has(item.file_name)
+            );
+
+            renderizarComparacao(selectedItems);
+            document.getElementById('compareModal').style.display = 'block';
+            
+            // Ajustar z-index do botão para ficar abaixo do modal
+            const compareBtn = document.querySelector('[data-cy="compare-btn"]');
+            if (compareBtn) {
+                compareBtn.classList.add('modal-aberto');
+            }
+        }
+
+        // Função para fechar o modal de comparação
+        function fecharModalComparacao() {
+            document.getElementById('compareModal').style.display = 'none';
+            
+            // Restaurar z-index do botão
+            const compareBtn = document.querySelector('[data-cy="compare-btn"]');
+            if (compareBtn) {
+                compareBtn.classList.remove('modal-aberto');
+            }
+        }
+
+        // Função para renderizar a comparação
+        function renderizarComparacao(items) {
+            const compareContent = document.getElementById('compareContent');
+            
+            // Ordenar itens por data de execução do CSV (mais antigo primeiro)
+            const itemsOrdenados = items.sort((a, b) => {
+                // Usar dataHoraExecucao do CSV se disponível, senão usar data_modificacao
+                const dataA = a.dataHoraExecucao || new Date(a.data_modificacao);
+                const dataB = b.dataHoraExecucao || new Date(b.data_modificacao);
+                return dataA - dataB; // Crescente (mais antigo primeiro)
+            });
+            
+            // Calcular diferenças entre os arquivos
+            const diferencas = calcularDiferencas(itemsOrdenados);
+            
+            const html = itemsOrdenados.map((item, index) => {
+                // Usar data e hora do CSV se disponível, senão usar data_modificacao do arquivo
+                let dataFormatada, horaFormatada;
+                if (item.dataHoraExecucao) {
+                    dataFormatada = item.dataExecucao || item.dataHoraExecucao.toLocaleDateString('pt-BR');
+                    horaFormatada = item.horaExecucao || item.dataHoraExecucao.toLocaleTimeString('pt-BR');
+                } else {
+                    // Fallback para data_modificacao do arquivo
+                    dataFormatada = new Date(item.data_modificacao).toLocaleDateString('pt-BR');
+                    horaFormatada = new Date(item.data_modificacao).toLocaleTimeString('pt-BR');
+                }
+                
+                // Adicionar indicador de posição
+                const posicao = index === 0 ? ' Mais Antigo' : 
+                               index === itemsOrdenados.length - 1 ? ' Mais Atual' : 
+                               ` ${index + 1}º`; 
+                
+                // Obter cenários únicos e anexos únicos para este item
+                const cenariosUnicos = diferencas[index]?.cenarios || [];
+                const anexosUnicos = diferencas[index]?.anexos || [];
+                
+                return `
+                    <div class="compare-column" data-cy="compare-column">
+                        <h4 data-cy="compare-column-title">${item.feature_name}</h4>
+                        <h6 data-cy="compare-column-position">${posicao}</h6>
+                        <div class="compare-stats" data-cy="compare-stats">
+                            <div class="compare-stat" data-cy="compare-stat-date">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-date">Data:</span>
+                                <span class="compare-stat-value" data-cy="compare-stat-value-date">${dataFormatada}</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-time">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-time">Hora:</span>
+                                <span class="compare-stat-value" data-cy="compare-stat-value-time">${horaFormatada}</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-testador">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-testador">Testador:</span>
+                                <span class="compare-stat-value" data-cy="compare-stat-value-testador">${item.testador}</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-ambiente">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-ambiente">Ambiente:</span>
+                                <span class="compare-stat-value" data-cy="compare-stat-value-ambiente">${item.ambiente}</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-casos-teste">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-casos-teste">Casos de Teste:</span>
+                                <span class="compare-stat-value casos-teste" data-cy="compare-stat-value-casos-teste">${item.totalCenarios || 0}</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-taxa">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-taxa">Taxa Aprovação:</span>
+                                <span class="compare-stat-value taxa-aprovacao" data-cy="compare-stat-value-taxa">${item.taxaAprovacao || 0}%</span>
+                            </div>
+                            <div class="compare-stat" data-cy="compare-stat-anexos">
+                                <span class="compare-stat-label" data-cy="compare-stat-label-anexos">Anexos:</span>
+                                <span class="compare-stat-value anexos" data-cy="compare-stat-value-anexos">${item.totalAnexos || 0}</span>
+                            </div>
+                        </div>
+                        <div class="compare-ct-list" data-cy="compare-ct-list">
+                            <h5 data-cy="compare-ct-list-title">Diferenças</h5>
+                            <h6 data-cy="compare-ct-list-subtitle">Casos de Teste</h6>
+                            ${cenariosUnicos.length > 0 ? cenariosUnicos.map(ct => {
+                                // Extrair apenas o número do CT do título atual (ex: "CT001 - Nome" -> "CT001")
+                                let numeroAtual = '';
+                                if (ct.titulo) {
+                                    const match = ct.titulo.match(/^(CT\d+)/);
+                                    numeroAtual = match ? match[1] : ct.titulo.split(' ')[0];
+                                }
+                                
+                                return `
+                                <div class="compare-ct-item" data-cy="compare-ct-item">
+                                    <div class="ct-info" data-cy="compare-ct-info">
+                                        <span class="compare-ct-title" data-cy="compare-ct-title">${numeroAtual || ct.titulo}</span>
+                                        <div style="display: flex; gap: 8px; align-items: center;" data-cy="compare-ct-status-container">
+                                            ${ct.isNovo ? '<span class="compare-ct-status status-novo" data-cy="compare-ct-status-novo">NOVO</span>' : ''}
+                                            ${ct.isRenomeado ? '<span class="compare-ct-status status-renomeado" data-cy="compare-ct-status-renomeado">RENOMEADO</span>' : ''}
+                                            ${ct.isRemovido ? '<span class="compare-ct-status status-removido" data-cy="compare-ct-status-removido">REMOVIDO</span>' : ''}
+                                            ${!ct.isRemovido && !ct.isRenomeado ? `<span class="compare-ct-status status-${ct.status}" data-cy="compare-ct-status-${ct.status}">${ct.status}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            }).join('') : '<p style="padding: 10px 0; color: #666; font-size: 12px;" data-cy="compare-ct-no-differences">Nenhuma diferença encontrada</p>'}
+                        </div>
+                        
+                        <div class="compare-anexos-list" data-cy="compare-anexos-list">
+                            <h6 style="margin-bottom: 12px; color: #333;" data-cy="compare-anexos-list-title">Anexos</h6>
+                            ${anexosUnicos.length > 0 ? anexosUnicos.map(anexo => {
+                                // Extrair apenas a parte do nome do arquivo após o prefixo do feature ID
+                                // Ex: "1B926D_CT001_1.png" -> "CT001_1.png"
+                                let nomeArquivo = anexo.arquivo || '';
+                                // Remover prefixo do feature ID (tudo antes do primeiro underscore seguido de CT)
+                                const match = nomeArquivo.match(/^[^_]+_(CT.+)$/);
+                                if (match) {
+                                    nomeArquivo = match[1];
+                                }
+                                
+                                return `
+                                <div class="compare-ct-item" data-cy="compare-anexo-item">
+                                    <div class="ct-info" data-cy="compare-anexo-info">
+                                        <span class="compare-ct-title" data-cy="compare-anexo-title">${nomeArquivo}</span>
+                                        <div style="display: flex; gap: 8px; align-items: center;" data-cy="compare-anexo-status-container">
+                                            ${anexo.isNovo ? '<span class="compare-ct-status status-novo" data-cy="compare-anexo-status-novo">NOVO</span>' : ''}
+                                            ${anexo.isRemovido ? '<span class="compare-ct-status status-removido" data-cy="compare-anexo-status-removido">REMOVIDO</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            }).join('') : '<p style="padding: 10px 0; color: #666; font-size: 12px; font-style: italic;" data-cy="compare-anexos-no-attachments">Nenhum anexo encontrado</p>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            compareContent.innerHTML = html;
+        }
+
+        // Função para calcular diferenças entre os arquivos
+        function calcularDiferencas(items) {
+            console.log(`🔍 Calculando diferenças entre ${items.length} itens...`);
+            const diferencas = [];
+            
+            for (let i = 0; i < items.length; i++) {
+                const itemAtual = items[i];
+                const cenariosAtuais = itemAtual.cenarios || [];
+                const anexosAtuais = itemAtual.anexos || [];
+                const cenariosDiferentes = [];
+                const anexosDiferentes = [];
+                
+                console.log(`  📊 Item ${i + 1}: ${itemAtual.feature_name}`);
+                console.log(`     - Cenários: ${cenariosAtuais.length}`);
+                console.log(`     - Anexos: ${anexosAtuais.length}`, anexosAtuais);
+                
+                // Processar TODOS os casos de teste da versão atual
+                // Listar todos os CTs atuais e verificar se são novos comparando com a versão anterior
+                cenariosAtuais.forEach((ctAtual, indexAtual) => {
+                    let temDiferenca = false;
+                    const statusNosOutros = [];
+                    let isNovo = false;
+                    let isRenomeado = false;
+                    let nomeAnterior = null;
+                    
+                    // Verificar status em outros itens
+                    for (let j = 0; j < items.length; j++) {
+                        if (i !== j) {
+                            const outrosCenarios = items[j].cenarios || [];
+                            const ctEncontrado = outrosCenarios.find(ct => 
+                                ct.titulo === ctAtual.titulo
+                            );
+                            
+                            if (ctEncontrado) {
+                                statusNosOutros.push(ctEncontrado.status);
+                                // Se o status é diferente, há diferença
+                                if (ctEncontrado.status !== ctAtual.status) {
+                                    temDiferenca = true;
+                                }
+                            } else {
+                                // CT não existe no outro arquivo, também é diferença
+                                temDiferenca = true;
+                            }
+                        }
+                    }
+                    
+                    // Verificar se é novo ou renomeado comparando com a versão anterior
+                    let statusMudouDaVersaoAnterior = false;
+                    if (i > 0) {
+                        const versaoAnterior = items[i - 1];
+                        const cenariosVersaoAnterior = versaoAnterior.cenarios || [];
+                        const ctNaVersaoAnterior = cenariosVersaoAnterior.find(ct => 
+                            ct.titulo === ctAtual.titulo
+                        );
+                        
+                        // Se o CT existe na versão anterior, verificar se o status mudou
+                        if (ctNaVersaoAnterior) {
+                            if (ctNaVersaoAnterior.status !== ctAtual.status) {
+                                statusMudouDaVersaoAnterior = true;
+                                temDiferenca = true;
+                                console.log(`     🔄 Status mudou para "${ctAtual.titulo}": ${ctNaVersaoAnterior.status} -> ${ctAtual.status}`);
+                            } else {
+                                // Status não mudou - não incluir nas diferenças (a menos que tenha sido renomeado)
+                                console.log(`     ⏩ CT "${ctAtual.titulo}" mantém o mesmo status (${ctAtual.status}) - não incluir nas diferenças`);
+                                return; // Pular este CT - não incluir nas diferenças
+                            }
+                        }
+                        
+                        if (!ctNaVersaoAnterior) {
+                            // CT não existe na versão anterior com o mesmo nome
+                            // Verificar se pode ser um renomeio
+                            // Estratégia: encontrar CTs da versão anterior que não existem mais na versão atual
+                            // e tentar fazer correspondência por posição e/ou status
+                            
+                            // Listar todos os CTs da versão anterior que não existem mais na versão atual
+                            const ctsRemovidosDaVersaoAnterior = cenariosVersaoAnterior.filter(ctAnterior => {
+                                return !cenariosAtuais.some(ct => ct.titulo === ctAnterior.titulo);
+                            });
+                            
+                            console.log(`     🔍 CT "${ctAtual.titulo}" não encontrado na versão anterior`);
+                            console.log(`     📋 CTs removidos da versão anterior: ${ctsRemovidosDaVersaoAnterior.length}`);
+                            
+                            // Caso especial: se há exatamente um CT removido e um CT novo, é muito provável que seja renomeio
+                            const ctsNovosNaVersaoAtual = cenariosAtuais.filter(ct => 
+                                !cenariosVersaoAnterior.some(ctAnt => ctAnt.titulo === ct.titulo)
+                            );
+                            
+                            if (ctsRemovidosDaVersaoAnterior.length === 1 && ctsNovosNaVersaoAtual.length === 1) {
+                                // Caso especial: um removido e um novo - muito provável renomeio
+                                const ctRemovido = ctsRemovidosDaVersaoAnterior[0];
+                                const indexRemovido = cenariosVersaoAnterior.findIndex(ct => ct.titulo === ctRemovido.titulo);
+                                const indexNovo = cenariosAtuais.findIndex(ct => ct.titulo === ctAtual.titulo);
+                                
+                                // Se estão na mesma posição ou têm o mesmo status, considerar renomeio
+                                if (Math.abs(indexNovo - indexRemovido) <= 2 || ctRemovido.status === ctAtual.status) {
+                                    isRenomeado = true;
+                                    nomeAnterior = ctRemovido.titulo;
+                                    console.log(`     ✅ CT RENOMEADO detectado (caso especial 1:1): "${ctRemovido.titulo}" -> "${ctAtual.titulo}"`);
+                                } else {
+                                    // Mesmo sendo 1:1, se posição e status são muito diferentes, considerar novo
+                                    isNovo = true;
+                                    console.log(`     ✨ CT NOVO detectado (caso especial 1:1 mas posição/status muito diferentes)`);
+                                }
+                            } else if (ctsRemovidosDaVersaoAnterior.length > 0) {
+                                // Tentar encontrar correspondência
+                                // Prioridade: mesma posição E mesmo status > mesma posição > mesmo status
+                                let melhorCorrespondencia = null;
+                                let melhorScore = -1;
+                                
+                                // Encontrar índice do CT atual na versão atual
+                                const indexAtualNaVersaoAtual = cenariosAtuais.findIndex(ct => ct.titulo === ctAtual.titulo);
+                                
+                                ctsRemovidosDaVersaoAnterior.forEach((ctAnterior, indexAnterior) => {
+                                    // Calcular score de correspondência
+                                    let score = 0;
+                                    
+                                    // Mesma posição relativa (+3 pontos)
+                                    if (Math.abs(indexAtualNaVersaoAtual - indexAnterior) <= 1) {
+                                        score += 3;
+                                    }
+                                    
+                                    // Mesmo status (+2 pontos)
+                                    if (ctAnterior.status === ctAtual.status) {
+                                        score += 2;
+                                    }
+                                    
+                                    // Posição muito próxima (+1 ponto)
+                                    if (Math.abs(indexAtualNaVersaoAtual - indexAnterior) <= 2) {
+                                        score += 1;
+                                    }
+                                    
+                                    console.log(`        🔍 Comparando "${ctAnterior.titulo}" (pos: ${indexAnterior}, status: ${ctAnterior.status}) com "${ctAtual.titulo}" (pos: ${indexAtualNaVersaoAtual}, status: ${ctAtual.status}) - score: ${score}`);
+                                    
+                                    // Se encontrou uma correspondência melhor, atualizar
+                                    if (score > melhorScore) {
+                                        melhorScore = score;
+                                        melhorCorrespondencia = {
+                                            ct: ctAnterior,
+                                            index: indexAnterior,
+                                            score: score
+                                        };
+                                    }
+                                });
+                                
+                                // Se encontrou uma correspondência com score mínimo
+                                // Score >= 2 significa: mesmo status OU posição próxima
+                                // Score >= 3 significa: posição próxima E mesmo status (melhor correspondência)
+                                if (melhorCorrespondencia && melhorScore >= 2) {
+                                    // Verificar se há apenas uma correspondência com esse score (evitar ambiguidade)
+                                    const correspondenciasComMesmoScore = [];
+                                    ctsRemovidosDaVersaoAnterior.forEach((ctAnterior, indexAnterior) => {
+                                        let score = 0;
+                                        if (Math.abs(indexAtualNaVersaoAtual - indexAnterior) <= 1) score += 3;
+                                        if (ctAnterior.status === ctAtual.status) score += 2;
+                                        if (Math.abs(indexAtualNaVersaoAtual - indexAnterior) <= 2) score += 1;
+                                        if (score === melhorScore) {
+                                            correspondenciasComMesmoScore.push({ ct: ctAnterior, score });
+                                        }
+                                    });
+                                    
+                                    console.log(`     📊 Correspondências com score ${melhorScore}: ${correspondenciasComMesmoScore.length}`);
+                                    
+                                    // Se há apenas uma correspondência com esse score, ou se é a melhor (score >= 3), considerar renomeio
+                                    // Score >= 3 garante posição próxima, o que é um bom indicador de renomeio
+                                    if (correspondenciasComMesmoScore.length === 1 || melhorScore >= 3) {
+                                        isRenomeado = true;
+                                        nomeAnterior = melhorCorrespondencia.ct.titulo;
+                                        console.log(`     ✅ CT RENOMEADO confirmado: "${melhorCorrespondencia.ct.titulo}" -> "${ctAtual.titulo}" (score: ${melhorScore})`);
+                                    } else {
+                                        // Múltiplas correspondências, considerar como novo para evitar falsos positivos
+                                        isNovo = true;
+                                        console.log(`     ⚠️ Múltiplas correspondências encontradas para "${ctAtual.titulo}" (score: ${melhorScore}, count: ${correspondenciasComMesmoScore.length}), marcando como NOVO`);
+                                    }
+                                } else {
+                                    // Não encontrou correspondência suficiente, é novo
+                                    isNovo = true;
+                                    console.log(`     ✨ CT NOVO detectado: "${ctAtual.titulo}" (melhor score: ${melhorScore} < 2)`);
+                                }
+                            } else {
+                                // Não há CTs removidos, então este é novo
+                                isNovo = true;
+                                console.log(`     ✨ CT NOVO detectado: "${ctAtual.titulo}" (nenhum CT removido na versão anterior)`);
+                            }
+                        }
+                    } else {
+                        // Primeira versão - verificar se existe em outras versões
+                        isNovo = statusNosOutros.length === 0;
+                    }
+                    
+                    // Se há diferença de status ou CT não existe em outros arquivos OU foi renomeado
+                    // CTs renomeados sempre devem aparecer nas diferenças
+                    // Mas não incluir se o status não mudou da versão anterior (já foi tratado acima com return)
+                    if (temDiferenca || isNovo || isRenomeado || statusMudouDaVersaoAnterior) {
+                        // Adicionar informação sobre os status nos outros arquivos
+                        const ctComInfo = {
+                            ...ctAtual,
+                            statusOutros: statusNosOutros.length > 0 ? statusNosOutros.join(', ') : 'Não existe',
+                            isNovo: isNovo && !isRenomeado, // Não marcar como novo se foi renomeado
+                            isRemovido: false,
+                            isRenomeado: isRenomeado,
+                            nomeAnterior: nomeAnterior
+                        };
+                        cenariosDiferentes.push(ctComInfo);
+                        
+                        if (isRenomeado) {
+                            console.log(`     ✅ CT renomeado adicionado às diferenças: "${nomeAnterior}" -> "${ctAtual.titulo}"`);
+                        }
+                    }
+                });
+                
+                // Verificar casos de teste removidos (que existiam na versão anterior mas não existem mais)
+                // Não marcar como removido se foi renomeado
+                if (i > 0) {
+                    const versaoAnterior = items[i - 1];
+                    const cenariosVersaoAnterior = versaoAnterior.cenarios || [];
+                    
+                    // Coletar nomes anteriores dos CTs renomeados
+                    const nomesAnterioresRenomeados = cenariosDiferentes
+                        .filter(ct => ct.isRenomeado && ct.nomeAnterior)
+                        .map(ct => ct.nomeAnterior);
+                    
+                    console.log(`     🔍 Verificando CTs removidos (comparando com versão ${i - 1})`);
+                    console.log(`     📝 CTs renomeados (não marcar como removidos):`, nomesAnterioresRenomeados);
+                    
+                    cenariosVersaoAnterior.forEach(ctAnterior => {
+                        // Verificar se este CT ainda existe no item atual
+                        const ctAtual = cenariosAtuais.find(ct => ct.titulo === ctAnterior.titulo);
+                        
+                        // Verificar se foi renomeado (não marcar como removido se foi renomeado)
+                        const foiRenomeado = nomesAnterioresRenomeados.includes(ctAnterior.titulo);
+                        
+                        // Se não existe no atual mas existia na versão anterior e não foi renomeado, foi removido
+                        if (!ctAtual && !foiRenomeado) {
+                            console.log(`     🗑️ CT REMOVIDO detectado: ${ctAnterior.titulo}`);
+                            cenariosDiferentes.push({
+                                titulo: ctAnterior.titulo,
+                                status: ctAnterior.status,
+                                isNovo: false,
+                                isRemovido: true,
+                                isRenomeado: false
+                            });
+                        }
+                    });
+                }
+                
+                // Processar TODOS os anexos de cada versão
+                // Listar apenas anexos novos (que não existiam na versão anterior)
+                anexosAtuais.forEach(anexoAtual => {
+                    const ctTitulo = anexoAtual.titulo;
+                    const arquivosAtuais = anexoAtual.arquivos !== 'Nenhum anexo' 
+                        ? anexoAtual.arquivos.split('; ').filter(f => f.trim())
+                        : [];
+                    
+                    console.log(`     🔍 Processando anexos de ${ctTitulo}: ${arquivosAtuais.length} arquivo(s)`);
+                    
+                    // Para cada arquivo deste CT, verificar se é novo comparando com a versão anterior
+                    arquivosAtuais.forEach(arquivo => {
+                        console.log(`        📎 Analisando arquivo: ${arquivo}`);
+                        
+                        let isNovo = false;
+                        
+                        // Se há versão anterior, verificar se o arquivo existe nela
+                        if (i > 0) {
+                            const versaoAnterior = items[i - 1];
+                            const anexosVersaoAnterior = versaoAnterior.anexos || [];
+                            const ctNaVersaoAnterior = anexosVersaoAnterior.find(a => a.titulo === ctTitulo);
+                            
+                            if (ctNaVersaoAnterior && ctNaVersaoAnterior.arquivos !== 'Nenhum anexo') {
+                                const arquivosVersaoAnterior = ctNaVersaoAnterior.arquivos.split('; ').filter(f => f.trim());
+                                isNovo = !arquivosVersaoAnterior.includes(arquivo);
+                                console.log(`           Existe na versão anterior? ${!isNovo}`);
+                            } else {
+                                // CT não existe na versão anterior, então o arquivo é novo
+                                isNovo = true;
+                                console.log(`           CT não existe na versão anterior - marcando como novo`);
+                            }
+                        } else {
+                            // Primeira versão - todos os anexos são novos
+                            isNovo = true;
+                        }
+                        
+                        // Adicionar apenas anexos novos (que não existiam na versão anterior)
+                        if (isNovo) {
+                            anexosDiferentes.push({
+                                titulo: ctTitulo,
+                                arquivo: arquivo,
+                                isNovo: true,
+                                isRemovido: false
+                            });
+                        }
+                    });
+                });
+                
+                // Verificar anexos removidos (que existiam na versão anterior mas não existem mais)
+                if (i > 0) {
+                    const versaoAnterior = items[i - 1];
+                    const anexosVersaoAnterior = versaoAnterior.anexos || [];
+                    
+                    console.log(`     🔍 Verificando anexos removidos (comparando com versão ${i - 1})`);
+                    
+                    anexosVersaoAnterior.forEach(anexoAnterior => {
+                        const ctTitulo = anexoAnterior.titulo;
+                        const arquivosAnterior = anexoAnterior.arquivos !== 'Nenhum anexo'
+                            ? anexoAnterior.arquivos.split('; ').filter(f => f.trim())
+                            : [];
+                        
+                        arquivosAnterior.forEach(arquivo => {
+                            // Verificar se este arquivo ainda existe no item atual
+                            const ctAtual = anexosAtuais.find(a => a.titulo === ctTitulo);
+                            let existeNoAtual = false;
+                            
+                            if (ctAtual && ctAtual.arquivos !== 'Nenhum anexo') {
+                                const arquivosAtuais = ctAtual.arquivos.split('; ').filter(f => f.trim());
+                                existeNoAtual = arquivosAtuais.includes(arquivo);
+                            }
+                            
+                            // Se não existe no atual mas existia na versão anterior, foi removido
+                            if (!existeNoAtual) {
+                                console.log(`     🗑️ Anexo REMOVIDO detectado: ${ctTitulo} - ${arquivo}`);
+                                anexosDiferentes.push({
+                                    titulo: ctTitulo,
+                                    arquivo: arquivo,
+                                    isNovo: false,
+                                    isRemovido: true
+                                });
+                            }
+                        });
+                    });
+                }
+                
+                console.log(`     ✅ Diferenças encontradas - Cenários: ${cenariosDiferentes.length}, Anexos: ${anexosDiferentes.length}`);
+                
+                diferencas.push({
+                    cenarios: cenariosDiferentes,
+                    anexos: anexosDiferentes
+                });
+            }
+            
+            console.log(`✅ Total de diferenças calculadas:`, diferencas);
+            return diferencas;
+        }
+
+        // Funções de controle de paginação do histórico
+        function atualizarPaginacaoHistorico() {
+            const paginationDiv = document.getElementById('historico-pagination');
+            const btnAnterior = document.getElementById('historico-prev-btn');
+            const btnProxima = document.getElementById('historico-next-btn');
+            const infoPaginacao = document.getElementById('historico-pagination-info');
+            const totalHistoricoElement = document.getElementById('total-historico');
+            
+            const totalPaginas = Math.max(1, Math.ceil(historicoDataFiltrado.length / itensPorPaginaHistorico));
+            const totalHistorico = historicoDataFiltrado.length;
+            
+            // Sempre mostrar a paginação
+            paginationDiv.style.display = 'flex';
+            
+            // Ajustar página atual se necessário
+            if (paginaAtualHistorico > totalPaginas) {
+                paginaAtualHistorico = totalPaginas;
+            }
+            if (paginaAtualHistorico < 1) {
+                paginaAtualHistorico = 1;
+            }
+            
+            // Atualizar botões
+            btnAnterior.disabled = paginaAtualHistorico === 1;
+            btnProxima.disabled = paginaAtualHistorico === totalPaginas;
+            
+            // Atualizar informação de página
+            infoPaginacao.textContent = `Página ${paginaAtualHistorico} de ${totalPaginas}`;
+            
+            // Atualizar total de histórico
+            const selecionados = itensSelecionados.size;
+            totalHistoricoElement.textContent = `Total: ${totalHistorico}${selecionados > 0 ? ` (selecionados: ${selecionados})` : ''}`;
+        }
+        
+        function paginaAnteriorHistorico() {
+            if (paginaAtualHistorico > 1) {
+                paginaAtualHistorico--;
+                renderizarHistorico(historicoDataFiltrado);
+                
+                // Scroll suave para o topo da página
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        function proximaPaginaHistorico() {
+            const totalPaginas = Math.ceil(historicoDataFiltrado.length / itensPorPaginaHistorico);
+            if (paginaAtualHistorico < totalPaginas) {
+                paginaAtualHistorico++;
+                renderizarHistorico(historicoDataFiltrado);
+                
+                // Scroll suave para o topo da página
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
+    
+    <!-- Footer Component -->
+    <div id="footer-container"></div>
+    <script src="../js/components-loader.js"></script>
+</body>
+</html>
