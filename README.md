@@ -1,4 +1,4 @@
-# QualiDoc — documentação de testes (QA)
+# QualiDoc — documentação de testes (QA) 
 
 Sistema de documentação de casos de testes voltado a QA. **A proposta atual é executar a aplicação com persistência somente no lado do cliente**, usando **`localStorage` do navegador** como armazenamento principal — sem depender de bucket S3, banco ou APIs de arquivo no servidor para os dados da documentação.
 
